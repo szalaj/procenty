@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dodaj waga</title>
+
+<style>
+
+input[type="text"]
+{ padding: 20px 10px; line-height: 10px;
+font-size: 36px;
+margin-top: 30px;
+
+}
+
+button {
+
+  font-size: 40px;
+
+  margin: 20px;
+}
+</style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <h1>Raty równe kredytu hipotecznego</h1>
+        <hr>
+      </div>
+    </div>
+  </div>
+
+  {% if feedback %}
+<p class="text-danger float-right">{{ feedback }}</p>
+{% endif %}
+
+  <form action="/" method="POST">
+
+    <div class="form-group">
+      <input type="text" class="form-control" id="kapital" name="kapital" placeholder="Kapitał">
+    </div>
+
+    <div class="form-group">
+      <input type="text" class="form-control" id="procent" name="procent" placeholder="Oprocentowanie">
+    </div>
+
+    <div class="form-group">
+      <input type="text" class="form-control" id="liczba_rat" name="liczba_rat" placeholder="Liczba rat" value="360">
+    </div>
+
+<div>
+  <button type="submit" class="btn btn-primary">Dodaj</button>
+</div>
+
+
+  </form>
+
+
+</body>
+</html>
