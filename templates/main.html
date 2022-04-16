@@ -2,12 +2,13 @@
 <html>
 <head>
 <title>Dodaj waga</title>
+<script src="{{url_for('static', filename='d3.js')}}"></script>
 
 <style>
 
 input[type="text"]
 { padding: 20px 10px; line-height: 10px;
-font-size: 36px;
+font-size: 26px;
 margin-top: 30px;
 
 }
@@ -35,7 +36,87 @@ button {
 <p class="text-danger float-right">{{ feedback }}</p>
 {% endif %}
 
-  <form action="/" method="POST">
+{% if dane %}
+<div id="chart">
+
+
+
+</div>
+<script type="text/javascript">
+  dane = {{dane|tojson}};
+
+  console.log(dane)
+
+
+  var margin = {top: 30, right: 30, bottom: 70, left: 30},
+      width_chart = 500,
+      width = width_chart - margin.left - margin.right,
+      height = 120- margin.top - margin.bottom;
+
+
+      // append the svg object to the body of the page
+      var svg = d3.select("#chart")
+        .append("svg")
+          .attr("class", "svg-holder")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .attr("style", "border:1px solid black;")
+          .style('background', "white")
+          .append("g")
+            .attr("transform",
+                  "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+        const xscale = d3.scaleTime()
+            .domain([0, d3.max([dane.kapital, dane.zwrot]) ])
+            .range([0, width]);
+
+        svg.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", xscale(dane.kapital))
+            .attr("height", 20)
+            .attr("fill", 'red');
+
+            svg.append("rect")
+                .attr("x", 0)
+                .attr("y", 40)
+                .attr("width", xscale(dane.zwrot))
+                .attr("height", 20)
+                .attr("fill", 'blue');
+
+
+            d3.select("#chart")
+                      .append("p")
+                      .text("Pożyczyłeś " + dane.kapital)
+
+
+            d3.select("#chart")
+                      .append("p")
+                      .text("Rata równa " + dane.rata)
+
+
+            d3.select("#chart")
+                      .append("p")
+                      .text("Oddasz " + dane.zwrot)
+
+
+            d3.select("#chart")
+                .append("p")
+                .text("Proporcja " + ((dane.zwrot/dane.kapital)*100).toFixed(2) + "%")
+
+
+
+
+      // (dane.zwrot/dane.kapital)*100) )
+
+</script>
+
+
+{% endif %}
+
+<form action="/" method="POST">
 
     <div class="form-group">
       <input type="text" class="form-control" id="kapital" name="kapital" placeholder="Kapitał">
@@ -54,7 +135,7 @@ button {
 </div>
 
 
-  </form>
+</form>
 
 
 </body>

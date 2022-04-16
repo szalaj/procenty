@@ -52,8 +52,9 @@ def main():
 
         I = round(I, 2)
 
+        dane = {'kapital':N, 'zwrot':n*I, 'rata': I}
 
-        return render_template("main.html", feedback="rata równa : {}".format(I))
+        return render_template("main.html", dane=dane)
 
     # tu zaczyna się aplikacja
     return render_template("main.html")
