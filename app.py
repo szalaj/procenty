@@ -1,7 +1,7 @@
 
 from flask import Flask, render_template, redirect, url_for, jsonify, request, make_response
 
-import numpy as np
+
 
 app = Flask(__name__)
 
@@ -46,7 +46,7 @@ def main():
         #n = 360
 
         L = (N*r)
-        M = k*(1-np.power(k/(k+r),n) )
+        M = k*(1-pow(k/(k+r),n) )
         I = L/M
 
         I = round(I, 2)
