@@ -87,14 +87,26 @@ button {
                 .attr("fill", 'blue');
 
 
+                d3.select("#chart")
+                          .append("p")
+                          .text("Rata równa " + dane.rata)
+
+          d3.select("#chart")
+                    .append("p")
+                    .text("Oprocentowanie " + dane.oprocentowanie)
+
+
+                    d3.select("#chart")
+                              .append("p")
+                              .text("Liczba rat " + dane.liczba_rat)
+
+
             d3.select("#chart")
                       .append("p")
                       .text("Pożyczyłeś " + dane.kapital)
 
 
-            d3.select("#chart")
-                      .append("p")
-                      .text("Rata równa " + dane.rata)
+
 
 
             d3.select("#chart")

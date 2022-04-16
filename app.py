@@ -52,7 +52,7 @@ def main():
 
         I = round(I, 2)
 
-        dane = {'kapital':N, 'zwrot':round(n*I,2), 'rata': I}
+        dane = {'kapital':N, 'zwrot':round(n*I,2), 'rata': I, 'liczba_rat': n, 'oprocentowanie': r}
 
         return render_template("main.html", dane=dane)
 
