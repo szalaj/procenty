@@ -2,6 +2,7 @@
 from flask import Flask, render_template, redirect, url_for, jsonify, request, make_response
 
 
+import bank.kredyt as Kredyt
 
 app = Flask(__name__)
 
@@ -40,17 +41,8 @@ def main():
 
         print("--obliczenia--")
 
-        # liczba rat płatnych w ciągu roku
-        k = 12
 
-        # liczba rat ogółem
-        #n = 360
-
-        L = (N*r)
-        M = k*(1-pow(k/(k+r),n) )
-        I = L/M
-
-        I = round(I, 2)
+        I = Kredyt.rata_rowna(N, r, n, k=12)
 
         dane = {'kapital':N, 'zwrot':round(n*I,2), 'rata': I, 'liczba_rat': n, 'oprocentowanie': r}
 
