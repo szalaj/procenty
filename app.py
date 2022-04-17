@@ -42,11 +42,12 @@ def main():
         print("--obliczenia--")
 
 
-        I = Kredyt.rata_rowna(N, r, n, k=12)
+        I,D = Kredyt.rata_rowna_prosta(N, r, n, k=12)
+
 
         dane = {'kapital':N, 'zwrot':round(n*I,2), 'rata': I, 'liczba_rat': n, 'oprocentowanie': r}
 
-        return render_template("main.html", dane=dane)
+        return render_template("main.html", dane=dane, dane_splaty=D)
 
     # tu zaczyna się aplikacja
     return render_template("main.html")
