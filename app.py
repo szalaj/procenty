@@ -4,10 +4,14 @@ from flask import Flask, render_template, redirect, url_for, jsonify, request, m
 
 import bank.kredyt as Kredyt
 
+k1 = Kredyt.Kredyt('04/11/2021', '18/12/2021')
+
 app = Flask(__name__)
 
 @app.route("/", methods=['GET', 'POST'])
 def main():
+
+
 
     # tu po wypełnieniu i przesłaniu formularza
     if request.method == "POST":

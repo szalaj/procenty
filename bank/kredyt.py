@@ -1,6 +1,9 @@
 
 
 
+import datetime
+from dateutil.relativedelta import relativedelta
+
 
 
 def rata_rowna_prosta(K0, r, N, k):
@@ -50,3 +53,32 @@ def rata_rowna_prosta(K0, r, N, k):
 
 def rata_rowna(K0, r, N, k):
     pass
+
+
+class Kredyt:
+
+    def __init__(self, dzien_start, dzien_platnosci):
+
+        # dzien start - dzień uruchomienia kredytu
+
+        self.dzien_start = datetime.datetime.strptime(dzien_start, "%d/%m/%Y")
+        self.dzien_platnosci = datetime.datetime.strptime(dzien_platnosci, "%d/%m/%Y")
+        print(self.dzien_start + relativedelta(months=4) )
+
+
+        dni = (self.dzien_platnosci-self.dzien_start).days
+
+        dni = ( datetime.datetime.strptime('18/11/2021', "%d/%m/%Y")-self.dzien_start).days
+        print(dni)
+        r=4.23/100
+        K = 460000
+
+        o = K*(r*(dni/360))
+        k = K/360
+
+        I,D = rata_rowna_prosta(K + o, 4.23/100, 360, 12)
+
+        print(o)
+        print(k+o)
+
+        print(I)
