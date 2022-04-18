@@ -18,7 +18,7 @@ def rata_rowna_prosta(K0, r, N, k):
 
     I = L/M
 
-    I = round(I, 2)
+    #I = round(I, 2)
 
     K = K0
     Dane = []
@@ -63,6 +63,7 @@ class Kredyt:
 
         self.dzien_start = datetime.datetime.strptime(dzien_start, "%d/%m/%Y")
         self.dzien_platnosci = datetime.datetime.strptime(dzien_platnosci, "%d/%m/%Y")
+
         print(self.dzien_start + relativedelta(months=4) )
 
 
@@ -70,15 +71,13 @@ class Kredyt:
 
         dni = ( datetime.datetime.strptime('18/11/2021', "%d/%m/%Y")-self.dzien_start).days
         print(dni)
-        r=4.23/100
+        r = 4.23/100
         K = 460000
 
-        o = K*(r*(dni/360))
-        k = K/360
+        o = K*r*(dni/365)
+
 
         I,D = rata_rowna_prosta(K + o, 4.23/100, 360, 12)
 
         print(o)
-        print(k+o)
-
         print(I)
