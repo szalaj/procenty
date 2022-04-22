@@ -37,7 +37,11 @@
                d.day = parseDate(d.day)
                d.value = parseFloat(d.value)
 
-           });
+        });
+
+
+
+        dane.push({'day': new Date(), 'value': dane[dane.length-1].value})
 
 
         var xscale = d3.scaleTime()
@@ -45,24 +49,43 @@
                .range([0, width]);
 
 
-               var maxYvalue = d3.max(dane, function(d) { return d.value });
-               var minYvalue = d3.min(dane, function(d) { return d.value });
-               // Add Y axis
+       var maxYvalue = d3.max(dane, function(d) { return d.value });
+       var minYvalue = d3.min(dane, function(d) { return d.value });
+       // Add Y axis
 
-               var yscale = d3.scaleLinear()
-                 .domain([minYvalue-0.5, maxYvalue+0.5])
-                 .range([ height, 0]);
-
-
-         var  line_wibor = d3.line()
-            .x(d => xscale(d.day))
-            .y(d => yscale(d.value))
+       var yscale = d3.scaleLinear()
+         .domain([0, maxYvalue+0.5])
+         .range([ height, 0]);
 
 
-         svg.append("path")
-           .datum(dane)
-           .attr('d', line_wibor)
-           .style("stroke", "blue")
+
+
+        for (var i=0; i<dane.length-1; i++) {
+
+               console.log(i);
+
+                svg.append("line")
+                  .attr("x1", xscale(dane[i].day))
+                  .attr("y1", yscale(dane[i].value))
+                  .attr("x2", xscale(dane[i+1].day))
+                  .attr("y2", yscale(dane[i].value))
+                  .style("stroke-width", 2)
+                  .style("stroke", "red")
+
+
+                  svg.append("line")
+                    .attr("x1", xscale(dane[i+1].day))
+                    .attr("y1", yscale(dane[i+1].value))
+                    .attr("x2", xscale(dane[i+1].day))
+                    .attr("y2", yscale(dane[i].value))
+                    .style("stroke-width", 2)
+                    .style("stroke", "red")
+                    .style("stroke-dasharray","4");
+
+        }
+
+
+
 
 
 
