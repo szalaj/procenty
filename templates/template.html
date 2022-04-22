@@ -8,6 +8,11 @@
         padding-top: 12px;
       }
 
+      img {
+
+        border-style: dotted;
+      }
+
       h2 {color: black;}
 
       input[type="text"]
@@ -34,7 +39,7 @@
   <body>
     <div class="container">
       <img src="{{ url_for('static', filename='images/logo.png') }}" />
-      <hr/>
+      <br><br />
       {% block content %}{% endblock %}
       <hr />
     </div>

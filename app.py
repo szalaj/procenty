@@ -61,8 +61,8 @@ def main():
 def wibor():
 
     wibor_dane = [{'day': '04/11/2021', 'value': 0.21},
-                  {'day': '04/02/2022', 'value': 3.05},
-                  {'day': '04/05/2022', 'value': 6.30}]
+                  {'day': '04/02/2022', 'value': 1.05},
+                  {'day': '04/05/2022', 'value': 7.30}]
 
     return render_template('wibor.html', wibor_dane = wibor_dane)
 
