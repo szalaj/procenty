@@ -1,42 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Procenty</title>
-<script src="{{url_for('static', filename='d3.js')}}"></script>
-
-<style>
-
-input[type="text"]
-{ padding: 20px 10px; line-height: 10px;
-font-size: 26px;
-margin-top: 30px;
-
-}
-
-button {
-
-  font-size: 40px;
-
-  margin: 20px;
-}
-
-path {
-  fill: none;
-  stroke-width: 2px;
-  stroke: black;
-}
-</style>
-</head>
-<body>
-
-  <div class="container">
-    <div class="row">
-      <div class="col">
-        <h1>Raty równe kredytu hipotecznego</h1>
-        <hr>
-      </div>
-    </div>
-  </div>
+{% extends "template.html" %}
+{% block content %}
 
   {% if feedback %}
 <p class="text-danger float-right">{{ feedback }}</p>
@@ -244,6 +207,4 @@ path {
 
 </form>
 
-
-</body>
-</html>
+{% endblock %}
