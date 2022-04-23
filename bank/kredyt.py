@@ -4,7 +4,7 @@
 import datetime
 from dateutil.relativedelta import relativedelta
 
-
+import bank.stopy
 
 def rata_rowna_prosta(K0, r, N, k):
 
@@ -55,22 +55,36 @@ def rata_rowna(K0, r, N, k):
     pass
 
 
+
+
+
 class Kredyt:
 
-    def __init__(self, dzien_start, dzien_platnosci):
+    #def __new__(cls,  N, dzien_start, dzien_platnosci):
+    #    return object.__new__(cls)
 
+    def __init__(self, N, dzien_start, dzien_platnosci):
+        # N - pożyczona kwota
         # dzien start - dzień uruchomienia kredytu
+        # dzien platnosci - przesuwna
 
+
+        self.N = N
         self.dzien_start = datetime.datetime.strptime(dzien_start, "%d/%m/%Y")
         self.dzien_platnosci = datetime.datetime.strptime(dzien_platnosci, "%d/%m/%Y")
 
-        print(self.dzien_start + relativedelta(months=4) )
 
 
-        dni = (self.dzien_platnosci-self.dzien_start).days
+    def oblicz_kredyt(self):
+
+        #print(self.dzien_start + relativedelta(months=4) )
+
+        #dni = (self.dzien_platnosci-self.dzien_start).days
 
         dni = ( datetime.datetime.strptime('18/11/2021', "%d/%m/%Y")-self.dzien_start).days
-        print(dni)
+
+        #print(dni)
+
         r = 4.23/100
         K = 460000
 
@@ -81,3 +95,6 @@ class Kredyt:
 
         print(o)
         print(I)
+
+
+        return bank.stopy.wibor_moje

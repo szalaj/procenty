@@ -1,3 +1,4 @@
-__all__ = ["kredyt"]
+__all__ = ["kredyt", "stopy"]
 
-from bank import kredyt
+#from bank import kredyt
+#from bank import wibor

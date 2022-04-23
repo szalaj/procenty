@@ -2,9 +2,10 @@
 from flask import Flask, render_template, redirect, url_for, jsonify, request, make_response
 
 
-import bank.kredyt as Kredyt
+import bank.kredyt as kredyt
+import bank.stopy as stopy
 
-k1 = Kredyt.Kredyt('04/11/2021', '18/12/2021')
+#k1 = kredyt.Kredyt('04/11/2021', '18/12/2021')
 
 app = Flask(__name__)
 
@@ -46,7 +47,7 @@ def main():
         print("--obliczenia--")
 
 
-        I,D = Kredyt.rata_rowna_prosta(N, r, n, k=12)
+        I,D = kredyt.rata_rowna_prosta(N, r, n, k=12)
 
 
         dane = {'kapital':N, 'zwrot':round(n*I,2), 'rata': I, 'liczba_rat': n, 'oprocentowanie': r}
@@ -57,14 +58,17 @@ def main():
     return render_template("main.html")
 
 
-@app.route("/wibor", methods=['GET'])
-def wibor():
+@app.route("/stopy", methods=['GET'])
+def pokaz_stopy():
 
-    wibor_dane = [{'day': '04/11/2021', 'value': 1.26},
-                  {'day': '04/02/2022', 'value': 3.06}
-                  ]
+    wibor_dane = stopy.wibor_moje
 
-    return render_template('wibor.html', wibor_dane = wibor_dane)
+    a = kredyt.Kredyt(460000, '04/11/2021', '18/12/2021').oblicz_kredyt()
+    
+    return render_template('stopy.html', wibor_dane = wibor_dane)
+
+
+
 
 
 if __name__ == "__main__":
