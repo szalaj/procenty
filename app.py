@@ -63,9 +63,9 @@ def pokaz_stopy():
 
     wibor_dane = stopy.wibor_moje
 
-    roznica = kredyt.Kredyt(460000, '04/11/2021', '18/12/2021').oblicz_roznice()
+    roznice_opcje = kredyt.Kredyt(460000, '04/11/2021', '18/12/2021').oblicz_roznice()
 
-    return render_template('stopy.html', wibor_dane = wibor_dane)
+    return render_template('stopy.html', wibor_dane = wibor_dane, roznice_opcje = roznice_opcje)
 
 
 

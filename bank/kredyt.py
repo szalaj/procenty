@@ -70,6 +70,31 @@ def rata_rowna(N0, r, n, k):
 
 
 
+class Stopa:
+    """
+    Obiekty do łatwiejszego wyliczania obowiązującej stopy procentowej w danym dniu
+
+    Parameters:
+    -----------------------
+    stopa_dane_json - patrz format w bank.stopy
+    """
+
+    def __init__(self, stopa_dane_json):
+
+
+        self.stopa_df = pd.DataFrame(stopa_dane_json)
+        self.stopa_df['day'] = pd.to_datetime(self.stopa_df['day'], format="%d/%m/%Y")
+        self.stopa_df = self.stopa_df.sort_values(by="day")
+
+
+    def getStopa(self, day):
+
+        r_day = self.stopa_df[self.stopa_df['day']<=day]['value'].iloc[-1] / 100.0
+
+        return r_day
+
+
+
 
 
 class Kredyt:
@@ -78,9 +103,11 @@ class Kredyt:
     #    return object.__new__(cls)
 
     def __init__(self, N, dzien_start, dzien_platnosci):
-        # N - pożyczona kwota
-        # dzien start - dzień uruchomienia kredytu
-        # dzien platnosci - przesuwna
+        """
+        N - pożyczona kwota
+        dzien start - dzień uruchomienia kredytu
+        dzien platnosci - przesuwna
+        """
 
 
         self.N = N
@@ -90,58 +117,52 @@ class Kredyt:
 
 
     def oblicz_roznice(self):
+        """
+        Co by było gdyby kredyt był nadpłacany?
+        Obliczenie różnicy w dwóch wariantach.
+        """
 
-        #print(self.dzien_start + relativedelta(months=4) )
+        dni_odsetki_poczatkowe = (datetime.datetime.strptime('18/11/2021', "%d/%m/%Y")-self.dzien_start).days
 
-        #dni = (self.dzien_platnosci-self.dzien_start).days
-
-        dni = ( datetime.datetime.strptime('18/11/2021', "%d/%m/%Y")-self.dzien_start).days
-
-        #print(dni)
 
         r = 4.23/100
-        K = 460000
+        N_od_banku = 460000
 
-        o = K*r*(dni/365)
+        odsetki_poczatkowe = N_od_banku*r*(dni_odsetki_poczatkowe/365)
 
         # poczatkowa kwota do splaty po uwzlednieniu opoznienia 1 raty
-        N0 = K + o
+        N0 = N_od_banku + odsetki_poczatkowe
 
-        n = 360
-
-        stopa_dane = bank.stopy.wibor_moje
-
-        stopa_df = pd.DataFrame(stopa_dane)
-        stopa_df['day'] = pd.to_datetime(stopa_df['day'], format="%d/%m/%Y")
-        stopa_df = stopa_df.sort_values(by="day")
 
 
         N_i = N0
         N_i2 = N0
 
-        I_suma = o
-        I_suma2 = o
+        I_suma = odsetki_poczatkowe
+        I_suma2 = odsetki_poczatkowe
 
+
+        stopa_procentowa = Stopa(bank.stopy.wibor_moje)
+
+        result_roznice = [ {'N1': N0, 'N2': N0} ]
+
+        #ile okresow (miesiecy) splaty kredytu
+        n = 360
         for i_n in range(0,n):
 
-            data_i = self.dzien_platnosci + relativedelta(months=i_n+1)
+            data_i = self.dzien_platnosci + relativedelta(months=i_n)
 
-            r_i = stopa_df[stopa_df['day']<=data_i]['value'].iloc[-1] / 100.0
+            r_i = stopa_procentowa.getStopa(data_i)
 
             r_i2 = r_i
 
 
-            if i_n>0 and i_n<12:
-                r_i = r_i2+ 0.01
+            if 1 <= i_n < 12:
+                r_i = r_i2 + 0.01
 
 
-            I_i = rata_rowna(N_i,r_i, n-i_n, 12)
+            I_i =  rata_rowna(N_i,r_i, n-i_n, 12)
             I_i2 = rata_rowna(N_i2,r_i2, n-i_n, 12)
-
-
-
-
-
 
 
             o_i = r_i/12*N_i
@@ -160,15 +181,11 @@ class Kredyt:
             if N_i2>0:
                 I_suma2 = I_suma2 + I_i2
 
-            print(data_i, r_i,  I_i, I_i2, delta_I)
+            #print(data_i, r_i,  I_i, I_i2, delta_I)
 
+            result_roznice += {'N1': N_i, 'N2': N_i2}
 
         print(I_suma, I_suma2, I_suma-I_suma2)
 
-        #I,D = rata_rowna_prosta(K + o, 4.23/100, 360, 12)
 
-        #print(o)
-        #print(I)
-
-
-        return bank.stopy.wibor_moje
+        return result_roznice
