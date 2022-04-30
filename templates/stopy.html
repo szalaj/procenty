@@ -2,9 +2,16 @@
 {% block content %}
 
 <h2>Wibor 3M</h2>
-<div id="chart"/> 
+<style>
+.box {
+display: inline-block;
+}
+</style>
+<div class="container">
+  <div id="chart" class="box"></div>
+  <div id="roznice" class="box"></div>
+</div>
 
-<div id="roznice"/>
 
 
 <script type="text/javascript">
@@ -88,10 +95,6 @@
         }
 
 
-
-
-
-
            svg.append("g")
              .attr("class", "xAxis3")
              .attr("transform", "translate( 0," + height + ")")
@@ -127,5 +130,73 @@
                 .attr("y2", 0);
 </script>
 
+<script type="text/javascript">
+
+
+    var dane_N = {{roznice_opcje|tojson}}
+    console.log(dane_N)
+
+    var margin = {top: 30, right: 30, bottom: 70, left: 30},
+        width_chart = 730,
+        width = width_chart - margin.left - margin.right,
+        height = 400- margin.top - margin.bottom;
+
+
+    // append the svg object to the body of the page
+    var svg = d3.select("#roznice")
+      .append("svg")
+        .attr("class", "svg-holder")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("style", "border:1px solid black;")
+        .style('background', "white")
+        .append("g")
+          .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+      var extents = [d3.extent(dane_N,d=>d.N1), d3.extent(dane_N,d=>d.N2)].flat()
+      var maxYvalue = d3.max(extents);
+      var minYvalue = d3.min(extents);
+
+      var yscale = d3.scaleLinear()
+        .domain([0, maxYvalue+0.5])
+        .range([ height, 0]);
+
+      var xscale = d3.scaleBand().domain( Array.from(Array(dane_N.length).keys()) ).range([0, width])
+
+
+      const line1 = d3.line()
+          .y(d => yscale(d.N1))
+          .x((d,i) => xscale(i))
+
+      const line2 = d3.line()
+              .y(d => yscale(d.N2))
+              .x(function(d,i) { return xscale(i) })
+
+
+      svg.append('path')
+      .datum(dane_N)
+      .attr('d', line1)
+      .style("stroke-width", 1)
+      .style("stroke", "red")
+
+
+      svg.append('path')
+      .datum(dane_N)
+      .attr('d', line2)
+      .style("stroke-width", 1)
+
+
+
+
+
+
+
+
+
+
+</script>
 
 {% endblock %}

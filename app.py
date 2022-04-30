@@ -5,7 +5,8 @@ from flask import Flask, render_template, redirect, url_for, jsonify, request, m
 import bank.kredyt as kredyt
 import bank.stopy as stopy
 
-#k1 = kredyt.Kredyt('04/11/2021', '18/12/2021')
+k1 = kredyt.StalaRata(460000, 360, 4.23, '18/03/2022').policz()
+print(k1)
 
 app = Flask(__name__)
 
@@ -63,7 +64,11 @@ def pokaz_stopy():
 
     wibor_dane = stopy.wibor_moje
 
-    roznice_opcje = kredyt.Kredyt(460000, '04/11/2021', '18/12/2021').oblicz_roznice()
+    kr = kredyt.Kredyt(460000, '04/11/2021', '18/12/2021')
+
+    yo = kr.policz_kredyt()
+
+    roznice_opcje = kr.oblicz_roznice()
 
     return render_template('stopy.html', wibor_dane = wibor_dane, roznice_opcje = roznice_opcje)
 
