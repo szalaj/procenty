@@ -194,8 +194,10 @@ class StalaRata:
 
         dzien_ostatnia_platnosc = datetime.datetime.strptime('04/11/2021', "%d/%m/%Y")
 
-        I = 2256.70
-        
+        I = I2
+
+
+
 
         result = []
 
@@ -241,6 +243,39 @@ class StalaRata:
             dzien_ostatnia_platnosc = dzien_platnosc
 
         return Kn, result
+
+
+
+    def policz2(self, data_rata):
+
+        data_pierwszej_raty = datetime.datetime.strptime(data_rata, "%d/%m/%Y")
+
+        daty_splaty = [data_pierwszej_raty + relativedelta(months=n) for n in range(0, self.N)]
+
+        dane_df = [{'data': self.dzien_start,
+                'saldo': self.K0,
+                'rata':  0,
+                'kapital_splata': 0,
+                'odsetki':  0}]
+
+
+
+        for dsplaty in daty_splaty:
+
+            row = {'data': dsplaty,
+                    'saldo': 0,
+                    'rata':  0,
+                    'kapital_splata': 0,
+                    'odsetki':  0}
+
+            dane_df.append(row)
+
+
+        harmo_df = pd.DataFrame(dane_df)
+
+        print(harmo_df)
+
+
 
 
 
