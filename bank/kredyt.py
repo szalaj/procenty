@@ -116,6 +116,7 @@ class StalaRata:
 
         self.K0 = K0
         self.N = N
+        #self.dzien_uruchomienia =
         self.dzien_start = datetime.datetime.strptime(dzien_start, "%d/%m/%Y")
 
 
@@ -191,17 +192,22 @@ class StalaRata:
 
         odsetki = 0
 
-        dzien_ostatnia_platnosc = self.dzien_start
+        dzien_ostatnia_platnosc = datetime.datetime.strptime('04/11/2021', "%d/%m/%Y")
 
-        I = I3
+        I = 2256.70
+        
 
         result = []
 
-        for n in range(0,self.N):
+        daty_splaty = [self.dzien_start + relativedelta(months=n+1) for n in range(0, self.N)]
+
+        daty_splaty[-1] =  datetime.datetime.strptime('04/11/2051', "%d/%m/%Y")
+
+        for dsplaty in daty_splaty:
 
 
 
-            dzien_platnosc = self.dzien_start + relativedelta(months=n+1)
+            dzien_platnosc = dsplaty
 
             odsetki += self.nalicz_odsetki(Kn, self.r, dzien_ostatnia_platnosc, dzien_platnosc)
 
@@ -224,9 +230,11 @@ class StalaRata:
 
 
 
-            row = {'data': dzien_platnosc.strftime('%d/%m/%Y'), 'saldo': "{:,.2f} zł".format(Kn),
-                                                   'kapital_splata': "{:,.2f} zł".format(kapital_splata),
-                                                   'odsetki':  "{:,.2f} zł".format(odsetki_krok)}
+            row = {'data': dzien_platnosc.strftime('%d/%m/%Y'),
+                    'saldo': "{:,.2f} zł".format(Kn),
+                    'rata':  "{:,.2f} zł".format(I),
+                    'kapital_splata': "{:,.2f} zł".format(kapital_splata),
+                    'odsetki':  "{:,.2f} zł".format(odsetki_krok)}
 
             result.append(row)
 

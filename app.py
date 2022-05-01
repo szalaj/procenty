@@ -74,7 +74,7 @@ def pokaz_stopy():
 @app.route("/harmonogram", methods=['GET'])
 def pokaz_harmonogram():
 
-    k, res = kredyt.StalaRata(460000, 360, 4.23, '31/03/2022').policz()
+    k, res = kredyt.StalaRata(460000, 360, 4.23, '01/11/2021').policz()
 
 
 
