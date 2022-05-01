@@ -5,8 +5,7 @@ from flask import Flask, render_template, redirect, url_for, jsonify, request, m
 import bank.kredyt as kredyt
 import bank.stopy as stopy
 
-k1 = kredyt.StalaRata(460000, 360, 4.23, '18/03/2022').policz()
-print(k1)
+
 
 app = Flask(__name__)
 
@@ -72,7 +71,14 @@ def pokaz_stopy():
 
     return render_template('stopy.html', wibor_dane = wibor_dane, roznice_opcje = roznice_opcje)
 
+@app.route("/harmonogram", methods=['GET'])
+def pokaz_harmonogram():
 
+    k, res = kredyt.StalaRata(460000, 360, 4.23, '31/03/2022').policz()
+
+
+
+    return render_template('harmonogram.html', results = res)
 
 
 

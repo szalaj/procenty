@@ -1,0 +1,49 @@
+{% extends "template.html" %}
+{% block content %}
+
+<h2>Harmonogram spłaty</h2>
+<style>
+.box {
+display: inline-block;
+}
+</style>
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+  dane = {{results|tojson}};
+
+  console.log(dane)
+
+  var table = d3.select(".container").append("table"),
+    thead = table.append("thead").append("tr"),
+    tbody = table.append("tbody");
+
+
+  thead.append("td").text("data")
+    thead.append("td").text("saldo")
+      thead.append("td").text("kapital splata")
+        thead.append("td").text("odsetki")
+
+ let row = tbody.selectAll("tr").data(dane).enter()
+  .append("tr")
+
+  row.append("td").text(d=>d['data'])
+  row.append("td").text(d=>d['saldo'])
+  row.append("td").text(d=>d['kapital_splata'])
+  row.append("td").text(d=>d['odsetki'])
+
+
+
+
+
+
+</script>
+
+{% endblock %}

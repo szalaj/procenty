@@ -122,7 +122,7 @@ class StalaRata:
         self.r = r / 100.0
 
 
-    def nalicz_odsetki(self, Kapital,  r_roczne, dzien_koniec, dzien_start):
+    def nalicz_odsetki(self, Kapital,  r_roczne, dzien_start, dzien_koniec):
 
         dni_odsetkowe = (dzien_koniec-dzien_start).days
         stopa_dzien = r_roczne / 365.0
@@ -151,11 +151,10 @@ class StalaRata:
 
         print('I3: ', I3)
 
-
-
         # rata rowna
         I2 = L/M
 
+        print('I2: ', I2)
 
 
         I = 3077.24
@@ -165,26 +164,26 @@ class StalaRata:
 
 
         S = 455437.06
-
         rs = 7.05/100.0
 
         ostatnia_rata = datetime.datetime.strptime('18/04/2022', "%d/%m/%Y")
-        dzis = datetime.datetime.strptime('18/05/2022', "%d/%m/%Y")
+        dzis = datetime.datetime.strptime('30/04/2022', "%d/%m/%Y")
         nadplata = datetime.datetime.strptime('25/04/2022', "%d/%m/%Y")
 
-        biezace_odsetki = 1059.67
+        d1 = datetime.datetime.strptime('18/10/2051', "%d/%m/%Y")
+        d2 = datetime.datetime.strptime('04/11/2051', "%d/%m/%Y")
 
-        od1 = self.nalicz_odsetki(S,rs, nadplata, ostatnia_rata)
 
-        od2 = self.nalicz_odsetki(S-3000,rs, dzis, nadplata)
 
-        odx = self.nalicz_odsetki(S,rs, dzis, ostatnia_rata)
+        od1 = self.nalicz_odsetki(S+3000, rs, ostatnia_rata, nadplata)
+        od2 = self.nalicz_odsetki(S, rs, nadplata, dzis)
+
+
+
+        od12 = self.nalicz_odsetki(2844.77,rs,  d1, d2)
 
         print('--od--', od1+od2)
-        print('--odx', odx)
-
-
-
+        print('od12: ', od12)
 
 
 
@@ -194,27 +193,29 @@ class StalaRata:
 
         dzien_ostatnia_platnosc = self.dzien_start
 
+        I = I3
+
+        result = []
+
         for n in range(0,self.N):
+
+
 
             dzien_platnosc = self.dzien_start + relativedelta(months=n+1)
 
+            odsetki += self.nalicz_odsetki(Kn, self.r, dzien_ostatnia_platnosc, dzien_platnosc)
+
+            odsetki_krok = odsetki
 
 
-            odsetki += self.nalicz_odsetki(Kn, self.r, dzien_platnosc, dzien_ostatnia_platnosc)
+            odsetki_reszta = odsetki - I
+            kapital_splata = 0
 
-
-
-            odsetki = odsetki - I
-
-            if odsetki < 0:
-
-                Kn = Kn + odsetki
+            if odsetki_reszta < 0:
+                kapital_splata = -odsetki_reszta
+                Kn = Kn - kapital_splata
 
                 odsetki = 0
-
-
-
-
 
 
             #Kn = Kn  - (I - odsetki)
@@ -222,13 +223,16 @@ class StalaRata:
 
 
 
+
+            row = {'data': dzien_platnosc.strftime('%d/%m/%Y'), 'saldo': "{:,.2f} zł".format(Kn),
+                                                   'kapital_splata': "{:,.2f} zł".format(kapital_splata),
+                                                   'odsetki':  "{:,.2f} zł".format(odsetki_krok)}
+
+            result.append(row)
+
             dzien_ostatnia_platnosc = dzien_platnosc
 
-        return Kn
-
-
-
-
+        return Kn, result
 
 
 
@@ -276,6 +280,8 @@ class Kredyt:
         print("---odsetki poczatkowe---", odsetki_poczatkowe)
 
         K0 = 460000 + odsetki_poczatkowe
+
+
 
 
 
