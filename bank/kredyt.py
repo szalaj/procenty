@@ -252,23 +252,71 @@ class StalaRata:
 
         daty_splaty = [data_pierwszej_raty + relativedelta(months=n) for n in range(0, self.N)]
 
+
+
+
         dane_df = [{'data': self.dzien_start,
                 'saldo': self.K0,
                 'rata':  0,
                 'kapital_splata': 0,
-                'odsetki':  0}]
+                'odsetki':  0,
+                'odsetki_suma': 0}]
 
 
+        stopa_obj = Stopa(bank.stopy.wibor_moje)
+
+        I = 2261.13
+
+        data_w =  data_pierwszej_raty - relativedelta(months=1)
+
+        #print(data_w)
+
+        odsetki_start = self.nalicz_odsetki(self.K0, 4.23/100, self.dzien_start, data_w)
+
+        #print(odsetki_start)
+
+        saldo = self.K0
+
+        dzien_ostatnia_platnosc = data_w
+
+        odsetki_suma = odsetki_start
 
         for dsplaty in daty_splaty:
 
+
+            #stopa_dzien = stopa_obj.getStopa(dsplaty)
+
+
+            odsetki = self.nalicz_odsetki(saldo, 4.23/100, dzien_ostatnia_platnosc, dsplaty)
+
+            odsetki_suma += odsetki
+            odsetki_suma = odsetki_suma - I
+
+
+
+            kapital_splata = 0
+            if odsetki_suma < 0:
+                kapital_splata = -odsetki_suma
+                odsetki_suma = 0
+
+            #kapital_splata = I - odsetki
+
+
+
+            saldo = saldo - kapital_splata
+
             row = {'data': dsplaty,
-                    'saldo': 0,
-                    'rata':  0,
-                    'kapital_splata': 0,
-                    'odsetki':  0}
+                    'saldo': saldo,
+                    'rata':  I,
+                    'kapital_splata': kapital_splata,
+                    'odsetki':  odsetki,
+                    'odsetki_suma': odsetki_suma}
+
+
+
 
             dane_df.append(row)
+            dzien_ostatnia_platnosc = dsplaty
 
 
         harmo_df = pd.DataFrame(dane_df)
