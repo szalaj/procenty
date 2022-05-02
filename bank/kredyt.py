@@ -5,6 +5,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 import bank.stopy
+import bank.nadplaty
 
 import pandas as pd
 
@@ -93,6 +94,63 @@ class Stopa:
 
         return r_day
 
+    def pomiedzy(self, data1, data2):
+
+        zwrot = self.stopa_df[(self.stopa_df['day']>data1) & (self.stopa_df['day']<data2)]
+
+        if not zwrot.empty:
+
+            zwrot_list = []
+
+            for i, row in zwrot.iterrows():
+
+                zwrot_list.append({'dzien': row['day'], 'stopa': row['value']/100.0})
+
+
+            return zwrot_list
+
+        else:
+
+            return None
+
+class Nadplata:
+    """
+    Obiekty do łatwiejszego wyliczania obowiązującej stopy procentowej w danym dniu
+
+    Parameters:
+    -----------------------
+    stopa_dane_json - patrz format w bank.stopy
+    """
+
+    def __init__(self, nadplata_dane_json):
+
+
+        self.nadplata_df = pd.DataFrame(nadplata_dane_json)
+        self.nadplata_df['day'] = pd.to_datetime(self.nadplata_df['day'], format="%d/%m/%Y")
+        self.nadplata_df = self.nadplata_df.sort_values(by="day")
+
+
+
+
+    def pomiedzy(self, data1, data2):
+
+        zwrot = self.nadplata_df[(self.nadplata_df['day']>data1) & (self.nadplata_df['day']<data2)]
+
+        if not zwrot.empty:
+
+            zwrot_list = []
+
+            for i, row in zwrot.iterrows():
+
+                zwrot_list.append({'dzien': row['day'], 'wartosc': row['value']})
+
+
+            return zwrot_list
+
+        else:
+
+            return None
+
 
 
 class Zdarzenie:
@@ -112,7 +170,7 @@ class Zdarzenie:
 
 
     def __repr__(self):
-        return 'Zdarzenie {}'.format(self.data.strftime('%d/%m/%Y'))
+        return 'Zdarzenie {}, {}, {}'.format(self.data.strftime('%d/%m/%Y'), self.r, self.saldo)
 
 
 
@@ -225,7 +283,7 @@ class StalaRata:
 
 
 
-            zdarzenia.append(Zdarzenie(dsplaty, 0.1, 450000))
+            #zdarzenia.append(Zdarzenie(dzien_ostatnia_platnosc, 0.1, 450000))
 
             dzien_platnosc = dsplaty
 
@@ -260,13 +318,13 @@ class StalaRata:
 
             dzien_ostatnia_platnosc = dzien_platnosc
 
-        sort_zdarzenia = sorted(zdarzenia, reverse=True)
-        print('sort', sort_zdarzenia)
-
-        if datetime.datetime.strptime('01/09/2050', "%d/%m/%Y") in zdarzenia:
-            z = zdarzenia[zdarzenia.index(datetime.datetime.strptime('01/09/2050', "%d/%m/%Y"))]
-            print('oh year')
-            print(z)
+        # sort_zdarzenia = sorted(zdarzenia, reverse=True)
+        # print('sort', sort_zdarzenia)
+        #
+        # if datetime.datetime.strptime('01/09/2050', "%d/%m/%Y") in zdarzenia:
+        #     z = zdarzenia[zdarzenia.index(datetime.datetime.strptime('01/09/2050', "%d/%m/%Y"))]
+        #     print('oh year')
+        #     print(z)
 
         return Kn, result
 
@@ -288,8 +346,20 @@ class StalaRata:
                 'odsetki':  0,
                 'odsetki_suma': 0}]
 
+        result =  [{'data': self.dzien_start.strftime('%d/%m/%Y'),
+                'saldo':"{:,.2f} zł".format(0),
+                'rata':   "{:,.2f} zł".format(0),
+                'kapital_splata': "{:,.2f} zł".format(0),
+                'odsetki': "{:,.2f} zł".format(0)}]
+
+        # rowx = {'data': dsplaty.strftime('%d/%m/%Y'),
+        #         'saldo': "{:,.2f} zł".format(saldo),
+        #         'rata':  "{:,.2f} zł".format(I),
+        #         'kapital_splata': "{:,.2f} zł".format(kapital_splata),
+        #         'odsetki':  "{:,.2f} zł".format(odsetki)}
 
         stopa_obj = Stopa(bank.stopy.wibor_moje)
+        nadplata_obj = Nadplata(bank.nadplaty.nadplaty_moje)
 
         I = 2261.13
 
@@ -307,15 +377,85 @@ class StalaRata:
 
         odsetki_suma = odsetki_start
 
-        for dsplaty in daty_splaty:
+
+
+        for i_splaty, dsplaty in enumerate(daty_splaty):
+
+            if i_splaty>2:
+                I = 3078.38
+            if i_splaty>4:
+                I= 3056
+            if i_splaty>5:
+                I= 4025
 
 
             #stopa_dzien = stopa_obj.getStopa(dsplaty)
+            zdarzenia = []
+            zdarzenia.append(Zdarzenie(dzien_ostatnia_platnosc, stopa_obj.getStopa(dzien_ostatnia_platnosc), saldo))
+
+            last_stopa = stopa_obj.getStopa(dzien_ostatnia_platnosc)
+
+            zdarzenia.append(Zdarzenie(dsplaty, 0,0))
+
+            lista_zmian = stopa_obj.pomiedzy(dzien_ostatnia_platnosc,dsplaty)
+
+            if lista_zmian:
+
+                for lz in lista_zmian:
+
+                    if lz['dzien'] in zdarzenia:
+                        # get item
+                        z = zdarzenia[zdarzenia.index(lz['dzien'])]
 
 
-            odsetki = self.nalicz_odsetki(saldo, 4.23/100, dzien_ostatnia_platnosc, dsplaty)
+                    else:
+                        print('dadane zdarzenies')
+                        # add item
+                        zdarzenia.append(Zdarzenie(lz['dzien'], lz['stopa'], saldo))
+                        last_stopa = lz['stopa']
+
+            lista_zmian_nadplaty = nadplata_obj.pomiedzy(dzien_ostatnia_platnosc,dsplaty)
+
+            if lista_zmian_nadplaty:
+                for lz in lista_zmian_nadplaty:
+                    if lz['dzien'] in zdarzenia:
+                        # get item
+                        z = zdarzenia[zdarzenia.index(lz['dzien'])]
+                    else:
+                        print('dadane zdarzenies nadplata')
+                        # add item
+                        saldo = saldo - lz['wartosc']
+                        zdarzenia.append(Zdarzenie(lz['dzien'], last_stopa, saldo))
+
+
+
+
+            zdarzenia = sorted(zdarzenia)
+            print('0000000000000000000')
+            print(zdarzenia)
+            print('0000000000000000000')
+
+            odsetki_zd = 0
+            for zdi in range(0,len(zdarzenia)-1):
+                zd1 = zdarzenia[zdi]
+                zd2 = zdarzenia[zdi+1]
+                odsetki_zd += self.nalicz_odsetki(zd1.saldo, zd1.r, zd1.data, zd2.data)
+
+
+
+
+
+
+
+
+            #odsetki = self.nalicz_odsetki(saldo, 4.23/100, dzien_ostatnia_platnosc, dsplaty)
+            odsetki = odsetki_zd
 
             odsetki_suma += odsetki
+
+
+            odsetki_row_copy = odsetki_suma
+
             odsetki_suma = odsetki_suma - I
 
 
@@ -338,6 +478,14 @@ class StalaRata:
                     'odsetki':  odsetki,
                     'odsetki_suma': odsetki_suma}
 
+            rowx = {'data': dsplaty.strftime('%d/%m/%Y'),
+                    'saldo': "{:,.2f} zł".format(saldo),
+                    'rata':  "{:,.2f} zł".format(I),
+                    'kapital_splata': "{:,.2f} zł".format(kapital_splata),
+                    'odsetki':  "{:,.2f} zł".format(odsetki_row_copy)}
+
+            result.append(rowx)
+
 
 
 
@@ -351,6 +499,8 @@ class StalaRata:
         harmo_df = pd.DataFrame(dane_df)
 
         print(harmo_df)
+
+        return result
 
 
 
