@@ -95,15 +95,29 @@ class Stopa:
 
 
 
-class Historia:
+class Zdarzenie:
 
-    def __init__(self):
+    def __init__(self, data, r, saldo):
 
-        self.historia = []
+        self.data = data
+        self.r = r
+        self.saldo = saldo
 
-    def dodaj(self, komunikat):
+    def __eq__(self, data_other):
+        return self.data == data_other
 
-        pass
+    def __lt__(self, other):
+         return self.data < other.data
+
+
+
+    def __repr__(self):
+        return 'Zdarzenie {}'.format(self.data.strftime('%d/%m/%Y'))
+
+
+
+
+
 
 
 
@@ -205,9 +219,13 @@ class StalaRata:
 
         daty_splaty[-1] =  datetime.datetime.strptime('04/11/2051', "%d/%m/%Y")
 
+        zdarzenia = []
+
         for dsplaty in daty_splaty:
 
 
+
+            zdarzenia.append(Zdarzenie(dsplaty, 0.1, 450000))
 
             dzien_platnosc = dsplaty
 
@@ -241,6 +259,14 @@ class StalaRata:
             result.append(row)
 
             dzien_ostatnia_platnosc = dzien_platnosc
+
+        sort_zdarzenia = sorted(zdarzenia, reverse=True)
+        print('sort', sort_zdarzenia)
+
+        if datetime.datetime.strptime('01/09/2050', "%d/%m/%Y") in zdarzenia:
+            z = zdarzenia[zdarzenia.index(datetime.datetime.strptime('01/09/2050', "%d/%m/%Y"))]
+            print('oh year')
+            print(z)
 
         return Kn, result
 
@@ -311,6 +337,9 @@ class StalaRata:
                     'kapital_splata': kapital_splata,
                     'odsetki':  odsetki,
                     'odsetki_suma': odsetki_suma}
+
+
+
 
 
 
