@@ -130,11 +130,14 @@ class Nadplata:
         self.nadplata_df = self.nadplata_df.sort_values(by="day")
 
 
+    def show(self):
+
+        print(self.nadplata_df)
 
 
     def pomiedzy(self, data1, data2):
 
-        zwrot = self.nadplata_df[(self.nadplata_df['day']>data1) & (self.nadplata_df['day']<data2)]
+        zwrot = self.nadplata_df[(self.nadplata_df['day']>=data1) & (self.nadplata_df['day']<data2)]
 
         if not zwrot.empty:
 
@@ -142,7 +145,7 @@ class Nadplata:
 
             for i, row in zwrot.iterrows():
 
-                zwrot_list.append({'dzien': row['day'], 'wartosc': row['value']})
+                zwrot_list.append({'nr': row['nr'], 'dzien': row['day'], 'wartosc': row['value']})
 
 
             return zwrot_list
@@ -177,6 +180,22 @@ class Zdarzenie:
 
 
 
+class KrokSplaty:
+
+    def __init__(self, nr):
+
+        self.krok_nr = nr
+        self.data_splaty = ''
+        self.saldo_start = 0
+        self.saldo_koniec = 0
+        self.rata = 0
+        self.nadplaty = 0
+        self.splata_kapitalu = 0
+        self.odsetki_krok = 0
+        self.odsetki_narastajaco = 0
+        self.inne_oplaty = 0
+
+
 
 
 class StalaRata:
@@ -206,160 +225,47 @@ class StalaRata:
 
 
 
-    def policz(self):
-
-        def wsp_a(k,rr):
-            suma = 0
-            for ki in range(k):
-                suma += pow(1.0/(1.0+rr), ki+1)
-
-            return suma
-
-
-        k = 12
-        L = (self.K0*self.r)
-        M = k*(1-pow(k/(k+self.r),self.N) )
-
-        I3 = self.K0/wsp_a(360, self.r/12.0)
-
-        print('I3: ', I3)
-
-        # rata rowna
-        I2 = L/M
-
-        print('I2: ', I2)
-
-
-        I = 3077.24
-
-        self.dzien_uruchomienia = datetime.datetime.strptime('04/11/2021', "%d/%m/%Y")
-        Kn = self.K0
-
-
-        S = 455437.06
-        rs = 7.05/100.0
-
-        ostatnia_rata = datetime.datetime.strptime('18/04/2022', "%d/%m/%Y")
-        dzis = datetime.datetime.strptime('30/04/2022', "%d/%m/%Y")
-        nadplata = datetime.datetime.strptime('25/04/2022', "%d/%m/%Y")
-
-        d1 = datetime.datetime.strptime('18/10/2051', "%d/%m/%Y")
-        d2 = datetime.datetime.strptime('04/11/2051', "%d/%m/%Y")
-
-
-
-        od1 = self.nalicz_odsetki(S+3000, rs, ostatnia_rata, nadplata)
-        od2 = self.nalicz_odsetki(S, rs, nadplata, dzis)
-
-
-
-        od12 = self.nalicz_odsetki(2844.77,rs,  d1, d2)
-
-        print('--od--', od1+od2)
-        print('od12: ', od12)
-
-
-
-        #odsetki = self.nalicz_odsetki(self.K0, self.r, self.dzien_start, self.dzien_uruchomienia)
-
-        odsetki = 0
-
-        dzien_ostatnia_platnosc = datetime.datetime.strptime('04/11/2021', "%d/%m/%Y")
-
-        I = I2
 
 
 
 
-        result = []
-
-        daty_splaty = [self.dzien_start + relativedelta(months=n+1) for n in range(0, self.N)]
-
-        daty_splaty[-1] =  datetime.datetime.strptime('04/11/2051', "%d/%m/%Y")
-
-        zdarzenia = []
-
-        for dsplaty in daty_splaty:
-
-
-
-            #zdarzenia.append(Zdarzenie(dzien_ostatnia_platnosc, 0.1, 450000))
-
-            dzien_platnosc = dsplaty
-
-            odsetki += self.nalicz_odsetki(Kn, self.r, dzien_ostatnia_platnosc, dzien_platnosc)
-
-            odsetki_krok = odsetki
-
-
-            odsetki_reszta = odsetki - I
-            kapital_splata = 0
-
-            if odsetki_reszta < 0:
-                kapital_splata = -odsetki_reszta
-                Kn = Kn - kapital_splata
-
-                odsetki = 0
-
-
-            #Kn = Kn  - (I - odsetki)
-            Kn = round(Kn,2)
-
-
-
-
-            row = {'data': dzien_platnosc.strftime('%d/%m/%Y'),
-                    'saldo': "{:,.2f} zł".format(Kn),
-                    'rata':  "{:,.2f} zł".format(I),
-                    'kapital_splata': "{:,.2f} zł".format(kapital_splata),
-                    'odsetki':  "{:,.2f} zł".format(odsetki_krok)}
-
-            result.append(row)
-
-            dzien_ostatnia_platnosc = dzien_platnosc
-
-        # sort_zdarzenia = sorted(zdarzenia, reverse=True)
-        # print('sort', sort_zdarzenia)
-        #
-        # if datetime.datetime.strptime('01/09/2050', "%d/%m/%Y") in zdarzenia:
-        #     z = zdarzenia[zdarzenia.index(datetime.datetime.strptime('01/09/2050', "%d/%m/%Y"))]
-        #     print('oh year')
-        #     print(z)
-
-        return Kn, result
-
-
-
-    def policz2(self, data_rata):
+    def policz(self, data_rata):
 
         data_pierwszej_raty = datetime.datetime.strptime(data_rata, "%d/%m/%Y")
 
-        daty_splaty = [data_pierwszej_raty + relativedelta(months=n) for n in range(0, self.N)]
+        #daty_splaty1 = [data_pierwszej_raty + relativedelta(months=n) for n in range(0, self.N)]
+
+        daty_splaty2 = []
+        for i in range(0, self.N):
+
+            data_next = data_pierwszej_raty + relativedelta(months=i)
+
+            if i > 4:
+                data_next = datetime.datetime.strptime('04/12/2021', "%d/%m/%Y") + relativedelta(months=i)
+
+            daty_splaty2.append(data_next)
 
 
 
+        daty_splaty = daty_splaty2
 
-        dane_df = [{'data': self.dzien_start,
-                'saldo': self.K0,
-                'rata':  0,
-                'kapital_splata': 0,
-                'odsetki':  0,
-                'odsetki_suma': 0}]
+
+
 
         result =  [{'data': self.dzien_start.strftime('%d/%m/%Y'),
-                'saldo':"{:,.2f} zł".format(0),
+                'saldo':"{:,.2f} zł".format(self.K0),
                 'rata':   "{:,.2f} zł".format(0),
                 'kapital_splata': "{:,.2f} zł".format(0),
                 'odsetki': "{:,.2f} zł".format(0)}]
 
-        # rowx = {'data': dsplaty.strftime('%d/%m/%Y'),
-        #         'saldo': "{:,.2f} zł".format(saldo),
-        #         'rata':  "{:,.2f} zł".format(I),
-        #         'kapital_splata': "{:,.2f} zł".format(kapital_splata),
-        #         'odsetki':  "{:,.2f} zł".format(odsetki)}
+
 
         stopa_obj = Stopa(bank.stopy.wibor_moje)
-        nadplata_obj = Nadplata(bank.nadplaty.nadplaty_moje)
+        nadplata_obj = Nadplata(bank.nadplaty.getNadplaty())
+
+        nadplata_obj.show()
+
+
 
         I = 2261.13
 
@@ -377,16 +283,23 @@ class StalaRata:
 
         odsetki_suma = odsetki_start
 
-
+        Raty_Suma = 0
 
         for i_splaty, dsplaty in enumerate(daty_splaty):
 
-            if i_splaty>2:
-                I = 3078.38
-            if i_splaty>4:
-                I= 3056
-            if i_splaty>5:
-                I= 4025
+            # if i_splaty>2:
+            #     I = 3078.38
+            # if i_splaty>4:
+            #     I= 3056
+            # if i_splaty>5:
+            #     I= 4025
+
+
+            krokSplaty = KrokSplaty(i_splaty+1)
+
+            krokSplaty.data_splaty = dsplaty.strftime('%d/%m/%Y')
+            krokSplaty.saldo_start = saldo
+
 
 
             #stopa_dzien = stopa_obj.getStopa(dsplaty)
@@ -394,6 +307,11 @@ class StalaRata:
             zdarzenia.append(Zdarzenie(dzien_ostatnia_platnosc, stopa_obj.getStopa(dzien_ostatnia_platnosc), saldo))
 
             last_stopa = stopa_obj.getStopa(dzien_ostatnia_platnosc)
+
+            k = 12
+            L = (saldo*last_stopa)
+            M = k*(1-pow(k/(k+last_stopa),360-i_splaty) )
+            I =L/M
 
             zdarzenia.append(Zdarzenie(dsplaty, 0,0))
 
@@ -406,6 +324,8 @@ class StalaRata:
                     if lz['dzien'] in zdarzenia:
                         # get item
                         z = zdarzenia[zdarzenia.index(lz['dzien'])]
+                        z.saldo = saldo
+                        z.stopa = lz['stopa']
 
 
                     else:
@@ -419,44 +339,71 @@ class StalaRata:
             if lista_zmian_nadplaty:
                 for lz in lista_zmian_nadplaty:
                     if lz['dzien'] in zdarzenia:
+                        print('duplicate nadplata')
                         # get item
                         z = zdarzenia[zdarzenia.index(lz['dzien'])]
+                        if lz['nr'] != 0 and lz['dzien']<self.dzien_start+relativedelta(years=3):
+                            wartosc_nadplaty = 0.99*lz['wartosc']
+                            oplata =  lz['wartosc'] - wartosc_nadplaty
+
+
+                        else:
+                            wartosc_nadplaty = lz['wartosc']
+                            oplata =  0
+
+                        saldo = saldo - wartosc_nadplaty
+                        krokSplaty.nadplaty += wartosc_nadplaty
+                        krokSplaty.inne_oplaty += oplata
+
+                        z.saldo = saldo
+                        z.stopa = last_stopa
+
                     else:
                         print('dadane zdarzenies nadplata')
                         # add item
-                        saldo = saldo - lz['wartosc']
+                        if lz['nr'] != 0 and lz['dzien']<self.dzien_start+relativedelta(years=3):
+                            wartosc_nadplaty = 0.99*lz['wartosc']
+                            oplata =  lz['wartosc'] - wartosc_nadplaty
+
+
+                        else:
+                            wartosc_nadplaty = lz['wartosc']
+                            oplata =  0
+
+
+                        saldo = saldo - wartosc_nadplaty
+                        krokSplaty.nadplaty += wartosc_nadplaty
+                        krokSplaty.inne_oplaty += oplata
+
                         zdarzenia.append(Zdarzenie(lz['dzien'], last_stopa, saldo))
 
 
 
 
             zdarzenia = sorted(zdarzenia)
-            print('0000000000000000000')
-            print(zdarzenia)
-            print('0000000000000000000')
 
-            odsetki_zd = 0
+
+            odsetki_krok = 0
             for zdi in range(0,len(zdarzenia)-1):
                 zd1 = zdarzenia[zdi]
                 zd2 = zdarzenia[zdi+1]
-                odsetki_zd += self.nalicz_odsetki(zd1.saldo, zd1.r, zd1.data, zd2.data)
+                odsetki_krok += self.nalicz_odsetki(zd1.saldo, zd1.r, zd1.data, zd2.data)
 
 
 
 
 
 
-
-
-            #odsetki = self.nalicz_odsetki(saldo, 4.23/100, dzien_ostatnia_platnosc, dsplaty)
-            odsetki = odsetki_zd
-
-            odsetki_suma += odsetki
+            odsetki_suma += odsetki_krok
 
 
             odsetki_row_copy = odsetki_suma
 
             odsetki_suma = odsetki_suma - I
+
+            krokSplaty.odsetki_krok = odsetki_krok
+            krokSplaty.odsetki_narastajaco = odsetki_row_copy
+            krokSplaty.rata = I
 
 
 
@@ -465,24 +412,24 @@ class StalaRata:
                 kapital_splata = -odsetki_suma
                 odsetki_suma = 0
 
-            #kapital_splata = I - odsetki
-
-
 
             saldo = saldo - kapital_splata
 
-            row = {'data': dsplaty,
-                    'saldo': saldo,
-                    'rata':  I,
-                    'kapital_splata': kapital_splata,
-                    'odsetki':  odsetki,
-                    'odsetki_suma': odsetki_suma}
+            krokSplaty.saldo_koniec = saldo
+            krokSplaty.kapital_splata = kapital_splata
 
-            rowx = {'data': dsplaty.strftime('%d/%m/%Y'),
-                    'saldo': "{:,.2f} zł".format(saldo),
-                    'rata':  "{:,.2f} zł".format(I),
-                    'kapital_splata': "{:,.2f} zł".format(kapital_splata),
-                    'odsetki':  "{:,.2f} zł".format(odsetki_row_copy)}
+            Raty_Suma += I
+
+
+            rowx = {'nr': krokSplaty.krok_nr,
+                    'data': krokSplaty.data_splaty,
+                    'saldo_start': "{:,.2f} zł".format(krokSplaty.saldo_start),
+                    'saldo_koniec': "{:,.2f} zł".format(krokSplaty.saldo_koniec),
+                    'rata':  "{:,.2f} zł".format(krokSplaty.rata),
+                    'kapital_splata': "{:,.2f} zł".format(krokSplaty.kapital_splata),
+                    'odsetki':  "{:,.2f} zł".format(krokSplaty.odsetki_narastajaco),
+                    'nadplaty':  "{:,.2f} zł".format(krokSplaty.nadplaty),
+                    'inne_oplaty': "{:,.2f} zł".format(krokSplaty.inne_oplaty)}
 
             result.append(rowx)
 
@@ -492,15 +439,13 @@ class StalaRata:
 
 
 
-            dane_df.append(row)
+
             dzien_ostatnia_platnosc = dsplaty
 
 
-        harmo_df = pd.DataFrame(dane_df)
 
-        print(harmo_df)
 
-        return result
+        return result, "{:,.2f} zł".format(Raty_Suma)
 
 
 

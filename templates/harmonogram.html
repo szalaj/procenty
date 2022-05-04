@@ -11,36 +11,45 @@ display: inline-block;
 
 
 
-
+<h2>Suma wszystkich rat: {{raty_suma}}</h2>
 
 
 
 <script type="text/javascript">
 
-  dane = {{results|tojson}};
+    dane = {{results|tojson}};
 
-  console.log(dane)
+    console.log(dane)
 
-  var table = d3.select(".container").append("table"),
+    var table = d3.select(".container").append("table"),
     thead = table.append("thead").append("tr"),
     tbody = table.append("tbody");
 
-
-  thead.append("td").text("data")
-    thead.append("td").text("saldo")
+    thead.append("td").text("nr")
+    thead.append("td").text("data")
+    thead.append("td").text("saldo_start")
+    thead.append("td").text("odsetki")
     thead.append("td").text("rata")
-      thead.append("td").text("kapital splata")
-        thead.append("td").text("odsetki")
+    thead.append("td").text("kapitał spłata")
 
- let row = tbody.selectAll("tr").data(dane).enter()
-  .append("tr")
+    thead.append("td").text("nadpłaty")
+      thead.append("td").text("inne_oplaty")
+    thead.append("td").text("saldo_koniec")
 
-  row.append("td").text(d=>d['data'])
-  row.append("td").text(d=>d['saldo'])
-  row.append("td").text(d=>d['rata'])
-  row.append("td").text(d=>d['kapital_splata'])
-  row.append("td").text(d=>d['odsetki'])
+    let row = tbody.selectAll("tr").data(dane).enter().append("tr")
 
+    row.append("td").text(d=>d['nr'])
+    row.append("td").text(d=>d['data'])
+    row.append("td").text(d=>d['saldo_start'])
+        row.append("td").text(d=>d['odsetki'])
+    row.append("td").text(d=>d['rata'])
+    row.append("td").text(d=>d['kapital_splata'])
+
+    row.append("td").text(d=>d['nadplaty'])
+
+
+    row.append("td").text(d=>d['inne_oplaty'])
+    row.append("td").text(d=>d['saldo_koniec'])
 
 
 
