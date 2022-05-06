@@ -8,7 +8,106 @@ display: inline-block;
 }
 </style>
 
+<div id="chart">
 
+  </div>
+
+<<script type="text/javascript">
+
+  let stopy_dane = {{ wykres_stopy|tojson }};
+
+
+  var parseDate = d3.timeParse("%d/%m/%Y");
+
+  stopy_dane.forEach(function(d) {
+         d.day = parseDate(d.day)
+         d.value = parseFloat(d.value)
+
+     });
+
+       console.log(stopy_dane)
+
+     var margin = {top: 30, right: 30, bottom: 70, left: 60},
+         width = 700 - margin.left - margin.right,
+         height = 420 - margin.top - margin.bottom;
+
+
+         // append the svg object to the body of the page
+         var svg = d3.select("#chart")
+           .append("svg")
+             .attr("class", "svg-holder")
+             .attr("width", width + margin.left + margin.right)
+             .attr("height", height + margin.top + margin.bottom)
+             .attr("style", "border:1px solid black;")
+             .style('background', "white")
+           .append("g")
+             .attr("transform",
+                   "translate(" + margin.left + "," + margin.top + ")");
+
+     const xscale = d3.scaleTime()
+         .domain(d3.extent(stopy_dane, d=>d.day))
+         .range([0, width]);
+
+
+
+
+      svg.append("g")
+        .attr("class", "xAxis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
+        .selectAll("text")
+          .attr("transform", "translate(-10,0)rotate(-45)")
+          .style("text-anchor", "end")
+          .style("font-size","13px");
+
+
+      d3.selectAll("g.xAxis g.tick")
+          .append("line")
+          .attr("class", "gridline")
+          .attr("x1", 0)
+          .attr("y1", -height)
+          .attr("x2", 0)
+          .attr("y2", 0);
+
+
+
+      var maxYvalue = d3.max(stopy_dane, function(d) { return d.value });
+      var minYvalue = d3.min(stopy_dane, function(d) { return d.value });
+      // Add Y axis
+
+      var yscale = d3.scaleLinear()
+        .domain([0, maxYvalue+0.1])
+        .range([ height, 0]);
+
+
+      svg.append("g")
+        .attr("class", "yAxis")
+        .call(d3.axisLeft(yscale))
+         .style("font-size","13px");
+
+       d3.selectAll("g.yAxis g.tick")
+           .append("line")
+           .attr("class", "gridline")
+           .attr("x1", 0)
+           .attr("y1", 0)
+           .attr("x2", width)
+           .attr("y2", 0);
+
+
+
+           var mybars = svg.selectAll(".mybar").data(stopy_dane)
+
+               mybars
+               .enter()
+               .append("rect")
+                 .attr("x", function(d) { return xscale(d.day); })
+                 .attr("y", function(d) { return  yscale(d.value); })
+                 .attr("width", 1)
+                 .attr("height", function(d) { return height-yscale(d.value); })
+                 .attr("class", "mybar");
+
+
+</script>
 
 
 <h2>Suma wszystkich rat: {{raty_suma}}</h2>
@@ -35,6 +134,7 @@ display: inline-block;
     thead.append("td").text("nadpłaty")
       thead.append("td").text("inne_oplaty")
     thead.append("td").text("saldo_koniec")
+    thead.append("td").text("suma kosztów")
 
     let row = tbody.selectAll("tr").data(dane).enter().append("tr")
 
@@ -50,6 +150,7 @@ display: inline-block;
 
     row.append("td").text(d=>d['inne_oplaty'])
     row.append("td").text(d=>d['saldo_koniec'])
+    row.append("td").append("b").text(d=>d['suma_kosztow'])
 
 
 

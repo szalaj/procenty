@@ -259,7 +259,8 @@ class StalaRata:
                 'nadplaty':   "{:,.2f} zł".format(0),
                 'kapital_splata': "{:,.2f} zł".format(0),
                 'odsetki': "{:,.2f} zł".format(0),
-                'inne_oplaty': "{:,.2f} zł".format(0)}]
+                'inne_oplaty': "{:,.2f} zł".format(0),
+                'suma_kosztow': "{:,.2f} zł".format(0)}]
 
 
 
@@ -288,6 +289,8 @@ class StalaRata:
 
         Raty_Suma = 0
 
+        wykres_stopy_procentowe = []
+
         for i_splaty, dsplaty in enumerate(daty_splaty):
 
             # if i_splaty>2:
@@ -310,6 +313,12 @@ class StalaRata:
             zdarzenia.append(Zdarzenie(dzien_ostatnia_platnosc, stopa_obj.getStopa(dzien_ostatnia_platnosc), saldo))
 
             last_stopa = stopa_obj.getStopa(dzien_ostatnia_platnosc)
+
+            wykres_stopy_procentowe.append(
+                                    {'day': dsplaty.strftime('%d/%m/%Y'),
+                                     'value': last_stopa}
+            )
+
 
             k = 12
             L = (saldo*last_stopa)
@@ -432,7 +441,10 @@ class StalaRata:
                     'kapital_splata': "{:,.2f} zł".format(krokSplaty.kapital_splata),
                     'odsetki':  "{:,.2f} zł".format(krokSplaty.odsetki_narastajaco),
                     'nadplaty':  "{:,.2f} zł".format(krokSplaty.nadplaty),
-                    'inne_oplaty': "{:,.2f} zł".format(krokSplaty.inne_oplaty)}
+                    'inne_oplaty': "{:,.2f} zł".format(krokSplaty.inne_oplaty),
+                    'suma_kosztow': "{:,.2f} zł".format(krokSplaty.inne_oplaty+
+                                                        krokSplaty.nadplaty+
+                                                        krokSplaty.rata)}
 
             result.append(rowx)
 
@@ -448,7 +460,7 @@ class StalaRata:
 
 
 
-        return result, "{:,.2f} zł".format(Raty_Suma)
+        return result, "{:,.2f} zł".format(Raty_Suma), wykres_stopy_procentowe
 
 
 
