@@ -253,10 +253,13 @@ class StalaRata:
 
 
         result =  [{'data': self.dzien_start.strftime('%d/%m/%Y'),
-                'saldo':"{:,.2f} zł".format(self.K0),
+                'saldo_start':"{:,.2f} zł".format(self.K0),
+                'saldo_koniec':"{:,.2f} zł".format(self.K0),
                 'rata':   "{:,.2f} zł".format(0),
+                'nadplaty':   "{:,.2f} zł".format(0),
                 'kapital_splata': "{:,.2f} zł".format(0),
-                'odsetki': "{:,.2f} zł".format(0)}]
+                'odsetki': "{:,.2f} zł".format(0),
+                'inne_oplaty': "{:,.2f} zł".format(0)}]
 
 
 
