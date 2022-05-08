@@ -194,6 +194,8 @@ class KrokSplaty:
         self.odsetki_krok = 0
         self.odsetki_narastajaco = 0
         self.inne_oplaty = 0
+        self.suma_kosztow = 0
+        self.realna_suma_kosztow = 0
 
 
 
@@ -260,7 +262,8 @@ class StalaRata:
                 'kapital_splata': "{:,.2f} zł".format(0),
                 'odsetki': "{:,.2f} zł".format(0),
                 'inne_oplaty': "{:,.2f} zł".format(0),
-                'suma_kosztow': "{:,.2f} zł".format(0)}]
+                'suma_kosztow': "{:,.2f} zł".format(0),
+                'realna_suma_kosztow': "{:,.2f} zł".format(0)}]
 
 
 
@@ -288,6 +291,7 @@ class StalaRata:
         odsetki_suma = odsetki_start
 
         Raty_Suma = 0
+        Real_Suma_Kosztow = 0
 
         wykres_stopy_procentowe = []
 
@@ -430,7 +434,17 @@ class StalaRata:
             krokSplaty.saldo_koniec = saldo
             krokSplaty.kapital_splata = kapital_splata
 
-            Raty_Suma += I
+
+
+            krokSplaty.suma_kosztow = krokSplaty.inne_oplaty+krokSplaty.nadplaty+krokSplaty.rata
+            nA = 6 - krokSplaty.krok_nr
+
+            Raty_Suma += krokSplaty.suma_kosztow
+
+            krokSplaty.realna_suma_kosztow = krokSplaty.suma_kosztow*pow(1+0.005, nA)
+
+            Real_Suma_Kosztow += krokSplaty.realna_suma_kosztow
+
 
 
             rowx = {'nr': krokSplaty.krok_nr,
@@ -442,9 +456,8 @@ class StalaRata:
                     'odsetki':  "{:,.2f} zł".format(krokSplaty.odsetki_narastajaco),
                     'nadplaty':  "{:,.2f} zł".format(krokSplaty.nadplaty),
                     'inne_oplaty': "{:,.2f} zł".format(krokSplaty.inne_oplaty),
-                    'suma_kosztow': "{:,.2f} zł".format(krokSplaty.inne_oplaty+
-                                                        krokSplaty.nadplaty+
-                                                        krokSplaty.rata)}
+                    'suma_kosztow': "{:,.2f} zł".format(krokSplaty.suma_kosztow),
+                    'realna_suma_kosztow': "{:,.2f} zł".format(krokSplaty.realna_suma_kosztow)}
 
             result.append(rowx)
 
@@ -460,7 +473,7 @@ class StalaRata:
 
 
 
-        return result, "{:,.2f} zł".format(Raty_Suma), wykres_stopy_procentowe
+        return result, "{:,.2f} zł".format(Raty_Suma),  "{:,.2f} zł".format(Real_Suma_Kosztow), wykres_stopy_procentowe
 
 
 

@@ -6,13 +6,22 @@
 .box {
 display: inline-block;
 }
+
+table {
+  background-color: white;
+}
+
+td.lol {
+
+  background-color: #bde9ba;
+}
 </style>
 
 <div id="chart">
 
   </div>
 
-<<script type="text/javascript">
+<script type="text/javascript">
 
   let stopy_dane = {{ wykres_stopy|tojson }};
 
@@ -111,6 +120,7 @@ display: inline-block;
 
 
 <h2>Suma wszystkich rat: {{raty_suma}}</h2>
+<h2>Realna suma wszystkich kosztów: {{real_suma}}</h2>
 
 
 
@@ -135,6 +145,7 @@ display: inline-block;
       thead.append("td").text("inne_oplaty")
     thead.append("td").text("saldo_koniec")
     thead.append("td").text("suma kosztów")
+      thead.append("td").text("realna suma kosztów")
 
     let row = tbody.selectAll("tr").data(dane).enter().append("tr")
 
@@ -151,6 +162,7 @@ display: inline-block;
     row.append("td").text(d=>d['inne_oplaty'])
     row.append("td").text(d=>d['saldo_koniec'])
     row.append("td").append("b").text(d=>d['suma_kosztow'])
+    row.append("td").attr("class", "lol").text(d=>d['realna_suma_kosztow'])
 
 
 

@@ -76,11 +76,18 @@ def pokaz_harmonogram():
 
     #k, res = kredyt.StalaRata(430000, 350, 4.23, '01/11/2021').policz()
 
-    res, raty_suma, wykres_stopy = kredyt.StalaRata(460000, 360, 4.23, '04/11/2021').policz('18/12/2021')
+    res, raty_suma, real_suma, wykres_stopy = kredyt.StalaRata(460000, 360, 4.23, '04/11/2021').policz('18/12/2021')
+
+    kt = 100*pow(1-0.1, 30)
+    print('wartosc ', kt)
+    A = 100
+    for i in range(0,30):
+        A = A - 0.1*A
+
+    print(A)
 
 
-
-    return render_template('harmonogram.html', results = res, raty_suma = raty_suma, wykres_stopy=wykres_stopy)
+    return render_template('harmonogram.html', results = res, raty_suma = raty_suma, real_suma = real_suma, wykres_stopy=wykres_stopy)
 
 
 
