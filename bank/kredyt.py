@@ -263,7 +263,7 @@ class StalaRata:
                 'odsetki': "{:,.2f} zł".format(0),
                 'inne_oplaty': "{:,.2f} zł".format(0),
                 'suma_kosztow': "{:,.2f} zł".format(0),
-                'realna_suma_kosztow': "{:,.2f} zł".format(0)}]
+                'realna_suma_kosztow': "{}".format(0)}]
 
 
 
@@ -457,7 +457,7 @@ class StalaRata:
                     'nadplaty':  "{:,.2f} zł".format(krokSplaty.nadplaty),
                     'inne_oplaty': "{:,.2f} zł".format(krokSplaty.inne_oplaty),
                     'suma_kosztow': "{:,.2f} zł".format(krokSplaty.suma_kosztow),
-                    'realna_suma_kosztow': "{:,.2f} zł".format(krokSplaty.realna_suma_kosztow)}
+                    'realna_suma_kosztow': "{}".format(krokSplaty.realna_suma_kosztow)}
 
             result.append(rowx)
 

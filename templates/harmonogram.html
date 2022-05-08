@@ -15,11 +15,18 @@ td.lol {
 
   background-color: #bde9ba;
 }
+.text-tytul {
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 20px;
+}
 </style>
 
 <div id="chart">
+</div>
 
-  </div>
+<div id="chart_realne_koszty">
+</div>
 
 <script type="text/javascript">
 
@@ -53,7 +60,7 @@ td.lol {
              .attr("transform",
                    "translate(" + margin.left + "," + margin.top + ")");
 
-     const xscale = d3.scaleTime()
+     var xscale = d3.scaleTime()
          .domain(d3.extent(stopy_dane, d=>d.day))
          .range([0, width]);
 
@@ -116,7 +123,119 @@ td.lol {
                  .attr("class", "mybar");
 
 
+                 svg.append("text")
+                   .attr("class", "text-tytul")
+                 .attr("x", 50)
+                 .attr("y", -2)
+                 .text("stopa procentowa: marża + wibor3m")
+
 </script>
+
+
+
+<script type="text/javascript">
+
+  var dane = {{results|tojson}};
+
+
+  var parseDate = d3.timeParse("%d/%m/%Y");
+
+  dane.forEach(function(d) {
+         d.data = parseDate(d.data)
+         d.realna_suma_kosztow = parseFloat(d.realna_suma_kosztow)
+
+     });
+
+
+           console.log(dane)
+
+     var margin = {top: 30, right: 30, bottom: 70, left: 60},
+         width = 700 - margin.left - margin.right,
+         height = 420 - margin.top - margin.bottom;
+
+
+         // append the svg object to the body of the page
+         var svg = d3.select("#chart_realne_koszty")
+           .append("svg")
+             .attr("class", "svg-holder")
+             .attr("width", width + margin.left + margin.right)
+             .attr("height", height + margin.top + margin.bottom)
+             .attr("style", "border:1px solid black;")
+             .style('background', "white")
+           .append("g")
+             .attr("transform",
+                   "translate(" + margin.left + "," + margin.top + ")");
+
+     var xscale = d3.scaleTime()
+         .domain(d3.extent(dane, d=>d.data))
+         .range([0, width]);
+
+
+
+
+      svg.append("g")
+        .attr("class", "xAxis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
+        .selectAll("text")
+          .attr("transform", "translate(-10,0)rotate(-45)")
+          .style("text-anchor", "end")
+          .style("font-size","13px");
+
+
+      d3.selectAll("g.xAxis g.tick")
+          .append("line")
+          .attr("class", "gridline")
+          .attr("x1", 0)
+          .attr("y1", -height)
+          .attr("x2", 0)
+          .attr("y2", 0);
+
+
+
+      var maxYvalue = d3.max(dane, function(d) { return d.realna_suma_kosztow });
+      var minYvalue = d3.min(dane, function(d) { return d.realna_suma_kosztow });
+      // Add Y axis
+
+      var yscale = d3.scaleLinear()
+        .domain([minYvalue  , maxYvalue])
+        .range([ height, 0]);
+
+
+      svg.append("g")
+        .attr("class", "yAxis")
+        .call(d3.axisLeft(yscale))
+         .style("font-size","13px");
+
+       d3.selectAll("g.yAxis g.tick")
+           .append("line")
+           .attr("class", "gridline")
+           .attr("x1", 0)
+           .attr("y1", 0)
+           .attr("x2", width)
+           .attr("y2", 0);
+
+
+
+           svg.append("path")
+                 .datum(dane)
+                 .attr("fill", "none")
+                 .attr("stroke", "steelblue")
+                 .attr("stroke-width", 1.5)
+                 .attr("d", d3.line()
+                   .x(function(d) { return xscale(d.data) })
+                   .y(function(d) { return yscale(d.realna_suma_kosztow) })
+                   )
+
+                   svg.append("text")
+                     .attr("class", "text-tytul")
+                   .attr("x", 50)
+                   .attr("y", -2)
+                   .text("miesięczne realne koszty kredytu")
+
+
+</script>
+
 
 
 <h2>Suma wszystkich rat: {{raty_suma}}</h2>
@@ -158,11 +277,17 @@ td.lol {
 
     row.append("td").text(d=>d['nadplaty'])
 
+    function numberWithCommas(x) {
+      x = parseFloat(x).toFixed(2);
+      var parts = x.toString().split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return parts.join(".") + " zł";
+}
 
     row.append("td").text(d=>d['inne_oplaty'])
     row.append("td").text(d=>d['saldo_koniec'])
     row.append("td").append("b").text(d=>d['suma_kosztow'])
-    row.append("td").attr("class", "lol").text(d=>d['realna_suma_kosztow'])
+    row.append("td").attr("class", "lol").text(d=>numberWithCommas(d['realna_suma_kosztow']))
 
 
 
