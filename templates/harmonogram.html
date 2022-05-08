@@ -3,23 +3,46 @@
 
 <h2>Harmonogram spłaty</h2>
 <style>
-.box {
-display: inline-block;
-}
+  .box {
+  display: inline-block;
+  }
 
-table {
-  background-color: white;
-}
+  table {
+    background-color: white;
+  }
 
-td.lol {
+  td.lol {
 
-  background-color: #bde9ba;
-}
-.text-tytul {
+    background-color: #bde9ba;
+  }
+  .text-tytul {
 
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 20px;
-}
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+  }
+  tr {
+
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  tr.przeszlosc {
+  background-color: lightblue;
+
+  }
+  tr.przyszlosc {
+  background-color: lightgray;
+
+  }
+
+  tr.start {
+  background-color: yellow;
+
+  }
+
+  tr.najblizsza {
+  background-color: orange;
+
+  }
+
 </style>
 
 <div id="chart">
@@ -135,16 +158,16 @@ td.lol {
 
 <script type="text/javascript">
 
-  var dane = {{results|tojson}};
+      var dane = {{results|tojson}};
 
 
-  var parseDate = d3.timeParse("%d/%m/%Y");
+      var parseDate = d3.timeParse("%d/%m/%Y");
 
-  dane.forEach(function(d) {
-         d.data = parseDate(d.data)
-         d.realna_suma_kosztow = parseFloat(d.realna_suma_kosztow)
+      dane.forEach(function(d) {
+             d.data = parseDate(d.data)
+             d.realna_suma_kosztow = parseFloat(d.realna_suma_kosztow)
 
-     });
+         });
 
 
            console.log(dane)
@@ -217,21 +240,21 @@ td.lol {
 
 
 
-           svg.append("path")
-                 .datum(dane)
-                 .attr("fill", "none")
-                 .attr("stroke", "steelblue")
-                 .attr("stroke-width", 1.5)
-                 .attr("d", d3.line()
-                   .x(function(d) { return xscale(d.data) })
-                   .y(function(d) { return yscale(d.realna_suma_kosztow) })
-                   )
+       svg.append("path")
+             .datum(dane)
+             .attr("fill", "none")
+             .attr("stroke", "steelblue")
+             .attr("stroke-width", 1.5)
+             .attr("d", d3.line()
+               .x(function(d) { return xscale(d.data) })
+               .y(function(d) { return yscale(d.realna_suma_kosztow) })
+               )
 
-                   svg.append("text")
-                     .attr("class", "text-tytul")
-                   .attr("x", 50)
-                   .attr("y", -2)
-                   .text("miesięczne realne koszty kredytu")
+        svg.append("text")
+            .attr("class", "text-tytul")
+            .attr("x", 50)
+            .attr("y", -2)
+            .text("miesięczne realne koszty kredytu")
 
 
 </script>
@@ -255,23 +278,55 @@ td.lol {
 
     thead.append("td").text("nr")
     thead.append("td").text("data")
-    thead.append("td").text("saldo_start")
+    thead.append("td").text("saldo start")
     thead.append("td").text("odsetki")
     thead.append("td").text("rata")
     thead.append("td").text("kapitał spłata")
 
     thead.append("td").text("nadpłaty")
-      thead.append("td").text("inne_oplaty")
-    thead.append("td").text("saldo_koniec")
+    thead.append("td").text("inne opłaty")
+    thead.append("td").text("saldo koniec")
     thead.append("td").text("suma kosztów")
-      thead.append("td").text("realna suma kosztów")
+    thead.append("td").text("realna suma kosztów")
+
+
+    var k = 0
 
     let row = tbody.selectAll("tr").data(dane).enter().append("tr")
+      .attr("class", function(d,i) {
+
+
+
+
+      if (parseDate(d['data'])<=new Date() && d['nr'] != 0) {
+        k = i;
+      //  console.log(k + "przeszlosc")
+        return "przeszlosc"
+
+      }
+
+
+      else if (d['nr']==0){
+
+        return "start"
+
+      }
+      else {
+        //console.log(i + "/" + k)
+         if (i==k+1) {
+
+           return "najblizsza"
+         }
+        return "przyszlosc"
+      }
+
+
+    })
 
     row.append("td").text(d=>d['nr'])
     row.append("td").text(d=>d['data'])
     row.append("td").text(d=>d['saldo_start'])
-        row.append("td").text(d=>d['odsetki'])
+    row.append("td").text(d=>d['odsetki'])
     row.append("td").text(d=>d['rata'])
     row.append("td").text(d=>d['kapital_splata'])
 
@@ -287,7 +342,7 @@ td.lol {
     row.append("td").text(d=>d['inne_oplaty'])
     row.append("td").text(d=>d['saldo_koniec'])
     row.append("td").append("b").text(d=>d['suma_kosztow'])
-    row.append("td").attr("class", "lol").text(d=>numberWithCommas(d['realna_suma_kosztow']))
+    row.append("td").append("b").text(d=>numberWithCommas(d['realna_suma_kosztow']))
 
 
 
