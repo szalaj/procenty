@@ -13,11 +13,11 @@ def getNadplaty():
 
                   ]
 
-    data_pierwszej_nadplaty = datetime.datetime.strptime('04/06/2022', "%d/%m/%Y")
-    for i in range(250,350):
-        data_next = data_pierwszej_nadplaty + relativedelta(months=i)
-        nadplaty_moje.append({'day': data_next.strftime('%d/%m/%Y'),
-                                'value': 0+(i-250)*5})
+    # data_pierwszej_nadplaty = datetime.datetime.strptime('04/06/2022', "%d/%m/%Y")
+    # for i in range(0,351):
+    #     data_next = data_pierwszej_nadplaty + relativedelta(months=i)
+    #     nadplaty_moje.append({'day': data_next.strftime('%d/%m/%Y'),
+    #                             'value': 1000})
 
     for i,nadpl in enumerate(nadplaty_moje):
          nadpl['nr'] = i

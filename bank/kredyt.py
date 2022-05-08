@@ -131,8 +131,8 @@ class Nadplata:
 
 
     def show(self):
-
-        print(self.nadplata_df)
+        pass
+        #print(self.nadplata_df)
 
 
     def pomiedzy(self, data1, data2):
@@ -233,6 +233,15 @@ class StalaRata:
 
     def policz(self, data_rata):
 
+        raty_pobrane = [{'nr': 1, 'kwota': 2261.13},
+                      {'nr': 2, 'kwota': 1737.09+524.04},
+                      {'nr': 3, 'kwota': 2147.70+113.43},
+                      {'nr': 4, 'kwota': 2484.34+594.04},
+                      {'nr': 5, 'kwota': 2746.95+331.43},
+                      {'nr': 6, 'kwota': 1411.47+1637.38},
+                      {'nr': 7, 'kwota':  4000.65}
+                      ]
+
         data_pierwszej_raty = datetime.datetime.strptime(data_rata, "%d/%m/%Y")
 
         #daty_splaty1 = [data_pierwszej_raty + relativedelta(months=n) for n in range(0, self.N)]
@@ -270,7 +279,7 @@ class StalaRata:
         stopa_obj = Stopa(bank.stopy.wibor_moje)
         nadplata_obj = Nadplata(bank.nadplaty.getNadplaty())
 
-        nadplata_obj.show()
+        #nadplata_obj.show()
 
 
 
@@ -290,8 +299,10 @@ class StalaRata:
 
         odsetki_suma = odsetki_start
 
-        Raty_Suma = 0
+        Suma_Kosztow = 0
         Real_Suma_Kosztow = 0
+
+        Suma_Lokata = 0
 
         wykres_stopy_procentowe = []
 
@@ -329,6 +340,12 @@ class StalaRata:
             M = k*(1-pow(k/(k+last_stopa),360-i_splaty) )
             I =L/M
 
+            #szukaj raty zaplaconej
+            zwrot = [item for item in raty_pobrane if item["nr"] == krokSplaty.krok_nr]
+            if zwrot:
+                I = zwrot[0]['kwota']
+
+
             zdarzenia.append(Zdarzenie(dsplaty, 0,0))
 
             lista_zmian = stopa_obj.pomiedzy(dzien_ostatnia_platnosc,dsplaty)
@@ -359,8 +376,8 @@ class StalaRata:
                         # get item
                         z = zdarzenia[zdarzenia.index(lz['dzien'])]
                         if lz['nr'] != 0 and lz['dzien']<self.dzien_start+relativedelta(years=3):
-                            wartosc_nadplaty = 0.99*lz['wartosc']
-                            oplata =  lz['wartosc'] - wartosc_nadplaty
+                            wartosc_nadplaty = lz['wartosc']
+                            oplata =  0.01*lz['wartosc']
 
 
                         else:
@@ -378,8 +395,8 @@ class StalaRata:
                         print('dadane zdarzenies nadplata')
                         # add item
                         if lz['nr'] != 0 and lz['dzien']<self.dzien_start+relativedelta(years=3):
-                            wartosc_nadplaty = 0.99*lz['wartosc']
-                            oplata =  lz['wartosc'] - wartosc_nadplaty
+                            wartosc_nadplaty = lz['wartosc']
+                            oplata =  0.01*lz['wartosc']
 
 
                         else:
@@ -439,11 +456,13 @@ class StalaRata:
             krokSplaty.suma_kosztow = krokSplaty.inne_oplaty+krokSplaty.nadplaty+krokSplaty.rata
             nA = 6 - krokSplaty.krok_nr
 
-            Raty_Suma += krokSplaty.suma_kosztow
+            Suma_Kosztow += krokSplaty.suma_kosztow
 
             krokSplaty.realna_suma_kosztow = krokSplaty.suma_kosztow*pow(1+0.005, nA)
 
             Real_Suma_Kosztow += krokSplaty.realna_suma_kosztow
+
+            Suma_Lokata = 1000 + Suma_Lokata
 
 
 
@@ -470,10 +489,14 @@ class StalaRata:
 
             dzien_ostatnia_platnosc = dsplaty
 
+            if krokSplaty.saldo_koniec<=0:
+                break
 
 
+        print('suma na lokacie real {}'.format(Suma_Lokata*pow(1+0.005, -350)))
+        print('suma na lokacie {}'.format(Suma_Lokata))
 
-        return result, "{:,.2f} zł".format(Raty_Suma),  "{:,.2f} zł".format(Real_Suma_Kosztow), wykres_stopy_procentowe
+        return result, "{:,.2f} zł".format(Suma_Kosztow),  "{:,.2f} zł".format(Real_Suma_Kosztow), wykres_stopy_procentowe
 
 
 
