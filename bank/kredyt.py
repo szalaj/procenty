@@ -203,7 +203,7 @@ class KrokSplaty:
 class StalaRata:
 
 
-    def __init__(self, K0, N, r, dzien_start):
+    def __init__(self, K0, N, dzien_start):
 
 
 
@@ -213,7 +213,6 @@ class StalaRata:
         self.dzien_start = datetime.datetime.strptime(dzien_start, "%d/%m/%Y")
 
 
-        self.r = r / 100.0
 
 
     def nalicz_odsetki(self, Kapital,  r_roczne, dzien_start, dzien_koniec):
@@ -234,19 +233,18 @@ class StalaRata:
     def policz(self, data_rata):
 
         raty_pobrane = [{'nr': 1, 'kwota': 2261.13},
-                      {'nr': 2, 'kwota': 1737.09+524.04},
-                      {'nr': 3, 'kwota': 2147.70+113.43},
-                      {'nr': 4, 'kwota': 2484.34+594.04},
-                      {'nr': 5, 'kwota': 2746.95+331.43},
-                      {'nr': 6, 'kwota': 1411.47+1637.38},
-                      {'nr': 7, 'kwota':  4000.65}
+                          {'nr': 2, 'kwota': 1737.09+524.04},
+                          {'nr': 3, 'kwota': 2147.70+113.43},
+                          {'nr': 4, 'kwota': 2484.34+594.04},
+                          {'nr': 5, 'kwota': 2746.95+331.43},
+                          {'nr': 6, 'kwota': 1411.47+1637.38},
+                          {'nr': 7, 'kwota':  4000.65}
                       ]
 
         data_pierwszej_raty = datetime.datetime.strptime(data_rata, "%d/%m/%Y")
 
-        #daty_splaty1 = [data_pierwszej_raty + relativedelta(months=n) for n in range(0, self.N)]
 
-        daty_splaty2 = []
+        daty_splaty = []
         for i in range(0, self.N):
 
             data_next = data_pierwszej_raty + relativedelta(months=i)
@@ -254,17 +252,16 @@ class StalaRata:
             if i > 4:
                 data_next = datetime.datetime.strptime('04/12/2021', "%d/%m/%Y") + relativedelta(months=i)
 
-            daty_splaty2.append(data_next)
+            daty_splaty.append(data_next)
 
 
 
-        daty_splaty = daty_splaty2
 
 
 
 
         result =  [{'nr': 0,
-                    'data': self.dzien_start.strftime('%d/%m/%Y'),
+                'data': self.dzien_start.strftime('%d/%m/%Y'),
                 'saldo_start':"{:,.2f} zł".format(self.K0),
                 'saldo_koniec':"{:,.2f} zł".format(self.K0),
                 'rata':   "{:,.2f} zł".format(0),
@@ -280,41 +277,29 @@ class StalaRata:
         stopa_obj = Stopa(bank.stopy.wibor_moje)
         nadplata_obj = Nadplata(bank.nadplaty.getNadplaty())
 
-        #nadplata_obj.show()
 
+        inflacja_list = bank.stopy.getInflacja()
 
-
-        I = 2261.13
 
         data_w =  data_pierwszej_raty - relativedelta(months=1)
-
-        #print(data_w)
-
         odsetki_start = self.nalicz_odsetki(self.K0, 4.23/100, self.dzien_start, data_w)
 
-        #print(odsetki_start)
+
 
         saldo = self.K0
-
         dzien_ostatnia_platnosc = data_w
-
         odsetki_suma = odsetki_start
 
         Suma_Kosztow = 0
         Real_Suma_Kosztow = 0
 
-        Suma_Lokata = 0
+
 
         wykres_stopy_procentowe = []
 
         for i_splaty, dsplaty in enumerate(daty_splaty):
 
-            # if i_splaty>2:
-            #     I = 3078.38
-            # if i_splaty>4:
-            #     I= 3056
-            # if i_splaty>5:
-            #     I= 4025
+
 
 
             krokSplaty = KrokSplaty(i_splaty+1)
@@ -324,7 +309,6 @@ class StalaRata:
 
 
 
-            #stopa_dzien = stopa_obj.getStopa(dsplaty)
             zdarzenia = []
             zdarzenia.append(Zdarzenie(dzien_ostatnia_platnosc, stopa_obj.getStopa(dzien_ostatnia_platnosc), saldo))
 
@@ -459,11 +443,13 @@ class StalaRata:
 
             Suma_Kosztow += krokSplaty.suma_kosztow
 
-            krokSplaty.realna_suma_kosztow = krokSplaty.suma_kosztow*pow(1+0.005, nA)
+
+
+            krokSplaty.realna_suma_kosztow = krokSplaty.suma_kosztow*pow(1+inflacja_list[krokSplaty.krok_nr-1]['value'], nA)
 
             Real_Suma_Kosztow += krokSplaty.realna_suma_kosztow
 
-            Suma_Lokata = 1000 + Suma_Lokata
+
 
 
 
@@ -494,8 +480,7 @@ class StalaRata:
                 break
 
 
-        print('suma na lokacie real {}'.format(Suma_Lokata*pow(1+0.005, -350)))
-        print('suma na lokacie {}'.format(Suma_Lokata))
+
 
         return result, "{:,.2f} zł".format(Suma_Kosztow),  "{:,.2f} zł".format(Real_Suma_Kosztow), wykres_stopy_procentowe
 

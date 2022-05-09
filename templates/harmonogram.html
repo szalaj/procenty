@@ -51,6 +51,10 @@
 <div id="chart_realne_koszty">
 </div>
 
+
+
+<div id="chart_inflacja">
+</div>
 <script type="text/javascript">
 
   let stopy_dane = {{ wykres_stopy|tojson }};
@@ -259,6 +263,109 @@
 
 </script>
 
+
+<script type="text/javascript">
+
+      var dane = {{inflacja_dane|tojson}};
+
+
+      var parseDate = d3.timeParse("%d/%m/%Y");
+
+      dane.forEach(function(d) {
+             d.day = parseDate(d.day)
+             d.value = parseFloat(d.value)
+
+         });
+
+
+           console.log(dane)
+
+     var margin = {top: 30, right: 30, bottom: 70, left: 60},
+         width = 700 - margin.left - margin.right,
+         height = 420 - margin.top - margin.bottom;
+
+
+         // append the svg object to the body of the page
+         var svg = d3.select("#chart_inflacja")
+           .append("svg")
+             .attr("class", "svg-holder")
+             .attr("width", width + margin.left + margin.right)
+             .attr("height", height + margin.top + margin.bottom)
+             .attr("style", "border:1px solid black;")
+             .style('background', "white")
+           .append("g")
+             .attr("transform",
+                   "translate(" + margin.left + "," + margin.top + ")");
+
+     var xscale = d3.scaleTime()
+         .domain(d3.extent(dane, d=>d.day))
+         .range([0, width]);
+
+
+
+
+      svg.append("g")
+        .attr("class", "xAxis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
+        .selectAll("text")
+          .attr("transform", "translate(-10,0)rotate(-45)")
+          .style("text-anchor", "end")
+          .style("font-size","13px");
+
+
+      d3.selectAll("g.xAxis g.tick")
+          .append("line")
+          .attr("class", "gridline")
+          .attr("x1", 0)
+          .attr("y1", -height)
+          .attr("x2", 0)
+          .attr("y2", 0);
+
+
+
+      var maxYvalue = d3.max(dane, function(d) { return d.value });
+      var minYvalue = d3.min(dane, function(d) { return d.value });
+      // Add Y axis
+
+      var yscale = d3.scaleLinear()
+        .domain([minYvalue  , maxYvalue])
+        .range([ height, 0]);
+
+
+      svg.append("g")
+        .attr("class", "yAxis")
+        .call(d3.axisLeft(yscale))
+         .style("font-size","13px");
+
+       d3.selectAll("g.yAxis g.tick")
+           .append("line")
+           .attr("class", "gridline")
+           .attr("x1", 0)
+           .attr("y1", 0)
+           .attr("x2", width)
+           .attr("y2", 0);
+
+
+
+       svg.append("path")
+             .datum(dane)
+             .attr("fill", "none")
+             .attr("stroke", "steelblue")
+             .attr("stroke-width", 1.5)
+             .attr("d", d3.line()
+               .x(function(d) { return xscale(d.day) })
+               .y(function(d) { return yscale(d.value) })
+               )
+
+        svg.append("text")
+            .attr("class", "text-tytul")
+            .attr("x", 50)
+            .attr("y", -2)
+            .text("inflacja")
+
+
+</script>
 
 
 <h2>Suma wszystkich kosztów: {{suma_kosztow}}</h2>
