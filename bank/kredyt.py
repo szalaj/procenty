@@ -213,6 +213,11 @@ class StalaRata:
         self.dzien_start = datetime.datetime.strptime(dzien_start, "%d/%m/%Y")
 
 
+        self.stopa_obj = Stopa(bank.stopy.wibor_moje)
+        self.nadplata_obj = Nadplata(bank.nadplaty.getNadplaty())
+        self.inflacja_list = bank.stopy.getInflacja()
+
+
 
 
     def nalicz_odsetki(self, Kapital,  r_roczne, dzien_start, dzien_koniec):
@@ -238,7 +243,7 @@ class StalaRata:
                           {'nr': 4, 'kwota': 2484.34+594.04},
                           {'nr': 5, 'kwota': 2746.95+331.43},
                           {'nr': 6, 'kwota': 1411.47+1637.38},
-                          {'nr': 7, 'kwota':  4000.65}
+                          {'nr': 7, 'kwota':  4000.55}
                       ]
 
         data_pierwszej_raty = datetime.datetime.strptime(data_rata, "%d/%m/%Y")
@@ -274,11 +279,7 @@ class StalaRata:
 
 
 
-        stopa_obj = Stopa(bank.stopy.wibor_moje)
-        nadplata_obj = Nadplata(bank.nadplaty.getNadplaty())
 
-
-        inflacja_list = bank.stopy.getInflacja()
 
 
         data_w =  data_pierwszej_raty - relativedelta(months=1)
@@ -310,9 +311,9 @@ class StalaRata:
 
 
             zdarzenia = []
-            zdarzenia.append(Zdarzenie(dzien_ostatnia_platnosc, stopa_obj.getStopa(dzien_ostatnia_platnosc), saldo))
+            zdarzenia.append(Zdarzenie(dzien_ostatnia_platnosc, self.stopa_obj.getStopa(dzien_ostatnia_platnosc), saldo))
 
-            last_stopa = stopa_obj.getStopa(dzien_ostatnia_platnosc)
+            last_stopa = self.stopa_obj.getStopa(dzien_ostatnia_platnosc)
 
             wykres_stopy_procentowe.append(
                                     {'day': dsplaty.strftime('%d/%m/%Y'),
@@ -333,7 +334,7 @@ class StalaRata:
 
             zdarzenia.append(Zdarzenie(dsplaty, 0,0))
 
-            lista_zmian = stopa_obj.pomiedzy(dzien_ostatnia_platnosc,dsplaty)
+            lista_zmian = self.stopa_obj.pomiedzy(dzien_ostatnia_platnosc,dsplaty)
 
             if lista_zmian:
 
@@ -352,7 +353,7 @@ class StalaRata:
                         zdarzenia.append(Zdarzenie(lz['dzien'], lz['stopa'], saldo))
                         last_stopa = lz['stopa']
 
-            lista_zmian_nadplaty = nadplata_obj.pomiedzy(dzien_ostatnia_platnosc,dsplaty)
+            lista_zmian_nadplaty = self.nadplata_obj.pomiedzy(dzien_ostatnia_platnosc,dsplaty)
 
             if lista_zmian_nadplaty:
                 for lz in lista_zmian_nadplaty:
@@ -445,7 +446,7 @@ class StalaRata:
 
 
 
-            krokSplaty.realna_suma_kosztow = krokSplaty.suma_kosztow*pow(1+inflacja_list[krokSplaty.krok_nr-1]['value'], nA)
+            krokSplaty.realna_suma_kosztow = krokSplaty.suma_kosztow*pow(1+self.inflacja_list[krokSplaty.krok_nr-1]['value'], nA)
 
             Real_Suma_Kosztow += krokSplaty.realna_suma_kosztow
 
@@ -520,8 +521,8 @@ class Kredyt:
 
             return datetime.date(rok, 12, 31).timetuple().tm_yday
 
-        stopa_obj = Stopa(bank.stopy.wibor_moje)
-        stopa_dzien = stopa_obj.getStopa(self.dzien_platnosci) + 0.01
+        self.stopa_obj = Stopa(bank.stopy.wibor_moje)
+        stopa_dzien = self.stopa_obj.getStopa(self.dzien_platnosci) + 0.01
         print(stopa_dzien)
 
         dni_w_roku = dni_rok(self.dzien_platnosci)

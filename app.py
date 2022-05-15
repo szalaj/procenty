@@ -71,6 +71,8 @@ def pokaz_stopy():
 
     return render_template('stopy.html', wibor_dane = wibor_dane, roznice_opcje = roznice_opcje)
 
+
+
 @app.route("/harmonogram", methods=['GET'])
 def pokaz_harmonogram():
 
