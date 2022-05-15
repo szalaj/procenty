@@ -19,7 +19,7 @@ def getInflacja():
         data_next = data_start + relativedelta(months=i)
         inflacja_mm.append({'nr': i,
                             'day': data_next.strftime('%d/%m/%Y'),
-                            'value': 0.01+0.001*math.sin(i*0.2)+0.001})
+                            'value': 0.005})
 
 
 
