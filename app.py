@@ -1,9 +1,10 @@
 
 from flask import Flask, render_template, redirect, url_for, jsonify, request, make_response
+import datetime
+from dateutil.relativedelta import relativedelta
 
-
-import bank.kredyt as kredyt
-import bank.stopy as stopy
+import bank.kredyt
+import bank.stopy
 
 
 
@@ -61,9 +62,9 @@ def main():
 @app.route("/stopy", methods=['GET'])
 def pokaz_stopy():
 
-    wibor_dane = stopy.wibor_moje
+    wibor_dane = bank.stopy.wibor_moje
 
-    kr = kredyt.Kredyt(460000, '04/11/2021', '18/12/2021')
+    kr = bank.kredyt.Kredyt(460000, '04/11/2021', '18/12/2021')
 
     yo = kr.policz_kredyt()
 
@@ -76,17 +77,54 @@ def pokaz_stopy():
 @app.route("/harmonogram", methods=['GET'])
 def pokaz_harmonogram():
 
-    inflacja = stopy.getInflacja()
+    K = 460000
+    N = 360
 
-    res, suma_kosztow, real_suma, wykres_stopy = kredyt.StalaRata(460000, 360, '04/11/2021').policz('18/12/2021')
+    inflacja = bank.stopy.getInflacja()
+    data_pierwszej_raty = datetime.datetime.strptime('18/12/2021', "%d/%m/%Y")
+    daty_splaty = []
+
+    for i in range(0, N):
+
+        data_next = data_pierwszej_raty + relativedelta(months=i)
+
+        if i > 4:
+            data_next = datetime.datetime.strptime('04/12/2021', "%d/%m/%Y") + relativedelta(months=i)
+
+        daty_splaty.append(data_next)
+
+    raty_pobrane = [{'nr': 1, 'kwota': 2261.13},
+                      {'nr': 2, 'kwota': 1737.09+524.04},
+                      {'nr': 3, 'kwota': 2147.70+113.43},
+                      {'nr': 4, 'kwota': 2484.34+594.04},
+                      {'nr': 5, 'kwota': 2746.95+331.43},
+                      {'nr': 6, 'kwota': 1411.47+1637.38},
+                      {'nr': 7, 'kwota':  4000.55}
+                  ]
+
+    kredyt_obj = bank.kredyt.StalaRata(K,N, '04/11/2021')
+    kredyt_obj.setStopy(bank.stopy.wibor_moje)
+    kredyt_obj.setNadplaty(bank.nadplaty.getNadplaty())
+    kredyt_obj.setInflacja(inflacja)
+
+    kredyt_obj.setDatySplaty(daty_splaty)
+
+    kredyt_obj.setRatyPobrane(raty_pobrane)
+
+    res = kredyt_obj.policz()
+
+    suma_kosztow = kredyt_obj.getSumaKosztow()
+    real_suma = kredyt_obj.getRealnaSumaKosztow()
+
+    wykres_stopy = bank.kredyt.Stopa(bank.stopy.wibor_moje).getWykres(daty_splaty)
 
 
 
 
     return render_template('harmonogram.html', results = res,
+                                               wykres_stopy = wykres_stopy,
                                                suma_kosztow = suma_kosztow,
                                                real_suma = real_suma,
-                                               wykres_stopy=wykres_stopy,
                                                inflacja_dane = inflacja)
 
 
