@@ -228,6 +228,8 @@ class StalaRata:
         #self.nadplata_obj = Nadplata(bank.nadplaty.getNadplaty())
         #self.inflacja_list = bank.stopy.getInflacja()
 
+        self.saldo = {}
+
 
     def setStopy(self, dane_stopy):
 
@@ -255,7 +257,16 @@ class StalaRata:
 
         return "{:,.2f} zł".format(self.Real_Suma_Kosztow)
 
+    def getSaldoMiesiac(self, miesiac):
+        '''
+        miesiac: mm/YYYY
+        '''
+        try:
+            saldo = -self.saldo[miesiac]
+        except:
+            saldo = 0
 
+        return saldo
 
 
     def nalicz_odsetki(self, Kapital,  r_roczne, dzien_start, dzien_koniec):
@@ -298,7 +309,7 @@ class StalaRata:
                 'realna_suma_kosztow': "{}".format(0)}]
 
 
-
+        self.saldo[self.dzien_start.strftime('%m/%Y')] = self.K0
 
         data_pierwszej_raty = self.daty_splaty[0]
 
@@ -335,7 +346,7 @@ class StalaRata:
 
             last_stopa = self.stopa_obj.getStopa(dzien_ostatnia_platnosc)
 
-            
+
 
 
             k = 12
@@ -457,18 +468,17 @@ class StalaRata:
 
 
             krokSplaty.suma_kosztow = krokSplaty.inne_oplaty+krokSplaty.nadplaty+krokSplaty.rata
-            nA = 6 - krokSplaty.krok_nr
+
 
             self.Suma_Kosztow += krokSplaty.suma_kosztow
 
 
-
+            nA = 6 - krokSplaty.krok_nr
             krokSplaty.realna_suma_kosztow = krokSplaty.suma_kosztow*pow(1+self.inflacja_list[krokSplaty.krok_nr-1]['value'], nA)
-
             self.Real_Suma_Kosztow += krokSplaty.realna_suma_kosztow
 
 
-
+            self.saldo[dsplaty.strftime('%m/%Y')] = krokSplaty.saldo_koniec
 
 
             rowx = {'nr': krokSplaty.krok_nr,

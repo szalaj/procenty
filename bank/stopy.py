@@ -12,6 +12,7 @@ wibor_moje = [
               ]
 
 def getInflacja():
+
     inflacja_mm = []
 
     data_start = datetime.datetime.strptime('04/11/2021', "%d/%m/%Y")
@@ -19,7 +20,20 @@ def getInflacja():
         data_next = data_start + relativedelta(months=i)
         inflacja_mm.append({'nr': i,
                             'day': data_next.strftime('%d/%m/%Y'),
-                            'value': 0.005})
+                            'value': 0.005 + 0.001*math.sin(i)})
+
+
+
+    return inflacja_mm
+
+def getInflacja2():
+
+    inflacja_mm = {}
+
+    data_start = datetime.datetime.strptime('04/10/2021', "%d/%m/%Y")
+    for i in range(0,380):
+        data_next = data_start + relativedelta(months=i)
+        inflacja_mm[data_next.strftime('%m/%Y')] = 0.003
 
 
 

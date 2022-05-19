@@ -5,6 +5,8 @@ from dateutil.relativedelta import relativedelta
 
 import bank.kredyt
 import bank.stopy
+import bank.portfel
+import bank.lokata
 
 
 
@@ -106,9 +108,7 @@ def pokaz_harmonogram():
     kredyt_obj.setStopy(bank.stopy.wibor_moje)
     kredyt_obj.setNadplaty(bank.nadplaty.getNadplaty())
     kredyt_obj.setInflacja(inflacja)
-
     kredyt_obj.setDatySplaty(daty_splaty)
-
     kredyt_obj.setRatyPobrane(raty_pobrane)
 
     res = kredyt_obj.policz()
@@ -118,6 +118,36 @@ def pokaz_harmonogram():
 
     wykres_stopy = bank.kredyt.Stopa(bank.stopy.wibor_moje).getWykres(daty_splaty)
 
+    lok1 = bank.lokata.Lokata(1000, '01/07/2022', '01/07/2055', 0.04)
+
+    lok2 = bank.lokata.Lokata(50000, '01/07/2023', '01/07/2075', 0.1)
+
+    portfel = bank.portfel.Portfel()
+    portfel.dodajProdukt(kredyt_obj)
+    #portfel.dodajProdukt(lok1)
+    portfel.dodajProdukt(lok2)
+
+
+    portfel_dane = []
+
+    startd = datetime.datetime.strptime('18/12/2021', "%d/%m/%Y")
+
+    for i in range(1,500):
+
+        data_next = data_pierwszej_raty + relativedelta(months=i)
+        month = data_next.strftime('%m/%Y')
+
+        portfel_dane.append({'month': month,
+                             'value': portfel.getSumaSald(month)})
+
+
+
+
+    print(portfel.getSumaSald('03/2050'))
+
+    infl = bank.portfel.Inflator(bank.stopy.getInflacja2())
+    print(infl.oblicz(100, '01/03/2022', '01/03/2033'))
+
 
 
 
@@ -125,7 +155,8 @@ def pokaz_harmonogram():
                                                wykres_stopy = wykres_stopy,
                                                suma_kosztow = suma_kosztow,
                                                real_suma = real_suma,
-                                               inflacja_dane = inflacja)
+                                               inflacja_dane = inflacja,
+                                               portfel = portfel_dane)
 
 
 
