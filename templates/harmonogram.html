@@ -42,6 +42,11 @@
   background-color: orange;
 
   }
+  path.red {
+    fill: none;
+    stroke-width: 2px;
+    stroke: red;
+  }
 
 </style>
 
@@ -354,12 +359,12 @@
        svg.append("path")
              .datum(dane)
              .attr("fill", "none")
-             .attr("stroke", "steelblue")
-             .attr("stroke-width", 1.5)
              .attr("d", d3.line()
                .x(function(d) { return xscale(d.day) })
                .y(function(d) { return yscale(d.value) })
                )
+               .attr("class", "red")
+
 
         svg.append("text")
             .attr("class", "text-tytul")
@@ -459,18 +464,37 @@
        svg.append("path")
              .datum(dane)
              .attr("fill", "none")
-             .attr("stroke", "steelblue")
-             .attr("stroke-width", 1.5)
              .attr("d", d3.line()
                .x(function(d) { return xscale(d.month) })
                .y(function(d) { return yscale(d.value) })
                )
+               .attr("stroke", "red")
+               .attr("stroke-width", 1.5)
+
+               svg.append("path")
+                     .datum(dane)
+                     .attr("fill", "none")
+                     .attr("d", d3.line()
+                       .x(function(d) { return xscale(d.month) })
+                       .y(function(d) { return yscale(d.value2) })
+                       )
+                       .attr("class", "red")
 
         svg.append("text")
             .attr("class", "text-tytul")
             .attr("x", 50)
             .attr("y", -2)
             .text("portfel")
+
+
+            svg.append("line")
+           .attr("x1", 0)
+           .attr("y1", yscale(0))
+           .attr("x2", width)
+           .attr("y2", yscale(0))
+           .attr("stroke", "black")
+           .attr("stroke-width", 1)
+           .attr("stroke-dasharray", 4)
 
 
 </script>

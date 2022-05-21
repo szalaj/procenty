@@ -129,6 +129,7 @@ def pokaz_harmonogram():
 
 
     portfel_dane = []
+    inflator = bank.portfel.Inflator(bank.stopy.getInflacja2())
 
     startd = datetime.datetime.strptime('18/12/2021', "%d/%m/%Y")
 
@@ -136,9 +137,12 @@ def pokaz_harmonogram():
 
         data_next = data_pierwszej_raty + relativedelta(months=i)
         month = data_next.strftime('%m/%Y')
+        saldo_norm = portfel.getSumaSald(month)
+        saldo_real = inflator.oblicz(saldo_norm, '01/05/2022', data_next.strftime('%d/%m/%Y'))
 
         portfel_dane.append({'month': month,
-                             'value': portfel.getSumaSald(month)})
+                             'value': saldo_norm,
+                             'value2': saldo_real })
 
 
 

@@ -31,9 +31,9 @@ def getInflacja2():
     inflacja_mm = {}
 
     data_start = datetime.datetime.strptime('04/10/2021', "%d/%m/%Y")
-    for i in range(0,380):
+    for i in range(0,580):
         data_next = data_start + relativedelta(months=i)
-        inflacja_mm[data_next.strftime('%m/%Y')] = 0.003
+        inflacja_mm[data_next.strftime('%m/%Y')] = 0.002
 
 
 
