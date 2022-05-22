@@ -138,7 +138,7 @@
       // Add Y axis
 
       var yscale = d3.scaleLinear()
-        .domain([0, maxYvalue+0.1])
+        .domain([0, maxYvalue])
         .range([ height, 0]);
 
         formatPerc = function(d) { return  d3.format(".0f")(100*d) + " %"; }
@@ -196,20 +196,28 @@
       console.log("-- realne koszty ---")
 
       var dane = {{results|tojson}};
+      var dane2 = {{results2|tojson}};
 
 
       var parseDate = d3.timeParse("%d/%m/%Y");
       console.log(dane)
+
       dane.forEach(function(d) {
              d.data = parseDate(d.data)
              d.suma_kosztow = parseFloat(d.suma_kosztow)
+             d.narastajaco_suma_kosztow = parseFloat(d.narastajaco_suma_kosztow)
 
          });
 
+         dane2.forEach(function(d) {
+                d.data = parseDate(d.data)
+                d.suma_kosztow = parseFloat(d.suma_kosztow)
+                d.narastajaco_suma_kosztow = parseFloat(d.narastajaco_suma_kosztow)
 
-           console.log(dane)
+            });
 
-     var margin = {top: 60, right: 30, bottom: 70, left: 60},
+
+     var margin = {top: 60, right: 100, bottom: 70, left: 60},
          width = 700 - margin.left - margin.right,
          height = 450 - margin.top - margin.bottom;
 
@@ -255,6 +263,12 @@
 
       var maxYvalue = d3.max(dane, function(d) { return d.suma_kosztow });
       var minYvalue = d3.min(dane, function(d) { return d.suma_kosztow });
+
+
+      var maxYvalueNar = d3.max(dane, function(d) { return d.narastajaco_suma_kosztow });
+      var minYvalueNar = d3.min(dane, function(d) { return d.narastajaco_suma_kosztow });
+
+
       // Add Y axis
 
       var yscale = d3.scaleLinear()
@@ -262,15 +276,27 @@
         .range([ height, 0]);
 
 
+        var yscaleNar = d3.scaleLinear()
+          .domain([minYvalueNar  , maxYvalueNar])
+          .range([ height, 0]);
+
+
 
 
       formatMoney = function(d) { return  d3.format(".0f")(d) + " zł"; }
-
+      formatMoney2 = function(d) { return  d3.format(",.0f")(d) + " zł"; }
 
       svg.append("g")
         .attr("class", "yAxis")
         .call(d3.axisLeft(yscale).tickFormat(formatMoney))
          .style("font-size","13px");
+
+
+         svg.append("g")
+           .attr("class", "yAxis")
+           .call(d3.axisRight(yscaleNar).tickFormat(formatMoney2))
+           .attr("transform", "translate("+ width + ",0)")
+            .style("font-size","13px");
 
        d3.selectAll("g.yAxis g.tick")
            .append("line")
@@ -291,6 +317,29 @@
                .x(function(d) { return xscale(d.data) })
                .y(function(d) { return yscale(d.suma_kosztow) })
                )
+
+               svg.append("path")
+                     .datum(dane2)
+                     .attr("class", "red")
+                     .attr("d", d3.line()
+                       .x(function(d) { return xscale(d.data) })
+                       .y(function(d) { return yscale(d.suma_kosztow) })
+                       )
+
+       svg.append("path")
+             .datum(dane)
+             .attr("d", d3.line()
+               .x(function(d) { return xscale(d.data) })
+               .y(function(d) { return yscaleNar(d.narastajaco_suma_kosztow) })
+               )
+
+               svg.append("path")
+                     .datum(dane2)
+                     .attr("class", "red")
+                     .attr("d", d3.line()
+                       .x(function(d) { return xscale(d.data) })
+                       .y(function(d) { return yscaleNar(d.narastajaco_suma_kosztow) })
+                       )
 
         svg.append("text")
             .attr("class", "text-tytul")

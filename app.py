@@ -105,6 +105,8 @@ def pokaz_harmonogram():
                       {'nr': 7, 'kwota':  4000.55}
                        ]
 
+    #raty_pobrane = []
+
     kredyt_obj = bank.kredyt.StalaRata(K,N, '04/11/2021')
     kredyt_obj.setStopy(bank.stopy.wibor_moje)
     kredyt_obj.setNadplaty(bank.nadplaty.getNadplaty())
@@ -113,6 +115,15 @@ def pokaz_harmonogram():
     kredyt_obj.setRatyPobrane(raty_pobrane)
 
     res = kredyt_obj.policz()
+
+    kredyt_obj2 = bank.kredyt.StalaRata(K,N, '04/11/2021')
+    kredyt_obj2.setStopy(bank.stopy.wibor_moje)
+    kredyt_obj2.setNadplaty(bank.nadplaty.getNadplaty2())
+
+    kredyt_obj2.setDatySplaty(daty_splaty)
+    kredyt_obj2.setRatyPobrane(raty_pobrane)
+
+    res2 = kredyt_obj2.policz()
 
 
 
@@ -147,17 +158,14 @@ def pokaz_harmonogram():
 
 
     suma_kosztow = kredyt_obj.getSumaKosztow()
-    
-
     wykres_stopy = bank.kredyt.Stopa(bank.stopy.wibor_moje).getWykres(daty_splaty)
-
-
 
     inflacja_wykres_dane = [{'day': key, 'value': value} for key, value in inflacja.items()]
 
 
 
     return render_template('harmonogram.html', results = res,
+                                               results2 = res2,
                                                wykres_stopy = wykres_stopy,
                                                suma_kosztow = suma_kosztow,
                                                inflacja_dane = inflacja_wykres_dane,

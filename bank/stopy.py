@@ -8,7 +8,8 @@ wibor_moje = [
                 {'day': '04/08/2022', 'value': 13.04},
                 {'day': '04/11/2022', 'value': 16.04},
                 {'day': '04/11/2025', 'value': 14.04},
-                {'day': '04/11/2027', 'value': 7.04}
+                {'day': '04/11/2027', 'value': 7.04},
+                {'day': '04/11/2047', 'value': 16.04}
               ]
 
 def getInflacja():
@@ -39,7 +40,7 @@ def getInflacja2():
         #                     'day': data_next.strftime('%m/%Y'),
         #                     'value': 0.01})
 
-        inflacja_mm[data_next.strftime('%m/%Y')] = 0.01
+        inflacja_mm[data_next.strftime('%m/%Y')] = 0.001
 
 
 

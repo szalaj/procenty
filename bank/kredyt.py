@@ -206,6 +206,7 @@ class KrokSplaty:
         self.odsetki_narastajaco = 0
         self.inne_oplaty = 0
         self.suma_kosztow = 0
+        self.narastajaco_suma_kosztow = 0
 
 
 
@@ -300,7 +301,8 @@ class StalaRata:
                 'kapital_splata': "{:,.2f} zł".format(0),
                 'odsetki': "{:,.2f} zł".format(0),
                 'inne_oplaty': "{:,.2f} zł".format(0),
-                'suma_kosztow': 0}]
+                'suma_kosztow': 0,
+                'narastajaco_suma_kosztow': 0}]
 
 
         self.saldo[self.dzien_start.strftime('%m/%Y')] = self.K0
@@ -482,7 +484,8 @@ class StalaRata:
                     'odsetki':  "{:,.2f} zł".format(krokSplaty.odsetki_narastajaco),
                     'nadplaty':  "{:,.2f} zł".format(krokSplaty.nadplaty),
                     'inne_oplaty': "{:,.2f} zł".format(krokSplaty.inne_oplaty),
-                    'suma_kosztow': krokSplaty.suma_kosztow}
+                    'suma_kosztow': krokSplaty.suma_kosztow,
+                    'narastajaco_suma_kosztow': self.Suma_Kosztow}
 
             result.append(rowx)
 
