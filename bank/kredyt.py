@@ -206,7 +206,7 @@ class KrokSplaty:
         self.odsetki_narastajaco = 0
         self.inne_oplaty = 0
         self.suma_kosztow = 0
-        self.realna_suma_kosztow = 0
+
 
 
 
@@ -239,8 +239,6 @@ class StalaRata:
     def setNadplaty(self, nadplaty_dane):
         self.nadplata_obj = Nadplata(nadplaty_dane)
 
-    def setInflacja(self, inflacja_dane):
-        self.inflacja_list = inflacja_dane
 
 
     def setDatySplaty(self, daty_splaty):
@@ -253,9 +251,6 @@ class StalaRata:
 
         return "{:,.2f} zł".format(self.Suma_Kosztow)
 
-    def getRealnaSumaKosztow(self):
-
-        return "{:,.2f} zł".format(self.Real_Suma_Kosztow)
 
     def getSaldoMiesiac(self, miesiac):
         '''
@@ -305,8 +300,7 @@ class StalaRata:
                 'kapital_splata': "{:,.2f} zł".format(0),
                 'odsetki': "{:,.2f} zł".format(0),
                 'inne_oplaty': "{:,.2f} zł".format(0),
-                'suma_kosztow': "{:,.2f} zł".format(0),
-                'realna_suma_kosztow': "{}".format(0)}]
+                'suma_kosztow': 0}]
 
 
         self.saldo[self.dzien_start.strftime('%m/%Y')] = self.K0
@@ -323,7 +317,7 @@ class StalaRata:
         odsetki_suma = odsetki_start
 
         self.Suma_Kosztow = 0
-        self.Real_Suma_Kosztow = 0
+
 
 
 
@@ -473,9 +467,7 @@ class StalaRata:
             self.Suma_Kosztow += krokSplaty.suma_kosztow
 
 
-            nA = 6 - krokSplaty.krok_nr
-            krokSplaty.realna_suma_kosztow = krokSplaty.suma_kosztow*pow(1+self.inflacja_list[krokSplaty.krok_nr-1]['value'], nA)
-            self.Real_Suma_Kosztow += krokSplaty.realna_suma_kosztow
+
 
 
             self.saldo[dsplaty.strftime('%m/%Y')] = krokSplaty.saldo_koniec
@@ -490,8 +482,7 @@ class StalaRata:
                     'odsetki':  "{:,.2f} zł".format(krokSplaty.odsetki_narastajaco),
                     'nadplaty':  "{:,.2f} zł".format(krokSplaty.nadplaty),
                     'inne_oplaty': "{:,.2f} zł".format(krokSplaty.inne_oplaty),
-                    'suma_kosztow': "{:,.2f} zł".format(krokSplaty.suma_kosztow),
-                    'realna_suma_kosztow': "{}".format(krokSplaty.realna_suma_kosztow)}
+                    'suma_kosztow': krokSplaty.suma_kosztow}
 
             result.append(rowx)
 

@@ -52,5 +52,9 @@ class Inflator:
 
             inflator *= 1 + self.inflacja[data_next.strftime('%m/%Y')]
 
+            #infl_i = [item for item in self.inflacja if item["day"] == data_next.strftime('%m/%Y')][0]
+            #print(infl_i)
+
+            #inflator *= 1 + infl_i["value"]
 
         return kwota/inflator
