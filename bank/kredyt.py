@@ -135,10 +135,13 @@ class Nadplata:
 
     def __init__(self, nadplata_dane_json):
 
+        if nadplata_dane_json:
+            self.nadplata_df = pd.DataFrame(nadplata_dane_json)
+            self.nadplata_df['day'] = pd.to_datetime(self.nadplata_df['day'], format="%d/%m/%Y")
+            self.nadplata_df = self.nadplata_df.sort_values(by="day")
 
-        self.nadplata_df = pd.DataFrame(nadplata_dane_json)
-        self.nadplata_df['day'] = pd.to_datetime(self.nadplata_df['day'], format="%d/%m/%Y")
-        self.nadplata_df = self.nadplata_df.sort_values(by="day")
+        else:
+            self.nadplata_df = pd.DataFrame()
 
 
     def show(self):
@@ -148,7 +151,10 @@ class Nadplata:
 
     def pomiedzy(self, data1, data2):
 
-        zwrot = self.nadplata_df[(self.nadplata_df['day']>=data1) & (self.nadplata_df['day']<data2)]
+        if not self.nadplata_df.empty:
+            zwrot = self.nadplata_df[(self.nadplata_df['day']>=data1) & (self.nadplata_df['day']<data2)]
+        else:
+            return None
 
         if not zwrot.empty:
 
@@ -231,6 +237,10 @@ class StalaRata:
 
         self.saldo = {}
 
+        self.nadplata_obj = Nadplata([])
+
+        self.raty_pobrane = []
+
 
     def setStopy(self, dane_stopy):
 
@@ -280,7 +290,7 @@ class StalaRata:
 
 
 
-    def policz(self):
+    def policz(self, inflator):
 
 
 
@@ -302,7 +312,12 @@ class StalaRata:
                 'odsetki': "{:,.2f} zł".format(0),
                 'inne_oplaty': "{:,.2f} zł".format(0),
                 'suma_kosztow': 0,
-                'narastajaco_suma_kosztow': 0}]
+                'real_suma_kosztow': 0,
+                'narastajaco_suma_kosztow': 0,
+                'real_narastajaco_suma_kosztow': 0}]
+
+
+
 
 
         self.saldo[self.dzien_start.strftime('%m/%Y')] = self.K0
@@ -474,6 +489,13 @@ class StalaRata:
 
             self.saldo[dsplaty.strftime('%m/%Y')] = krokSplaty.saldo_koniec
 
+            if inflator:
+                real_suma_kosztow = inflator.oblicz(krokSplaty.suma_kosztow, dsplaty)
+                real_narastajaco_suma_kosztow = inflator.oblicz(self.Suma_Kosztow, dsplaty)
+            else:
+                real_suma_kosztow = krokSplaty.suma_kosztow
+                real_narastajaco_suma_kosztow = self.Suma_Kosztow
+
 
             rowx = {'nr': krokSplaty.krok_nr,
                     'data': krokSplaty.data_splaty,
@@ -485,7 +507,9 @@ class StalaRata:
                     'nadplaty':  "{:,.2f} zł".format(krokSplaty.nadplaty),
                     'inne_oplaty': "{:,.2f} zł".format(krokSplaty.inne_oplaty),
                     'suma_kosztow': krokSplaty.suma_kosztow,
-                    'narastajaco_suma_kosztow': self.Suma_Kosztow}
+                    'real_suma_kosztow': real_suma_kosztow,
+                    'narastajaco_suma_kosztow': self.Suma_Kosztow,
+                    'real_narastajaco_suma_kosztow': real_narastajaco_suma_kosztow}
 
             result.append(rowx)
 

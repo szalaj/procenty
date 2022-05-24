@@ -30,14 +30,16 @@ class Portfel:
 
 class Inflator:
 
-    def __init__(self, inflacja_dane):
+    def __init__(self, inflacja_dane, miesiac_baza):
 
         self.inflacja = inflacja_dane
+        self.miesiac_baza = miesiac_baza
 
-    def oblicz(self, kwota, miesiac_baza, miesiac_obliczany):
+    def oblicz(self, kwota, miesiac_obliczany):
 
-        dbaza = datetime.datetime.strptime(miesiac_baza, "%d/%m/%Y")
-        doblicz = datetime.datetime.strptime(miesiac_obliczany, "%d/%m/%Y")
+        dbaza = datetime.datetime.strptime(self.miesiac_baza, "%d/%m/%Y")
+        #doblicz = datetime.datetime.strptime(miesiac_obliczany, "%d/%m/%Y")
+        doblicz = miesiac_obliczany
 
         # obliczenie wartosci inflacji z ciagu
         # pomiedzy miesiącem bazowy a obliczanym
@@ -52,6 +54,6 @@ class Inflator:
 
             inflator *= 1 + self.inflacja[data_next.strftime('%m/%Y')]
 
-            
+
 
         return kwota/inflator

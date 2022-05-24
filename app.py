@@ -84,15 +84,30 @@ def pokaz_harmonogram():
 
     inflacja = bank.stopy.getInflacja2()
 
-    data_pierwszej_raty = datetime.datetime.strptime('18/12/2021', "%d/%m/%Y")
+    nadplaty2 = [
+                    {'nr': 0, 'day': '01/07/2023', 'value': 30000}]
+
+
+    nadplaty = bank.nadplaty.getNadplaty2()
+
+    wibor_moje = [
+                    {'day': '04/11/2021', 'value': 4.23}]
+
+
+    stopy_procentowe =bank.stopy.wibor_moje
+    #stopy_procentowe =wibor_moje
+
+    data_start = '04/11/2021'
+    data_koniec = '04/11/2051'
+    data_pierwszej_raty = datetime.datetime.strptime('04/12/2021', "%d/%m/%Y")
     daty_splaty = []
 
     for i in range(0, N):
 
         data_next = data_pierwszej_raty + relativedelta(months=i)
 
-        if i > 4:
-            data_next = datetime.datetime.strptime('04/12/2021', "%d/%m/%Y") + relativedelta(months=i)
+        # if i > 4:
+        #     data_next = datetime.datetime.strptime('04/12/2021', "%d/%m/%Y") + relativedelta(months=i)
 
         daty_splaty.append(data_next)
 
@@ -107,58 +122,88 @@ def pokaz_harmonogram():
 
     #raty_pobrane = []
 
-    kredyt_obj = bank.kredyt.StalaRata(K,N, '04/11/2021')
-    kredyt_obj.setStopy(bank.stopy.wibor_moje)
-    kredyt_obj.setNadplaty(bank.nadplaty.getNadplaty())
+    inflator = bank.portfel.Inflator(inflacja, '24/05/2022')
+
+    kredyt_obj = bank.kredyt.StalaRata(K,N, data_start)
+    kredyt_obj.setStopy(stopy_procentowe)
+    #kredyt_obj.setNadplaty(nadplaty)
 
     kredyt_obj.setDatySplaty(daty_splaty)
-    kredyt_obj.setRatyPobrane(raty_pobrane)
+    #kredyt_obj.setRatyPobrane(raty_pobrane)
 
-    res = kredyt_obj.policz()
+    res = kredyt_obj.policz(inflator)
 
-    kredyt_obj2 = bank.kredyt.StalaRata(K,N, '04/11/2021')
-    kredyt_obj2.setStopy(bank.stopy.wibor_moje)
-    kredyt_obj2.setNadplaty(bank.nadplaty.getNadplaty2())
+    kredyt_obj2 = bank.kredyt.StalaRata(K,N, data_start)
+    kredyt_obj2.setStopy(stopy_procentowe)
+
+
+
+    kredyt_obj2.setNadplaty(nadplaty)
 
     kredyt_obj2.setDatySplaty(daty_splaty)
-    kredyt_obj2.setRatyPobrane(raty_pobrane)
+    #kredyt_obj2.setRatyPobrane(raty_pobrane)
 
-    res2 = kredyt_obj2.policz()
+    res2 = kredyt_obj2.policz(inflator)
 
-
-
-    lok1 = bank.lokata.Lokata(1000, '01/07/2022', '01/07/2055', 0.04)
-    lok2 = bank.lokata.Lokata(50000, '01/07/2023', '01/07/2055', 0.1)
 
     portfel = bank.portfel.Portfel()
     portfel.dodajProdukt(kredyt_obj)
-    portfel.dodajProdukt(lok1)
-    portfel.dodajProdukt(lok2)
+    #lok1 = bank.lokata.Lokata(1000,  '01/07/2022', data_koniec, 0.01)
+    data_pierwszej_lokaty = datetime.datetime.strptime('04/06/2028', "%d/%m/%Y")
+    for i in range(30):
+        data_next = data_pierwszej_lokaty + relativedelta(months=i)
+        lok = bank.lokata.Lokata(1000, data_next.strftime('%d/%m/%Y'), data_koniec, 0.06)
+        portfel.dodajProdukt(lok)
 
 
-    portfel_dane = []
-    inflator = bank.portfel.Inflator(inflacja)
+    #portfel.dodajProdukt(lok1)
+
+
+
+    portfel2 = bank.portfel.Portfel()
+    portfel2.dodajProdukt(kredyt_obj2)
+    #portfel2.dodajProdukt(lok1)
+    #portfel2.dodajProdukt(lok2)
+
+
+    portfele_dane = []
+
 
     #startd = datetime.datetime.strptime('18/12/2021', "%d/%m/%Y")
 
-    for i in range(1,380):
+    data_start_dt =  datetime.datetime.strptime(data_start, "%d/%m/%Y")
+    data_koniec_dt = datetime.datetime.strptime(data_koniec, "%d/%m/%Y")
+
+
+
+    liczba_miesiecy = (data_koniec_dt.year - data_start_dt.year) * 12 + data_koniec_dt.month - data_start_dt.month
+
+    for i in range(1,liczba_miesiecy-1):
 
         data_next = data_pierwszej_raty + relativedelta(months=i)
         month = data_next.strftime('%m/%Y')
         saldo_norm = portfel.getSumaSald(month)
+        saldo_norm2 = portfel2.getSumaSald(month)
 
-        saldo_real = inflator.oblicz(saldo_norm, '01/05/2022', data_next.strftime('%d/%m/%Y'))
+        saldo_real = inflator.oblicz(saldo_norm, data_next)
+        saldo_real2 = inflator.oblicz(saldo_norm2, data_next)
+        #.strftime('%d/%m/%Y')
 
-        portfel_dane.append({'month': month,
-                             'value': saldo_norm,
-                             'value2': saldo_real })
+        portfele_dane.append({'month': month,
+                             'p1_saldo_norm': saldo_norm,
+                             'p1_saldo_real': saldo_real,
+                             'p2_saldo_norm': saldo_norm2,
+                             'p2_saldo_real': saldo_real2 })
 
 
-
-
+    port_rozn = portfele_dane[-1]['p1_saldo_real']-portfele_dane[-1]['p2_saldo_real']
+    koszt_rozn = res[-1]['real_narastajaco_suma_kosztow']-res2[-1]['real_narastajaco_suma_kosztow']
+    print("portfelowa roznica : {}".format(port_rozn))
+    print("kosztowa róznica : {}".format(koszt_rozn))
+    print("roznica gdy lokata : {}".format(port_rozn-koszt_rozn))
 
     suma_kosztow = kredyt_obj.getSumaKosztow()
-    wykres_stopy = bank.kredyt.Stopa(bank.stopy.wibor_moje).getWykres(daty_splaty)
+    wykres_stopy = bank.kredyt.Stopa(stopy_procentowe).getWykres(daty_splaty)
 
     inflacja_wykres_dane = [{'day': key, 'value': value} for key, value in inflacja.items()]
 
@@ -169,7 +214,7 @@ def pokaz_harmonogram():
                                                wykres_stopy = wykres_stopy,
                                                suma_kosztow = suma_kosztow,
                                                inflacja_dane = inflacja_wykres_dane,
-                                               portfel = portfel_dane)
+                                               portfele = portfele_dane)
 
 
 @app.route("/portfel")

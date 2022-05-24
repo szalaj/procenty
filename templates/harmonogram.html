@@ -48,6 +48,22 @@
     stroke: red;
   }
 
+  path.red-dot {
+    fill: none;
+    stroke-width: 1px;
+    stroke: red;
+    border-style: dotted;
+    stroke-dasharray: 5;
+  }
+
+  path.black-dot {
+    fill: none;
+    stroke-width: 1px;
+    stroke: black;
+    border-style: dotted;
+    stroke-dasharray: 5;
+  }
+
   .divelement {
     display: inline-block;
 
@@ -141,7 +157,7 @@
         .domain([0, maxYvalue])
         .range([ height, 0]);
 
-        formatPerc = function(d) { return  d3.format(".0f")(100*d) + " %"; }
+        formatPerc = function(d) { return  d3.format(".2f")(100*d) + " %"; }
 
       svg.append("g")
         .attr("class", "yAxis")
@@ -261,8 +277,8 @@
 
 
 
-      var maxYvalue = d3.max(dane, function(d) { return d.suma_kosztow });
-      var minYvalue = d3.min(dane, function(d) { return d.suma_kosztow });
+      var maxYvalue = d3.max([dane,dane2].flat(), function(d) { return d.suma_kosztow });
+      var minYvalue = d3.min([dane,dane2].flat(), function(d) { return d.suma_kosztow });
 
 
       var maxYvalueNar = d3.max(dane, function(d) { return d.narastajaco_suma_kosztow });
@@ -310,20 +326,34 @@
 
        svg.append("path")
              .datum(dane)
-             .attr("fill", "none")
-             .attr("stroke", "steelblue")
-             .attr("stroke-width", 1.5)
              .attr("d", d3.line()
                .x(function(d) { return xscale(d.data) })
                .y(function(d) { return yscale(d.suma_kosztow) })
                )
 
                svg.append("path")
-                     .datum(dane2)
-                     .attr("class", "red")
+                     .datum(dane)
+                     .attr("class", "black-dot")
                      .attr("d", d3.line()
                        .x(function(d) { return xscale(d.data) })
-                       .y(function(d) { return yscale(d.suma_kosztow) })
+                       .y(function(d) { return yscale(d.real_suma_kosztow) })
+                       )
+
+       svg.append("path")
+             .datum(dane2)
+             .attr("class", "red")
+             .attr("d", d3.line()
+               .x(function(d) { return xscale(d.data) })
+               .y(function(d) { return yscale(d.suma_kosztow) })
+                       )
+
+
+              svg.append("path")
+                       .datum(dane2)
+                       .attr("class", "red-dot")
+                       .attr("d", d3.line()
+                         .x(function(d) { return xscale(d.data) })
+                         .y(function(d) { return yscale(d.real_suma_kosztow) })
                        )
 
        svg.append("path")
@@ -341,6 +371,24 @@
                        .y(function(d) { return yscaleNar(d.narastajaco_suma_kosztow) })
                        )
 
+
+
+                       svg.append("path")
+                             .datum(dane)
+                             .attr("class", "black-dot")
+                             .attr("d", d3.line()
+                               .x(function(d) { return xscale(d.data) })
+                               .y(function(d) { return yscaleNar(d.real_narastajaco_suma_kosztow) })
+                               )
+
+                               svg.append("path")
+                                     .datum(dane2)
+                                     .attr("class", "red-dot")
+                                     .attr("d", d3.line()
+                                       .x(function(d) { return xscale(d.data) })
+                                       .y(function(d) { return yscaleNar(d.real_narastajaco_suma_kosztow) })
+                                       )
+
         svg.append("text")
             .attr("class", "text-tytul")
             .attr("x", -50)
@@ -353,7 +401,8 @@
 
 <script type="text/javascript">
 
-      var dane = {{portfel|tojson}};
+      var dane = {{portfele|tojson}};
+
 
       console.log(dane)
 
@@ -413,8 +462,10 @@
 
 
 
-      var maxYvalue = d3.max(dane, function(d) { return d.value });
-      var minYvalue = d3.min(dane, function(d) { return d.value });
+      var maxYvalue1 = d3.max(dane, function(d) { return d.p1_saldo_norm });
+      var maxYvalue2 = d3.max(dane, function(d) { return d.p2_saldo_norm });
+      var maxYvalue = d3.max([maxYvalue1,maxYvalue2])
+      var minYvalue = d3.min(dane, function(d) { return d.p1_saldo_norm });
       // Add Y axis
 
       var yscale = d3.scaleLinear()
@@ -441,22 +492,40 @@
 
        svg.append("path")
              .datum(dane)
-             .attr("fill", "none")
              .attr("d", d3.line()
                .x(function(d) { return xscale(d.month) })
-               .y(function(d) { return yscale(d.value) })
+               .y(function(d) { return yscale(d.p1_saldo_norm) })
                )
                .attr("stroke", "red")
                .attr("stroke-width", 1.5)
 
                svg.append("path")
                      .datum(dane)
-                     .attr("fill", "none")
+                     .attr("class", "black-dot")
                      .attr("d", d3.line()
                        .x(function(d) { return xscale(d.month) })
-                       .y(function(d) { return yscale(d.value2) })
+                       .y(function(d) { return yscale(d.p1_saldo_real) })
                        )
-                       .attr("class", "red")
+
+
+
+                       svg.append("path")
+                             .datum(dane)
+                             .attr("class", "red")
+                             .attr("d", d3.line()
+                               .x(function(d) { return xscale(d.month) })
+                               .y(function(d) { return yscale(d.p2_saldo_norm) })
+                               )
+
+
+                               svg.append("path")
+                                     .datum(dane)
+                                     .attr("class", "red-dot")
+                                     .attr("d", d3.line()
+                                       .x(function(d) { return xscale(d.month) })
+                                       .y(function(d) { return yscale(d.p2_saldo_real) })
+                                       )
+
 
         svg.append("text")
             .attr("class", "text-tytul")

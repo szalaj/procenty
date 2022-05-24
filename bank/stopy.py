@@ -40,7 +40,7 @@ def getInflacja2():
         #                     'day': data_next.strftime('%m/%Y'),
         #                     'value': 0.01})
 
-        inflacja_mm[data_next.strftime('%m/%Y')] = 0.001
+        inflacja_mm[data_next.strftime('%m/%Y')] = 0.002
 
 
 
