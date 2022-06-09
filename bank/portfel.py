@@ -52,7 +52,11 @@ class Inflator:
 
             data_next = dbaza + relativedelta(months=i)
 
-            inflator *= 1 + self.inflacja[data_next.strftime('%m/%Y')]
+            data_szukana = data_next.strftime('%m/%Y')
+
+            szukany_item = next(item for item in self.inflacja if item["month"] == data_szukana)
+
+            inflator *= 1 + szukany_item['mm']
 
 
 

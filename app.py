@@ -123,7 +123,7 @@ def pokaz_harmonogram():
 
     #raty_pobrane = []
 
-    inflator = bank.portfel.Inflator(inflacja, '24/05/2022')
+    inflator = bank.portfel.Inflator(inflacja3, '24/05/2022')
 
     kredyt_obj = bank.kredyt.StalaRata(K,N, data_start)
     kredyt_obj.setStopy(stopy_procentowe)
@@ -209,7 +209,7 @@ def pokaz_harmonogram():
     inflacja_wykres_dane = [{'day': key, 'value': value} for key, value in inflacja.items()]
 
 
-    inflacja_wykres_dane = [{'day': x['month'], 'value': x['rr']} for x in inflacja3]
+    inflacja_wykres_dane = [{'day': x['month'], 'value': x['rr'], 'value2': x['mm']} for x in inflacja3]
 
 
 
