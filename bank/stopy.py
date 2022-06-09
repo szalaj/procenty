@@ -72,7 +72,7 @@ def getInflacja3():
         #rr/(m1z * m2z) = m3 * m4.. * m12
 
 
-        rr = 0.03+0.01*math.sin(i*0.01)
+        rr = 0.03+0.01*math.sin(i*0.3)
 
         if i==0:
             mm = pow(1+rr,1/12)-1
