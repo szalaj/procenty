@@ -83,6 +83,7 @@ def pokaz_harmonogram():
     N = 360
 
     inflacja = bank.stopy.getInflacja2()
+    inflacja3 = bank.stopy.getInflacja3()
 
     nadplaty2 = [
                     {'nr': 0, 'day': '01/07/2023', 'value': 30000}]
@@ -207,7 +208,10 @@ def pokaz_harmonogram():
 
     inflacja_wykres_dane = [{'day': key, 'value': value} for key, value in inflacja.items()]
 
-    
+
+    inflacja_wykres_dane = [{'day': x['month'], 'value': x['rr']} for x in inflacja3]
+
+
 
     return render_template('harmonogram.html', results = res,
                                                results2 = res2,

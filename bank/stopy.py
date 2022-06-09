@@ -42,6 +42,23 @@ def getInflacja2():
 
         inflacja_mm[data_next.strftime('%m/%Y')] = 0.002
 
-
-
     return inflacja_mm
+
+def getInflacja3():
+
+
+    inflacja_data = []
+
+    data_start = datetime.datetime.strptime('04/10/2020', "%d/%m/%Y")
+
+    mm = 0.004
+    rr = pow(1+mm,12)-1
+
+    for i in range(0,580):
+        data_next = data_start + relativedelta(months=i)
+
+        inflacja_data.append({'month': data_next.strftime('%m/%Y'),
+                              'mm': mm,
+                              'rr': rr})
+
+    return inflacja_data
