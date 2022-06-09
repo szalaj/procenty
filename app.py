@@ -207,7 +207,7 @@ def pokaz_harmonogram():
 
     inflacja_wykres_dane = [{'day': key, 'value': value} for key, value in inflacja.items()]
 
-
+    print('a')
 
     return render_template('harmonogram.html', results = res,
                                                results2 = res2,
