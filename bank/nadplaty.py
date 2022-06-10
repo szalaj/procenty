@@ -30,7 +30,7 @@ def getNadplaty2():
     nadplaty_moje2 = []
 
     data_pierwszej_nadplaty = datetime.datetime.strptime('04/06/2028', "%d/%m/%Y")
-    for i in range(0,30):
+    for i in range(0,200):
         data_next = data_pierwszej_nadplaty + relativedelta(months=i)
         nadplaty_moje2.append({'day': data_next.strftime('%d/%m/%Y'),
                                 'value': 1000})

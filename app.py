@@ -59,7 +59,7 @@ def porownanie():
 
     kredyt_obj2 = bank.kredyt.StalaRata(K,N, data_start)
     kredyt_obj2.setStopy(stopy_procentowe)
-    #kredyt_obj2.setNadplaty(nadplaty)
+    kredyt_obj2.setNadplaty(nadplaty)
     kredyt_obj2.setDatySplaty(daty_splaty)
 
     res_kredyt2 = kredyt_obj2.policz(inflator)
