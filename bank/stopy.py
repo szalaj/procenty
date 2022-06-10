@@ -26,7 +26,7 @@ def getInflacja():
         data_next = data_start + relativedelta(months=i)
         inflacja_mm.append({'nr': i,
                             'day': data_next.strftime('%d/%m/%Y'),
-                            'value': 0.005 + 0.001*math.sin(i)})
+                            'value': 0.005 + 0.001*math.sin(4*i)})
 
 
 
@@ -72,7 +72,7 @@ def getInflacja3():
         #rr/(m1z * m2z) = m3 * m4.. * m12
 
 
-        rr = 0.03+0.01*math.sin(i*0.3)
+        rr = 0.04+0.01*math.sin(0.01*i)
 
         if i==0:
             mm = pow(1+rr,1/12)-1
