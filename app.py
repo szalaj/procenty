@@ -26,13 +26,16 @@ def pokaz_harmonogram():
 
 @app.route("/porownanie")
 def porownanie():
+
     K = 460000
     N = 360
 
 
-    inflacja = bank.stopy.getInflacja3()
+    inflacja = bank.stopy.getInflacja()
     nadplaty = bank.nadplaty.getNadplaty2()
-    stopy_procentowe =bank.stopy.wibor_moje
+
+    #stopy_procentowe = bank.stopy.wibor_moje
+    stopy_procentowe = bank.stopy.getStopy(inflacja)
 
 
 
@@ -56,7 +59,7 @@ def porownanie():
 
     kredyt_obj2 = bank.kredyt.StalaRata(K,N, data_start)
     kredyt_obj2.setStopy(stopy_procentowe)
-    kredyt_obj2.setNadplaty(nadplaty)
+    #kredyt_obj2.setNadplaty(nadplaty)
     kredyt_obj2.setDatySplaty(daty_splaty)
 
     res_kredyt2 = kredyt_obj2.policz(inflator)
@@ -67,11 +70,11 @@ def porownanie():
     #lok1 = bank.lokata.Lokata(1000,  '01/07/2022', data_koniec, 0.01)
 
 
-    data_pierwszej_lokaty = datetime.datetime.strptime('04/06/2028', "%d/%m/%Y")
-    for i in range(30):
-        data_next = data_pierwszej_lokaty + relativedelta(months=i)
-        lok = bank.lokata.Lokata(1000, data_next.strftime('%d/%m/%Y'), data_koniec, 0.06)
-        portfel.dodajProdukt(lok)
+    # data_pierwszej_lokaty = datetime.datetime.strptime('04/06/2028', "%d/%m/%Y")
+    # for i in range(30):
+    #     data_next = data_pierwszej_lokaty + relativedelta(months=i)
+    #     lok = bank.lokata.Lokata(1000, data_next.strftime('%d/%m/%Y'), data_koniec, 0.06)
+    #     portfel.dodajProdukt(lok)
 
 
     portfel2 = bank.portfel.Portfel()

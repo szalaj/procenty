@@ -1,6 +1,9 @@
 import datetime
 from dateutil.relativedelta import relativedelta
 import math
+from functools import reduce  # Required in Python 3
+import operator
+
 wibor_moje = [
                 {'day': '04/11/2021', 'value': 4.23},
                 {'day': '04/02/2022', 'value': 7.05},
@@ -12,46 +15,12 @@ wibor_moje = [
                 {'day': '04/11/2047', 'value': 16.04}
               ]
 
-from functools import reduce  # Required in Python 3
-import operator
+
+
 def prod(iterable):
     return reduce(operator.mul, iterable, 1)
 
 def getInflacja():
-
-    inflacja_mm = []
-
-    data_start = datetime.datetime.strptime('04/11/2021', "%d/%m/%Y")
-    for i in range(0,360):
-        data_next = data_start + relativedelta(months=i)
-        inflacja_mm.append({'nr': i,
-                            'day': data_next.strftime('%d/%m/%Y'),
-                            'value': 0.005 + 0.001*math.sin(4*i)})
-
-
-
-    return inflacja_mm
-
-def getInflacja2():
-
-    #inflacja_mm = []
-    inflacja_mm ={}
-
-    data_start = datetime.datetime.strptime('04/10/2020', "%d/%m/%Y")
-    for i in range(0,580):
-        data_next = data_start + relativedelta(months=i)
-
-        # inflacja_mm.append({'nr': i,
-        #                     'day': data_next.strftime('%m/%Y'),
-        #                     'value': 0.01})
-
-        inflacja_mm[data_next.strftime('%m/%Y')] = 0.002
-
-    return inflacja_mm
-
-
-
-def getInflacja3():
     '''
     inflacja ustalana domyslnie rr, potem obliczana na mm
     '''
@@ -94,3 +63,17 @@ def getInflacja3():
                               'rr': rr})
 
     return inflacja_data
+
+
+def getStopy(inflacja_dane):
+
+    stopy = []
+
+    for infl in inflacja_dane:
+
+        day =  datetime.datetime.strptime('04/{}'.format(infl['month']), "%d/%m/%Y")
+        stopa = infl['rr']*100 + 1
+
+        stopy.append({'day': day.strftime('%d/%m/%Y'), 'value': stopa})
+
+    return stopy
