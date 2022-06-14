@@ -1,10 +1,15 @@
 import json
 
 import sys
-sys.path.append("..") # Adds higher directory to python modules path
-
+import os
+cwd = os.getcwd()
+print(cwd)
+sys.path.append(".") # Adds higher directory to python modules path
+print(sys.path)
 import bank.stopy as s
 inflacja = s.getInflacja()
 
-with open('../models/infl3.json', 'w') as f:
-    json.dump(inflacja, f)
+model = {'name': 'model1_inflacji', 'data': inflacja}
+
+with open('./models/infl33.json', 'w') as f:
+    json.dump(model, f)
