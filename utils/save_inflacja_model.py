@@ -11,5 +11,5 @@ inflacja = s.getInflacja()
 
 model = {'name': 'model1_inflacji', 'data': inflacja}
 
-with open('./models/infl33.json', 'w') as f:
-    json.dump(model, f)
+with open('./models/inf3l33.json', 'w') as f:
+    json.dump(model, f, indent=8)
