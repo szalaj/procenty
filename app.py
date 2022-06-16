@@ -8,19 +8,42 @@ import bank.stopy
 import bank.portfel
 import bank.lokata
 
-
+import json
 
 app = Flask(__name__)
 
 @app.route("/harmonogram", methods=['GET'])
 def pokaz_harmonogram():
+    '''
+        Wybierz model kredytu
+         - K
+         - N
+         - data uruchomienia
+         - daty spłaty
+         - stopy procentowe
+         - nadpłaty
+         - inflacja
+         itd.
+
+         Wszystkie dane powinny być zapisane do modelu
+    '''
+
+    with open('.\models\inflacja_model_1.json') as json_file:
+        inflacja_model = json.load(json_file)
 
 
-    return render_template('harmonogram.html', results = res_kredyt1,
-                                               results2 = res_kredyt2,
-                                               wykres_stopy = wykres_stopy,
-                                               inflacja_dane = inflacja_wykres_dane,
-                                               portfele = portfele_dane)
+
+    K = 460000
+    N = 360
+
+    model = {'name': 'model kredytu 1',
+             'K': K,
+             'N': N,
+             'inflacja': inflacja_model}
+
+    print(model)
+
+    return render_template('harmonogram.html', model = model)
 
 
 
