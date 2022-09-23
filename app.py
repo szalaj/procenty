@@ -38,6 +38,7 @@ def pokaz_harmonogram():
 
     inflator = bank.portfel.Inflator(inflacja, '24/05/2022')
     stopy_procentowe = bank.stopy.getStopy(inflacja)
+    wykres_stopy = bank.kredyt.Stopa(stopy_procentowe).getWykres(daty_splaty)
 
     kredyt_obj = bank.kredyt.StalaRata(K, N, data_start)
     kredyt_obj.setStopy(stopy_procentowe)
@@ -45,7 +46,9 @@ def pokaz_harmonogram():
 
     res_kredyt1 = kredyt_obj.policz(inflator)
 
-    return render_template('harmonogram.html', wynik = res_kredyt1)
+    inflacja_wykres_dane = [{'day': x['month'], 'value': x['rr'], 'value2': x['mm']} for x in inflacja]
+
+    return render_template('harmonogram.html', wynik = res_kredyt1, wykres_stopy=wykres_stopy,inflacja_dane = inflacja_wykres_dane)
 
 
 
