@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Procenty - kredyty hipoteczne</title>
+    <script src="{{url_for('static', filename='d3.js')}}"></script>
+    <style type="text/css">
+      .container {
+        padding-top: 12px;
+      }
+
+      img {
+
+        border-style: dotted;
+      }
+
+      h2 {color: black;}
+
+      input[type="text"]
+      { padding: 20px 10px; line-height: 10px;
+      font-size: 26px;
+      margin-top: 30px;
+
+      }
+
+      button {
+
+        font-size: 40px;
+
+        margin: 20px;
+      }
+
+      path {
+        fill: none;
+        stroke-width: 2px;
+        stroke: black;
+      }
+
+      body {
+         background-color: lightblue;
+      }          
+
+
+      table, th, td {
+        border: 1px solid;
+        padding: 5px;
+      }
+
+      td {
+        text-align: right;
+        width: 100px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="container">
+
+      {% block content %}{% endblock %}
+
+    </div>
+
+  </body>
+</html>
