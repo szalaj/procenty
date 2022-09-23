@@ -27,23 +27,27 @@ def pokaz_harmonogram():
 
          Wszystkie dane powinny być zapisane do modelu
     '''
-
-    with open('.\models\inflacja_model_1.json') as json_file:
-        inflacja_model = json.load(json_file)
-
-
-
     K = 460000
     N = 360
 
-    model = {'name': 'model kredytu 1',
-             'K': K,
-             'N': N,
-             'inflacja': inflacja_model}
+    data_start = '04/11/2021'
+  
+    data_pierwszej_raty = datetime.datetime.strptime(data_start, "%d/%m/%Y")
+    daty_splaty = [data_pierwszej_raty + relativedelta(months=i) for i in range(N)]
 
-    print(model)
+    inflacja = bank.stopy.getInflacja()
 
-    return render_template('harmonogram.html', model = model)
+
+    inflator = bank.portfel.Inflator(inflacja, '24/05/2022')
+    stopy_procentowe = bank.stopy.getStopy(inflacja)
+
+    kredyt_obj = bank.kredyt.StalaRata(K,N, data_start)
+    kredyt_obj.setStopy(stopy_procentowe)
+    kredyt_obj.setDatySplaty(daty_splaty)
+
+    res_kredyt1 = kredyt_obj.policz(inflator)
+
+    return render_template('harmonogram.html', wynik = res_kredyt1)
 
 
 
