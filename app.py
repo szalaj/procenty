@@ -23,7 +23,6 @@ def pokaz_harmonogram():
          - stopy procentowe
          - nadpłaty
          - inflacja
-         itd.
 
          Wszystkie dane powinny być zapisane do modelu
     '''
@@ -37,17 +36,21 @@ def pokaz_harmonogram():
 
     inflacja = bank.stopy.getInflacja()
 
-
     inflator = bank.portfel.Inflator(inflacja, '24/05/2022')
     stopy_procentowe = bank.stopy.getStopy(inflacja)
 
-    kredyt_obj = bank.kredyt.StalaRata(K,N, data_start)
+    kredyt_obj = bank.kredyt.StalaRata(K, N, data_start)
     kredyt_obj.setStopy(stopy_procentowe)
     kredyt_obj.setDatySplaty(daty_splaty)
 
     res_kredyt1 = kredyt_obj.policz(inflator)
 
     return render_template('harmonogram.html', wynik = res_kredyt1)
+
+
+
+
+
 
 
 

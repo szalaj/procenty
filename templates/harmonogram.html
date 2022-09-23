@@ -1,10 +1,243 @@
-{% extends "template.html" %}
+{% extends "szablon.html" %}
 {% block content %}
 
 
+<style>
+    .box {
+    display: inline-block;
+    }
+  
+    table {
+      background-color: white;
+    }
+  
+    td.lol {
+  
+      background-color: #bde9ba;
+    }
+    .text-tytul {
+  
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 20px;
+    }
+    tr {
+  
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    tr.przeszlosc {
+    background-color: lightblue;
+  
+    }
+    tr.przyszlosc {
+    background-color: lightgray;
+  
+    }
+  
+    tr.start {
+    background-color: yellow;
+  
+    }
+  
+    tr.najblizsza {
+    background-color: orange;
+  
+    }
+    path.red {
+      fill: none;
+      stroke-width: 2px;
+      stroke: red;
+    }
+  
+    path.red-dot {
+      fill: none;
+      stroke-width: 1px;
+      stroke: red;
+      border-style: dotted;
+      stroke-dasharray: 5;
+    }
+  
+    path.black-dot {
+      fill: none;
+      stroke-width: 1px;
+      stroke: black;
+      border-style: dotted;
+      stroke-dasharray: 5;
+    }
+  
+    .divelement {
+      display: inline-block;
+  
+  
+    }
+  
+  </style>
+  
 
-Nigdy nie wiesz kiedy musisz spłacić kredyt jak najkorzystniej.
+  
+<div id="chart_realne_koszty" class="divelement"></div>
 
-{{wynik}}
+
+
+<script type="text/javascript">
+
+    console.log("-- realne koszty ---")
+
+    var dane = {{ wynik|tojson }};
+
+
+
+    var parseDate = d3.timeParse("%d/%m/%Y");
+    console.log(dane)
+
+    dane.forEach(function(d) {
+           d.data = parseDate(d.data)
+           d.suma_kosztow = parseFloat(d.suma_kosztow)
+           d.narastajaco_suma_kosztow = parseFloat(d.narastajaco_suma_kosztow)
+
+       });
+
+
+
+
+   var margin = {top: 60, right: 100, bottom: 70, left: 60},
+       width = 700 - margin.left - margin.right,
+       height = 450 - margin.top - margin.bottom;
+
+
+       // append the svg object to the body of the page
+       var svg = d3.select("#chart_realne_koszty")
+         .append("svg")
+           .attr("class", "svg-holder")
+           .attr("width", width + margin.left + margin.right)
+           .attr("height", height + margin.top + margin.bottom)
+           .attr("style", "border:1px solid black;")
+           .style('background', "white")
+         .append("g")
+           .attr("transform",
+                 "translate(" + margin.left + "," + margin.top + ")");
+
+   var xscale = d3.scaleTime()
+       .domain(d3.extent(dane, d=>d.data))
+       .range([0, width]);
+
+
+
+
+    svg.append("g")
+      .attr("class", "xAxis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
+      .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-45)")
+        .style("text-anchor", "end")
+        .style("font-size","13px");
+
+
+    d3.selectAll("g.xAxis g.tick")
+        .append("line")
+        .attr("class", "gridline")
+        .attr("x1", 0)
+        .attr("y1", -height)
+        .attr("x2", 0)
+        .attr("y2", 0);
+
+
+
+    var maxYvalue = d3.max(dane, function(d) { return d.suma_kosztow });
+    var minYvalue = d3.min(dane, function(d) { return d.suma_kosztow });
+
+
+    var maxYvalueNar = d3.max(dane, function(d) { return d.narastajaco_suma_kosztow });
+    var minYvalueNar = d3.min(dane, function(d) { return d.narastajaco_suma_kosztow });
+
+
+    // Add Y axis
+
+    var yscale = d3.scaleLinear()
+      .domain([minYvalue  , maxYvalue])
+      .range([ height, 0]);
+
+
+      var yscaleNar = d3.scaleLinear()
+        .domain([minYvalueNar  , maxYvalueNar])
+        .range([ height, 0]);
+
+
+
+
+    formatMoney = function(d) { return  d3.format(".0f")(d) + " zł"; }
+    formatMoney2 = function(d) { return  d3.format(",.0f")(d) + " zł"; }
+
+
+    svg.append("g")
+      .attr("class", "yAxis")
+      .call(d3.axisLeft(yscale).tickFormat(formatMoney))
+       .style("font-size","13px");
+
+
+       svg.append("g")
+         .attr("class", "yAxis")
+         .call(d3.axisRight(yscaleNar).tickFormat(formatMoney2))
+         .attr("transform", "translate("+ width + ",0)")
+          .style("font-size","13px");
+
+     d3.selectAll("g.yAxis g.tick")
+         .append("line")
+         .attr("class", "gridline")
+         .attr("x1", 0)
+         .attr("y1", 0)
+         .attr("x2", width)
+         .attr("y2", 0);
+
+
+
+     svg.append("path")
+           .datum(dane)
+           .attr("d", d3.line()
+             .x(function(d) { return xscale(d.data) })
+             .y(function(d) { return yscale(d.suma_kosztow) })
+             )
+
+             svg.append("path")
+                   .datum(dane)
+                   .attr("class", "black-dot")
+                   .attr("d", d3.line()
+                     .x(function(d) { return xscale(d.data) })
+                     .y(function(d) { return yscale(d.real_suma_kosztow) })
+                     )
+
+    
+
+
+           
+     svg.append("path")
+           .datum(dane)
+           .attr("d", d3.line()
+             .x(function(d) { return xscale(d.data) })
+             .y(function(d) { return yscaleNar(d.narastajaco_suma_kosztow) })
+             )
+
+            
+
+
+    svg.append("path")
+        .datum(dane)
+        .attr("class", "black-dot")
+        .attr("d", d3.line()
+            .x(function(d) { return xscale(d.data) })
+            .y(function(d) { return yscaleNar(d.real_narastajaco_suma_kosztow) })
+            )
+
+                        
+
+    svg.append("text")
+        .attr("class", "text-tytul")
+        .attr("x", -50)
+        .attr("y", -20)
+        .text("miesięczne nominalne koszty kredytu (raty + nadpłaty + opłaty)")
+
+
+</script>
+
 
 {% endblock %}
