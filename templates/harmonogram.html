@@ -72,10 +72,138 @@
   
   </style>
   
+  <div id="chart" class="divelement">
+</div>
 
   
 <div id="chart_realne_koszty" class="divelement"></div>
 
+
+
+<script type="text/javascript">
+
+    let stopy_dane = {{ wykres_stopy|tojson }};
+    var inflacja_dane = {{inflacja_dane|tojson}};
+  
+  
+  
+    var parseDate = d3.timeParse("%d/%m/%Y");
+    var parseDateInfl = d3.timeParse("%m/%Y");
+  
+    stopy_dane.forEach(function(d) {
+           d.day = parseDate(d.day)
+           d.value = parseFloat(d.value)
+  
+       });
+  
+       inflacja_dane.forEach(function(d) {
+              d.day = parseDateInfl(d.day)
+              d.value = parseFloat(d.value)
+  
+          });
+  
+         console.log(stopy_dane)
+  
+       var margin = {top: 60, right: 30, bottom: 70, left: 60},
+           width = 700 - margin.left - margin.right,
+           height = 450 - margin.top - margin.bottom;
+  
+  
+           // append the svg object to the body of the page
+           var svg = d3.select("#chart")
+             .append("svg")
+               .attr("class", "svg-holder")
+               .attr("width", width + margin.left + margin.right)
+               .attr("height", height + margin.top + margin.bottom)
+               .attr("style", "border:1px solid black;")
+               .style('background', "white")
+             .append("g")
+               .attr("transform",
+                     "translate(" + margin.left + "," + margin.top + ")");
+  
+       var xscale = d3.scaleTime()
+           .domain(d3.extent(stopy_dane, d=>d.day))
+           .range([0, width]);
+  
+  
+  
+  
+        svg.append("g")
+          .attr("class", "xAxis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
+          .selectAll("text")
+            .attr("transform", "translate(-10,0)rotate(-45)")
+            .style("text-anchor", "end")
+            .style("font-size","13px");
+  
+  
+        d3.selectAll("g.xAxis g.tick")
+            .append("line")
+            .attr("class", "gridline")
+            .attr("x1", 0)
+            .attr("y1", -height)
+            .attr("x2", 0)
+            .attr("y2", 0);
+  
+  
+  
+        var maxYvalue = d3.max(stopy_dane, function(d) { return d.value });
+        var minYvalue = d3.min(stopy_dane, function(d) { return d.value });
+        // Add Y axis
+  
+        var yscale = d3.scaleLinear()
+          .domain([0, maxYvalue])
+          .range([ height, 0]);
+  
+          formatPerc = function(d) { return  d3.format(".2f")(100*d) + " %"; }
+  
+        svg.append("g")
+          .attr("class", "yAxis")
+          .call(d3.axisLeft(yscale).tickFormat(formatPerc))
+           .style("font-size","13px");
+  
+         d3.selectAll("g.yAxis g.tick")
+             .append("line")
+             .attr("class", "gridline")
+             .attr("x1", 0)
+             .attr("y1", 0)
+             .attr("x2", width)
+             .attr("y2", 0);
+  
+  
+  
+             var mybars = svg.selectAll(".mybar").data(stopy_dane)
+  
+                 mybars
+                 .enter()
+                 .append("rect")
+                   .attr("x", function(d) { return xscale(d.day); })
+                   .attr("y", function(d) { return  yscale(d.value); })
+                   .attr("width", 1)
+                   .attr("height", function(d) { return height-yscale(d.value); })
+                   .attr("class", "mybar");
+  
+  
+  
+                   svg.append("path")
+                         .datum(inflacja_dane)
+                         .attr("fill", "none")
+                         .attr("d", d3.line()
+                           .x(function(d) { return xscale(d.day) })
+                           .y(function(d) { return yscale(d.value) })
+                           )
+                           .attr("class", "red")
+  
+  
+                   svg.append("text")
+                     .attr("class", "text-tytul")
+                   .attr("x", -50)
+                   .attr("y", -20)
+                   .text("stopa procentowa (marża + wibor3m + ubezp.) oraz inflacja m/m")
+  
+  </script>
+  
 
 
 <script type="text/javascript">
