@@ -20,11 +20,19 @@ def pokaz_harmonogram():
          - N
          - data uruchomienia
          - daty spłaty
-         - nadpłaty
+         - rodzaj rata (stała/malejąca)
          - oprocentowanie
-         - inflacja
+         - nadplaty
+         - sposob rozliczania nadplat
+         
 
          Wszystkie dane powinny być zapisane do modelu
+
+         1. ModelKredyt
+         2. Kredyt : Obliczenia danych kredytu podstawowych (ModelKredyt) 
+         3. Opcjonalnie : Obliczenie Lokat (ModelLokata)
+         4. Opcjonalnie, bbliczenia danych rzeczywistych
+
     '''
     K = 460000
     N = 360
