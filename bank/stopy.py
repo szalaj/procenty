@@ -41,7 +41,7 @@ def getInflacja():
         #rr/(m1z * m2z) = m3 * m4.. * m12
 
 
-        rr = 0.04+0.01*math.sin(0.01*i)
+        rr = 0.08+0.01*math.sin(0.1*i)
 
         if i==0:
             mm = pow(1+rr,1/12)-1

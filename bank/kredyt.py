@@ -255,6 +255,9 @@ class StalaRata:
     def setDatySplaty(self, daty_splaty):
         self.daty_splaty =daty_splaty
 
+    def setInflator(self, inflator):
+        self.inflator = inflator
+
     def setRatyPobrane(self, raty_pobrane):
         self.raty_pobrane = raty_pobrane
 
@@ -290,7 +293,7 @@ class StalaRata:
 
 
 
-    def policz(self, inflator):
+    def policz(self):
 
 
 
@@ -489,9 +492,9 @@ class StalaRata:
 
             self.saldo[dsplaty.strftime('%m/%Y')] = krokSplaty.saldo_koniec
 
-            if inflator:
-                real_suma_kosztow = inflator.oblicz(krokSplaty.suma_kosztow, dsplaty)
-                real_narastajaco_suma_kosztow = inflator.oblicz(self.Suma_Kosztow, dsplaty)
+            if self.inflator:
+                real_suma_kosztow = self.inflator.oblicz(krokSplaty.suma_kosztow, dsplaty)
+                real_narastajaco_suma_kosztow = self.inflator.oblicz(self.Suma_Kosztow, dsplaty)
             else:
                 real_suma_kosztow = krokSplaty.suma_kosztow
                 real_narastajaco_suma_kosztow = self.Suma_Kosztow
