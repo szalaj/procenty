@@ -51,7 +51,7 @@ def getInflacja():
             mm_dod = [x+1 for x in mm_znane]
             ile = len(mm_znane)
             if ile<=0:
-                raise Excepttion('ale jaja')
+                raise Exception('ale jaja')
             produkt = prod(mm_dod)
             mm = pow((1+rr)/(produkt), 1/(12-ile)) - 1
 
