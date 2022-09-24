@@ -59,7 +59,7 @@ def pokaz_harmonogram():
 
     inflacja_wykres_dane = [{'day': x['month'], 'value': x['rr'], 'value2': x['mm']} for x in inflacja]
 
-    return render_template('harmonogram.html', wynik = res_kredyt1, wykres_stopy=wykres_stopy,inflacja_dane = inflacja_wykres_dane)
+    return render_template('harmonogram.html', wynik = res_kredyt1, wykres_stopy = wykres_stopy, inflacja_dane = inflacja_wykres_dane)
 
 
 
