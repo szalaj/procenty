@@ -20,8 +20,8 @@ def pokaz_harmonogram():
          - N
          - data uruchomienia
          - daty spłaty
-         - stopy procentowe
          - nadpłaty
+         - oprocentowanie
          - inflacja
 
          Wszystkie dane powinny być zapisane do modelu
@@ -35,6 +35,7 @@ def pokaz_harmonogram():
     daty_splaty = [data_pierwszej_raty + relativedelta(months=i) for i in range(N)]
 
     inflacja = bank.stopy.getInflacja()
+    nadplaty = bank.nadplaty.getNadplaty2()
 
     inflator = bank.portfel.Inflator(inflacja, '24/05/2022')
     stopy_procentowe = bank.stopy.getStopy(inflacja)
@@ -43,6 +44,7 @@ def pokaz_harmonogram():
     kredyt_obj = bank.kredyt.StalaRata(K, N, data_start)
     kredyt_obj.setStopy(stopy_procentowe)
     kredyt_obj.setDatySplaty(daty_splaty)
+    kredyt_obj.setNadplaty(nadplaty)
 
     res_kredyt1 = kredyt_obj.policz(inflator)
 
