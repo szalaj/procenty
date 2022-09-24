@@ -4,7 +4,7 @@
 
 <style>
   .box {
-  display: inline-block;
+    display: inline-block;
   }
 
   table {
@@ -15,33 +15,38 @@
 
     background-color: #bde9ba;
   }
+
   .text-tytul {
 
     font-family: Arial, Helvetica, sans-serif;
     font-size: 20px;
   }
+
   tr {
 
     font-family: Arial, Helvetica, sans-serif;
   }
+
   tr.przeszlosc {
-  background-color: lightblue;
+    background-color: lightblue;
 
   }
+
   tr.przyszlosc {
-  background-color: lightgray;
+    background-color: lightgray;
 
   }
 
   tr.start {
-  background-color: yellow;
+    background-color: yellow;
 
   }
 
   tr.najblizsza {
-  background-color: orange;
+    background-color: orange;
 
   }
+
   path.red {
     fill: none;
     stroke-width: 2px;
@@ -69,7 +74,6 @@
 
 
   }
-
 </style>
 
 <div id="chart" class="divelement">
@@ -85,125 +89,125 @@
 
 <script type="text/javascript">
 
-var stopy_dane = JSON.parse('{{ wykres_stopy | tojson | safe}}');
+  var stopy_dane = JSON.parse('{{ wykres_stopy | tojson | safe}}');
 
-var inflacja_dane = JSON.parse('{{ inflacja_dane | tojson | safe}}');
+  var inflacja_dane = JSON.parse('{{ inflacja_dane | tojson | safe}}');
 
 
   var parseDate = d3.timeParse("%d/%m/%Y");
   var parseDateInfl = d3.timeParse("%m/%Y");
 
-  stopy_dane.forEach(function(d) {
-         d.day = parseDate(d.day)
-         d.value = parseFloat(d.value)
+  stopy_dane.forEach(function (d) {
+    d.day = parseDate(d.day)
+    d.value = parseFloat(d.value)
 
-     });
+  });
 
-     inflacja_dane.forEach(function(d) {
-            d.day = parseDateInfl(d.day)
-            d.value = parseFloat(d.value)
+  inflacja_dane.forEach(function (d) {
+    d.day = parseDateInfl(d.day)
+    d.value = parseFloat(d.value)
 
-        });
+  });
 
-       console.log(stopy_dane)
+  console.log(stopy_dane)
 
-     var margin = {top: 60, right: 30, bottom: 70, left: 60},
-         width = 700 - margin.left - margin.right,
-         height = 450 - margin.top - margin.bottom;
-
-
-         // append the svg object to the body of the page
-         var svg = d3.select("#chart")
-           .append("svg")
-             .attr("class", "svg-holder")
-             .attr("width", width + margin.left + margin.right)
-             .attr("height", height + margin.top + margin.bottom)
-             .attr("style", "border:1px solid black;")
-             .style('background', "white")
-           .append("g")
-             .attr("transform",
-                   "translate(" + margin.left + "," + margin.top + ")");
-
-     var xscale = d3.scaleTime()
-         .domain(d3.extent(stopy_dane, d=>d.day))
-         .range([0, width]);
+  var margin = { top: 60, right: 30, bottom: 70, left: 60 },
+    width = 700 - margin.left - margin.right,
+    height = 450 - margin.top - margin.bottom;
 
 
+  // append the svg object to the body of the page
+  var svg = d3.select("#chart")
+    .append("svg")
+    .attr("class", "svg-holder")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .attr("style", "border:1px solid black;")
+    .style('background', "white")
+    .append("g")
+    .attr("transform",
+      "translate(" + margin.left + "," + margin.top + ")");
 
-
-      svg.append("g")
-        .attr("class", "xAxis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
-        .selectAll("text")
-          .attr("transform", "translate(-10,0)rotate(-45)")
-          .style("text-anchor", "end")
-          .style("font-size","13px");
-
-
-      d3.selectAll("g.xAxis g.tick")
-          .append("line")
-          .attr("class", "gridline")
-          .attr("x1", 0)
-          .attr("y1", -height)
-          .attr("x2", 0)
-          .attr("y2", 0);
+  var xscale = d3.scaleTime()
+    .domain(d3.extent(stopy_dane, d => d.day))
+    .range([0, width]);
 
 
 
-      var maxYvalue = d3.max(stopy_dane, function(d) { return d.value });
-      var minYvalue = d3.min(stopy_dane, function(d) { return d.value });
-      // Add Y axis
 
-      var yscale = d3.scaleLinear()
-        .domain([0, maxYvalue])
-        .range([ height, 0]);
+  svg.append("g")
+    .attr("class", "xAxis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
+    .selectAll("text")
+    .attr("transform", "translate(-10,0)rotate(-45)")
+    .style("text-anchor", "end")
+    .style("font-size", "13px");
 
-        formatPerc = function(d) { return  d3.format(".2f")(100*d) + " %"; }
 
-      svg.append("g")
-        .attr("class", "yAxis")
-        .call(d3.axisLeft(yscale).tickFormat(formatPerc))
-         .style("font-size","13px");
-
-       d3.selectAll("g.yAxis g.tick")
-           .append("line")
-           .attr("class", "gridline")
-           .attr("x1", 0)
-           .attr("y1", 0)
-           .attr("x2", width)
-           .attr("y2", 0);
+  d3.selectAll("g.xAxis g.tick")
+    .append("line")
+    .attr("class", "gridline")
+    .attr("x1", 0)
+    .attr("y1", -height)
+    .attr("x2", 0)
+    .attr("y2", 0);
 
 
 
-           var mybars = svg.selectAll(".mybar").data(stopy_dane)
+  var maxYvalue = d3.max(stopy_dane, function (d) { return d.value });
+  var minYvalue = d3.min(stopy_dane, function (d) { return d.value });
+  // Add Y axis
 
-               mybars
-               .enter()
-               .append("rect")
-                 .attr("x", function(d) { return xscale(d.day); })
-                 .attr("y", function(d) { return  yscale(d.value); })
-                 .attr("width", 1)
-                 .attr("height", function(d) { return height-yscale(d.value); })
-                 .attr("class", "mybar");
+  var yscale = d3.scaleLinear()
+    .domain([0, maxYvalue])
+    .range([height, 0]);
+
+  formatPerc = function (d) { return d3.format(".2f")(100 * d) + " %"; }
+
+  svg.append("g")
+    .attr("class", "yAxis")
+    .call(d3.axisLeft(yscale).tickFormat(formatPerc))
+    .style("font-size", "13px");
+
+  d3.selectAll("g.yAxis g.tick")
+    .append("line")
+    .attr("class", "gridline")
+    .attr("x1", 0)
+    .attr("y1", 0)
+    .attr("x2", width)
+    .attr("y2", 0);
 
 
 
-                 svg.append("path")
-                       .datum(inflacja_dane)
-                       .attr("fill", "none")
-                       .attr("d", d3.line()
-                         .x(function(d) { return xscale(d.day) })
-                         .y(function(d) { return yscale(d.value) })
-                         )
-                         .attr("class", "red")
+  var mybars = svg.selectAll(".mybar").data(stopy_dane)
+
+  mybars
+    .enter()
+    .append("rect")
+    .attr("x", function (d) { return xscale(d.day); })
+    .attr("y", function (d) { return yscale(d.value); })
+    .attr("width", 1)
+    .attr("height", function (d) { return height - yscale(d.value); })
+    .attr("class", "mybar");
 
 
-                 svg.append("text")
-                   .attr("class", "text-tytul")
-                 .attr("x", -50)
-                 .attr("y", -20)
-                 .text("stopa procentowa (marża + wibor3m + ubezp.) oraz inflacja m/m")
+
+  svg.append("path")
+    .datum(inflacja_dane)
+    .attr("fill", "none")
+    .attr("d", d3.line()
+      .x(function (d) { return xscale(d.day) })
+      .y(function (d) { return yscale(d.value) })
+    )
+    .attr("class", "red")
+
+
+  svg.append("text")
+    .attr("class", "text-tytul")
+    .attr("x", -50)
+    .attr("y", -20)
+    .text("stopa procentowa (marża + wibor3m + ubezp.) oraz inflacja m/m")
 
 </script>
 
@@ -211,193 +215,193 @@ var inflacja_dane = JSON.parse('{{ inflacja_dane | tojson | safe}}');
 
 <script type="text/javascript">
 
-      console.log("-- realne koszty ---")
+  console.log("-- realne koszty ---")
 
-      var dane = JSON.parse('{{ results | tojson | safe}}');
-      var dane2 = JSON.parse('{{ results2 | tojson | safe}}');
-
-
-   
-
-      var parseDate = d3.timeParse("%d/%m/%Y");
-      console.log(dane)
-
-      dane.forEach(function(d) {
-             d.data = parseDate(d.data)
-             d.suma_kosztow = parseFloat(d.suma_kosztow)
-             d.narastajaco_suma_kosztow = parseFloat(d.narastajaco_suma_kosztow)
-
-         });
-
-         dane2.forEach(function(d) {
-                d.data = parseDate(d.data)
-                d.suma_kosztow = parseFloat(d.suma_kosztow)
-                d.narastajaco_suma_kosztow = parseFloat(d.narastajaco_suma_kosztow)
-
-            });
-
-
-     var margin = {top: 60, right: 100, bottom: 70, left: 60},
-         width = 700 - margin.left - margin.right,
-         height = 450 - margin.top - margin.bottom;
-
-
-         // append the svg object to the body of the page
-         var svg = d3.select("#chart_realne_koszty")
-           .append("svg")
-             .attr("class", "svg-holder")
-             .attr("width", width + margin.left + margin.right)
-             .attr("height", height + margin.top + margin.bottom)
-             .attr("style", "border:1px solid black;")
-             .style('background', "white")
-           .append("g")
-             .attr("transform",
-                   "translate(" + margin.left + "," + margin.top + ")");
-
-     var xscale = d3.scaleTime()
-         .domain(d3.extent(dane, d=>d.data))
-         .range([0, width]);
+  var dane = JSON.parse('{{ results | tojson | safe}}');
+  var dane2 = JSON.parse('{{ results2 | tojson | safe}}');
 
 
 
 
-      svg.append("g")
-        .attr("class", "xAxis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
-        .selectAll("text")
-          .attr("transform", "translate(-10,0)rotate(-45)")
-          .style("text-anchor", "end")
-          .style("font-size","13px");
+  var parseDate = d3.timeParse("%d/%m/%Y");
+  console.log(dane)
+
+  dane.forEach(function (d) {
+    d.data = parseDate(d.data)
+    d.suma_kosztow = parseFloat(d.suma_kosztow)
+    d.narastajaco_suma_kosztow = parseFloat(d.narastajaco_suma_kosztow)
+
+  });
+
+  dane2.forEach(function (d) {
+    d.data = parseDate(d.data)
+    d.suma_kosztow = parseFloat(d.suma_kosztow)
+    d.narastajaco_suma_kosztow = parseFloat(d.narastajaco_suma_kosztow)
+
+  });
 
 
-      d3.selectAll("g.xAxis g.tick")
-          .append("line")
-          .attr("class", "gridline")
-          .attr("x1", 0)
-          .attr("y1", -height)
-          .attr("x2", 0)
-          .attr("y2", 0);
+  var margin = { top: 60, right: 100, bottom: 70, left: 60 },
+    width = 700 - margin.left - margin.right,
+    height = 450 - margin.top - margin.bottom;
 
 
+  // append the svg object to the body of the page
+  var svg = d3.select("#chart_realne_koszty")
+    .append("svg")
+    .attr("class", "svg-holder")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .attr("style", "border:1px solid black;")
+    .style('background', "white")
+    .append("g")
+    .attr("transform",
+      "translate(" + margin.left + "," + margin.top + ")");
 
-      var maxYvalue = d3.max([dane,dane2].flat(), function(d) { return d.suma_kosztow });
-      var minYvalue = d3.min([dane,dane2].flat(), function(d) { return d.suma_kosztow });
-
-
-      var maxYvalueNar = d3.max(dane, function(d) { return d.narastajaco_suma_kosztow });
-      var minYvalueNar = d3.min(dane, function(d) { return d.narastajaco_suma_kosztow });
-
-
-      // Add Y axis
-
-      var yscale = d3.scaleLinear()
-        .domain([minYvalue  , maxYvalue])
-        .range([ height, 0]);
-
-
-        var yscaleNar = d3.scaleLinear()
-          .domain([minYvalueNar  , maxYvalueNar])
-          .range([ height, 0]);
-
-
-
-
-      formatMoney = function(d) { return  d3.format(".0f")(d) + " zł"; }
-      formatMoney2 = function(d) { return  d3.format(",.0f")(d) + " zł"; }
-
-      svg.append("g")
-        .attr("class", "yAxis")
-        .call(d3.axisLeft(yscale).tickFormat(formatMoney))
-         .style("font-size","13px");
-
-
-         svg.append("g")
-           .attr("class", "yAxis")
-           .call(d3.axisRight(yscaleNar).tickFormat(formatMoney2))
-           .attr("transform", "translate("+ width + ",0)")
-            .style("font-size","13px");
-
-       d3.selectAll("g.yAxis g.tick")
-           .append("line")
-           .attr("class", "gridline")
-           .attr("x1", 0)
-           .attr("y1", 0)
-           .attr("x2", width)
-           .attr("y2", 0);
+  var xscale = d3.scaleTime()
+    .domain(d3.extent(dane, d => d.data))
+    .range([0, width]);
 
 
 
-       svg.append("path")
-             .datum(dane)
-             .attr("d", d3.line()
-               .x(function(d) { return xscale(d.data) })
-               .y(function(d) { return yscale(d.suma_kosztow) })
-               )
 
-               svg.append("path")
-                     .datum(dane)
-                     .attr("class", "black-dot")
-                     .attr("d", d3.line()
-                       .x(function(d) { return xscale(d.data) })
-                       .y(function(d) { return yscale(d.real_suma_kosztow) })
-                       )
-
-       svg.append("path")
-             .datum(dane2)
-             .attr("class", "red")
-             .attr("d", d3.line()
-               .x(function(d) { return xscale(d.data) })
-               .y(function(d) { return yscale(d.suma_kosztow) })
-                       )
+  svg.append("g")
+    .attr("class", "xAxis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
+    .selectAll("text")
+    .attr("transform", "translate(-10,0)rotate(-45)")
+    .style("text-anchor", "end")
+    .style("font-size", "13px");
 
 
-              svg.append("path")
-                       .datum(dane2)
-                       .attr("class", "red-dot")
-                       .attr("d", d3.line()
-                         .x(function(d) { return xscale(d.data) })
-                         .y(function(d) { return yscale(d.real_suma_kosztow) })
-                       )
-
-       svg.append("path")
-             .datum(dane)
-             .attr("d", d3.line()
-               .x(function(d) { return xscale(d.data) })
-               .y(function(d) { return yscaleNar(d.narastajaco_suma_kosztow) })
-               )
-
-               svg.append("path")
-                     .datum(dane2)
-                     .attr("class", "red")
-                     .attr("d", d3.line()
-                       .x(function(d) { return xscale(d.data) })
-                       .y(function(d) { return yscaleNar(d.narastajaco_suma_kosztow) })
-                       )
+  d3.selectAll("g.xAxis g.tick")
+    .append("line")
+    .attr("class", "gridline")
+    .attr("x1", 0)
+    .attr("y1", -height)
+    .attr("x2", 0)
+    .attr("y2", 0);
 
 
 
-                       svg.append("path")
-                             .datum(dane)
-                             .attr("class", "black-dot")
-                             .attr("d", d3.line()
-                               .x(function(d) { return xscale(d.data) })
-                               .y(function(d) { return yscaleNar(d.real_narastajaco_suma_kosztow) })
-                               )
+  var maxYvalue = d3.max([dane, dane2].flat(), function (d) { return d.suma_kosztow });
+  var minYvalue = d3.min([dane, dane2].flat(), function (d) { return d.suma_kosztow });
 
-                               svg.append("path")
-                                     .datum(dane2)
-                                     .attr("class", "red-dot")
-                                     .attr("d", d3.line()
-                                       .x(function(d) { return xscale(d.data) })
-                                       .y(function(d) { return yscaleNar(d.real_narastajaco_suma_kosztow) })
-                                       )
 
-        svg.append("text")
-            .attr("class", "text-tytul")
-            .attr("x", -50)
-            .attr("y", -20)
-            .text("miesięczne nominalne koszty kredytu (raty + nadpłaty + opłaty)")
+  var maxYvalueNar = d3.max(dane, function (d) { return d.narastajaco_suma_kosztow });
+  var minYvalueNar = d3.min(dane, function (d) { return d.narastajaco_suma_kosztow });
+
+
+  // Add Y axis
+
+  var yscale = d3.scaleLinear()
+    .domain([minYvalue, maxYvalue])
+    .range([height, 0]);
+
+
+  var yscaleNar = d3.scaleLinear()
+    .domain([minYvalueNar, maxYvalueNar])
+    .range([height, 0]);
+
+
+
+
+  formatMoney = function (d) { return d3.format(".0f")(d) + " zł"; }
+  formatMoney2 = function (d) { return d3.format(",.0f")(d) + " zł"; }
+
+  svg.append("g")
+    .attr("class", "yAxis")
+    .call(d3.axisLeft(yscale).tickFormat(formatMoney))
+    .style("font-size", "13px");
+
+
+  svg.append("g")
+    .attr("class", "yAxis")
+    .call(d3.axisRight(yscaleNar).tickFormat(formatMoney2))
+    .attr("transform", "translate(" + width + ",0)")
+    .style("font-size", "13px");
+
+  d3.selectAll("g.yAxis g.tick")
+    .append("line")
+    .attr("class", "gridline")
+    .attr("x1", 0)
+    .attr("y1", 0)
+    .attr("x2", width)
+    .attr("y2", 0);
+
+
+
+  svg.append("path")
+    .datum(dane)
+    .attr("d", d3.line()
+      .x(function (d) { return xscale(d.data) })
+      .y(function (d) { return yscale(d.suma_kosztow) })
+    )
+
+  svg.append("path")
+    .datum(dane)
+    .attr("class", "black-dot")
+    .attr("d", d3.line()
+      .x(function (d) { return xscale(d.data) })
+      .y(function (d) { return yscale(d.real_suma_kosztow) })
+    )
+
+  svg.append("path")
+    .datum(dane2)
+    .attr("class", "red")
+    .attr("d", d3.line()
+      .x(function (d) { return xscale(d.data) })
+      .y(function (d) { return yscale(d.suma_kosztow) })
+    )
+
+
+  svg.append("path")
+    .datum(dane2)
+    .attr("class", "red-dot")
+    .attr("d", d3.line()
+      .x(function (d) { return xscale(d.data) })
+      .y(function (d) { return yscale(d.real_suma_kosztow) })
+    )
+
+  svg.append("path")
+    .datum(dane)
+    .attr("d", d3.line()
+      .x(function (d) { return xscale(d.data) })
+      .y(function (d) { return yscaleNar(d.narastajaco_suma_kosztow) })
+    )
+
+  svg.append("path")
+    .datum(dane2)
+    .attr("class", "red")
+    .attr("d", d3.line()
+      .x(function (d) { return xscale(d.data) })
+      .y(function (d) { return yscaleNar(d.narastajaco_suma_kosztow) })
+    )
+
+
+
+  svg.append("path")
+    .datum(dane)
+    .attr("class", "black-dot")
+    .attr("d", d3.line()
+      .x(function (d) { return xscale(d.data) })
+      .y(function (d) { return yscaleNar(d.real_narastajaco_suma_kosztow) })
+    )
+
+  svg.append("path")
+    .datum(dane2)
+    .attr("class", "red-dot")
+    .attr("d", d3.line()
+      .x(function (d) { return xscale(d.data) })
+      .y(function (d) { return yscaleNar(d.real_narastajaco_suma_kosztow) })
+    )
+
+  svg.append("text")
+    .attr("class", "text-tytul")
+    .attr("x", -50)
+    .attr("y", -20)
+    .text("miesięczne nominalne koszty kredytu (raty + nadpłaty + opłaty)")
 
 
 </script>
@@ -406,150 +410,146 @@ var inflacja_dane = JSON.parse('{{ inflacja_dane | tojson | safe}}');
 <script type="text/javascript">
 
 
-      var dane = JSON.parse('{{ portfele | tojson | safe}}');
+  var dane = JSON.parse('{{ portfele | tojson | safe}}');
+
+  console.log(dane)
 
 
-   
+  var parseDate = d3.timeParse("%m/%Y");
+
+  dane.forEach(function (d) {
+    d.month = parseDate(d.month)
+    d.value = parseFloat(d.value)
+
+  });
 
 
-      console.log(dane)
+  console.log(dane)
+
+  var margin = { top: 60, right: 30, bottom: 70, left: 100 },
+    width = 700 - margin.left - margin.right,
+    height = 450 - margin.top - margin.bottom;
 
 
-      var parseDate = d3.timeParse("%m/%Y");
+  // append the svg object to the body of the page
+  var svg = d3.select("#chart_portfel")
+    .append("svg")
+    .attr("class", "svg-holder")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .attr("style", "border:1px solid black;")
+    .style('background', "white")
+    .append("g")
+    .attr("transform",
+      "translate(" + margin.left + "," + margin.top + ")");
 
-      dane.forEach(function(d) {
-             d.month = parseDate(d.month)
-             d.value = parseFloat(d.value)
-
-         });
-
-
-           console.log(dane)
-
-     var margin = {top: 60, right: 30, bottom: 70, left: 100},
-         width = 700 - margin.left - margin.right,
-         height = 450 - margin.top - margin.bottom;
-
-
-         // append the svg object to the body of the page
-         var svg = d3.select("#chart_portfel")
-           .append("svg")
-             .attr("class", "svg-holder")
-             .attr("width", width + margin.left + margin.right)
-             .attr("height", height + margin.top + margin.bottom)
-             .attr("style", "border:1px solid black;")
-             .style('background', "white")
-           .append("g")
-             .attr("transform",
-                   "translate(" + margin.left + "," + margin.top + ")");
-
-     var xscale = d3.scaleTime()
-         .domain(d3.extent(dane, d=>d.month))
-         .range([0, width]);
+  var xscale = d3.scaleTime()
+    .domain(d3.extent(dane, d => d.month))
+    .range([0, width]);
 
 
 
 
-      svg.append("g")
-        .attr("class", "xAxis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m')))
-        .selectAll("text")
-          .attr("transform", "translate(-10,0)rotate(-45)")
-          .style("text-anchor", "end")
-          .style("font-size","13px");
+  svg.append("g")
+    .attr("class", "xAxis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m')))
+    .selectAll("text")
+    .attr("transform", "translate(-10,0)rotate(-45)")
+    .style("text-anchor", "end")
+    .style("font-size", "13px");
 
 
-      d3.selectAll("g.xAxis g.tick")
-          .append("line")
-          .attr("class", "gridline")
-          .attr("x1", 0)
-          .attr("y1", -height)
-          .attr("x2", 0)
-          .attr("y2", 0);
-
-
-
-      var maxYvalue1 = d3.max(dane, function(d) { return d.p1_saldo_norm });
-      var maxYvalue2 = d3.max(dane, function(d) { return d.p2_saldo_norm });
-      var maxYvalue = d3.max([maxYvalue1,maxYvalue2])
-      var minYvalue = d3.min(dane, function(d) { return d.p1_saldo_norm });
-      // Add Y axis
-
-      var yscale = d3.scaleLinear()
-        .domain([minYvalue -0.1  , maxYvalue +0.1])
-        .range([ height, 0]);
-
-
-        formatMoney = function(d) { return  d3.format(",.0f")(d) + " zł"; }
-
-      svg.append("g")
-        .attr("class", "yAxis")
-        .call(d3.axisLeft(yscale).tickFormat(formatMoney))
-         .style("font-size","13px");
-
-       d3.selectAll("g.yAxis g.tick")
-           .append("line")
-           .attr("class", "gridline")
-           .attr("x1", 0)
-           .attr("y1", 0)
-           .attr("x2", width)
-           .attr("y2", 0);
+  d3.selectAll("g.xAxis g.tick")
+    .append("line")
+    .attr("class", "gridline")
+    .attr("x1", 0)
+    .attr("y1", -height)
+    .attr("x2", 0)
+    .attr("y2", 0);
 
 
 
-       svg.append("path")
-             .datum(dane)
-             .attr("d", d3.line()
-               .x(function(d) { return xscale(d.month) })
-               .y(function(d) { return yscale(d.p1_saldo_norm) })
-               )
-               .attr("stroke", "red")
-               .attr("stroke-width", 1.5)
+  var maxYvalue1 = d3.max(dane, function (d) { return d.p1_saldo_norm });
+  var maxYvalue2 = d3.max(dane, function (d) { return d.p2_saldo_norm });
+  var maxYvalue = d3.max([maxYvalue1, maxYvalue2])
+  var minYvalue = d3.min(dane, function (d) { return d.p1_saldo_norm });
+  // Add Y axis
 
-               svg.append("path")
-                     .datum(dane)
-                     .attr("class", "black-dot")
-                     .attr("d", d3.line()
-                       .x(function(d) { return xscale(d.month) })
-                       .y(function(d) { return yscale(d.p1_saldo_real) })
-                       )
+  var yscale = d3.scaleLinear()
+    .domain([minYvalue - 0.1, maxYvalue + 0.1])
+    .range([height, 0]);
 
 
+  formatMoney = function (d) { return d3.format(",.0f")(d) + " zł"; }
 
-                       svg.append("path")
-                             .datum(dane)
-                             .attr("class", "red")
-                             .attr("d", d3.line()
-                               .x(function(d) { return xscale(d.month) })
-                               .y(function(d) { return yscale(d.p2_saldo_norm) })
-                               )
+  svg.append("g")
+    .attr("class", "yAxis")
+    .call(d3.axisLeft(yscale).tickFormat(formatMoney))
+    .style("font-size", "13px");
 
-
-                               svg.append("path")
-                                     .datum(dane)
-                                     .attr("class", "red-dot")
-                                     .attr("d", d3.line()
-                                       .x(function(d) { return xscale(d.month) })
-                                       .y(function(d) { return yscale(d.p2_saldo_real) })
-                                       )
+  d3.selectAll("g.yAxis g.tick")
+    .append("line")
+    .attr("class", "gridline")
+    .attr("x1", 0)
+    .attr("y1", 0)
+    .attr("x2", width)
+    .attr("y2", 0);
 
 
-        svg.append("text")
-            .attr("class", "text-tytul")
-            .attr("x", -50)
-            .attr("y", -20)
-            .text("portfel")
+
+  svg.append("path")
+    .datum(dane)
+    .attr("d", d3.line()
+      .x(function (d) { return xscale(d.month) })
+      .y(function (d) { return yscale(d.p1_saldo_norm) })
+    )
+    .attr("stroke", "red")
+    .attr("stroke-width", 1.5)
+
+  svg.append("path")
+    .datum(dane)
+    .attr("class", "black-dot")
+    .attr("d", d3.line()
+      .x(function (d) { return xscale(d.month) })
+      .y(function (d) { return yscale(d.p1_saldo_real) })
+    )
 
 
-            svg.append("line")
-           .attr("x1", 0)
-           .attr("y1", yscale(0))
-           .attr("x2", width)
-           .attr("y2", yscale(0))
-           .attr("stroke", "black")
-           .attr("stroke-width", 1)
-           .attr("stroke-dasharray", 4)
+
+  svg.append("path")
+    .datum(dane)
+    .attr("class", "red")
+    .attr("d", d3.line()
+      .x(function (d) { return xscale(d.month) })
+      .y(function (d) { return yscale(d.p2_saldo_norm) })
+    )
+
+
+  svg.append("path")
+    .datum(dane)
+    .attr("class", "red-dot")
+    .attr("d", d3.line()
+      .x(function (d) { return xscale(d.month) })
+      .y(function (d) { return yscale(d.p2_saldo_real) })
+    )
+
+
+  svg.append("text")
+    .attr("class", "text-tytul")
+    .attr("x", -50)
+    .attr("y", -20)
+    .text("portfel")
+
+
+  svg.append("line")
+    .attr("x1", 0)
+    .attr("y1", yscale(0))
+    .attr("x2", width)
+    .attr("y2", yscale(0))
+    .attr("stroke", "black")
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", 4)
 
 
 </script>
