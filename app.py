@@ -35,7 +35,7 @@ def pokaz_harmonogram():
 
     '''
     K = 460000
-    N = 360
+    N = 40  
 
     data_start = '04/11/2021'
   
@@ -97,16 +97,18 @@ def porownanie():
     kredyt_obj = bank.kredyt.StalaRata(K,N, data_start)
     kredyt_obj.setStopy(stopy_procentowe)
     kredyt_obj.setDatySplaty(daty_splaty)
+    kredyt_obj.setInflator(inflator)
 
-    res_kredyt1 = kredyt_obj.policz(inflator)
+    res_kredyt1 = kredyt_obj.policz()
 
 
     kredyt_obj2 = bank.kredyt.StalaRata(K,N, data_start)
     kredyt_obj2.setStopy(stopy_procentowe)
     kredyt_obj2.setNadplaty(nadplaty)
     kredyt_obj2.setDatySplaty(daty_splaty)
+    kredyt_obj2.setInflator(inflator)
 
-    res_kredyt2 = kredyt_obj2.policz(inflator)
+    res_kredyt2 = kredyt_obj2.policz()
 
 
     portfel = bank.portfel.Portfel()

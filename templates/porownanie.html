@@ -85,9 +85,9 @@
 
 <script type="text/javascript">
 
-  let stopy_dane = {{ wykres_stopy|tojson }};
-  var inflacja_dane = {{inflacja_dane|tojson}};
+var stopy_dane = JSON.parse('{{ wykres_stopy | tojson | safe}}');
 
+var inflacja_dane = JSON.parse('{{ inflacja_dane | tojson | safe}}');
 
 
   var parseDate = d3.timeParse("%d/%m/%Y");
@@ -213,9 +213,11 @@
 
       console.log("-- realne koszty ---")
 
-      var dane = {{results|tojson}};
-      var dane2 = {{results2|tojson}};
+      var dane = JSON.parse('{{ results | tojson | safe}}');
+      var dane2 = JSON.parse('{{ results2 | tojson | safe}}');
 
+
+   
 
       var parseDate = d3.timeParse("%d/%m/%Y");
       console.log(dane)
@@ -403,7 +405,11 @@
 
 <script type="text/javascript">
 
-      var dane = {{portfele|tojson}};
+
+      var dane = JSON.parse('{{ portfele | tojson | safe}}');
+
+
+   
 
 
       console.log(dane)
