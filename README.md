@@ -33,6 +33,10 @@ Dodatkowo
 
   ![alt text](docs_img/rys1.png)
 
+Celem program jest obliczenie salda kredytu w czasach $$t_0, t_1, ..., t_i, ..., t_n$$
+
+  $$ x = {-b \pm \sqrt{b^2-4ac} \over 2a} $$
+
 # Model Lokaty
 
     3. Opcjonalnie : Obliczenie Lokat (ModelLokata)
