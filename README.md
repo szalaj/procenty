@@ -33,7 +33,9 @@ Dodatkowo
 
   ![alt text](docs_img/rys1.png)
 
-Celem program jest obliczenie salda kredytu w czasach $$t_0, t_1, ..., t_i, ..., t_n$$
+Celem program jest obliczenie salda kredytu w czasach $$t_0, t_1, ..., t_i, ..., t_N$$
+Które tworzą ciąg rosnący, niekoniecznie o równych odstępach czasowych (kredytobiorca może zmieniać datę spłaty).
+W czasie $t_0$ następuje wypłata kredytu, i zaczyna się naliczanie odsetek (dzień po dniu). W czasach $t_i$, $t_2$, ... $t_i$, $t_N$ płacone są raty. Po ostatniej racie $N$ saldo kredytu powinno wynieść 0.
 
   $$ x = {-b \pm \sqrt{b^2-4ac} \over 2a} $$
 
