@@ -31,6 +31,8 @@ Dodatkowo
     1. ModelKredyt
     2. Kredyt : Obliczenia danych kredytu podstawowych (ModelKredyt) 
 
+  ![alt text](docs_img/rys1.png)
+
 # Model Lokaty
 
     3. Opcjonalnie : Obliczenie Lokat (ModelLokata)
