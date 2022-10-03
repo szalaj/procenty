@@ -6,9 +6,12 @@ importlib-metadata==4.8.3
 itsdangerous==2.0.1
 Jinja2==3.0.3
 MarkupSafe==2.0.1
+numpy==1.23.3
+pandas==1.4.4
 python-dateutil==2.8.2
 pytz==2022.1
+PyYAML==6.0
 six==1.16.0
-typing-extensions==4.1.1
+typing_extensions==4.1.1
 Werkzeug==2.0.3
 zipp==3.6.0
