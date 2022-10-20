@@ -42,7 +42,7 @@ W czasie $t_0$ następuje wypłata kredytu, i zaczynają być naliczanie odsetki
 ```
 $ python proc.py
 ```
-# Konto
+# Konto bieżące
 
 # Nadpłaty
 
