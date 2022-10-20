@@ -42,6 +42,7 @@ W czasie $t_0$ następuje wypłata kredytu, i zaczynają być naliczanie odsetki
 ```
 $ python proc.py
 ```
+# Konto
 
 # Nadpłaty
 
@@ -50,7 +51,7 @@ $ python proc.py
     3. Opcjonalnie : Obliczenie Lokat (ModelLokata)
     4. Opcjonalnie, bbliczenia danych rzeczywistych
 
-# Nieruchomości
+# Nieruchomość
 
     Jak zmienia się wartość nieruchomości w czasie
 
