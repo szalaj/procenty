@@ -1,13 +1,20 @@
-
 import yaml
 import sys
 import getopt
 import argparse
 import datetime as dt
+from dateutil.relativedelta import relativedelta
 
 def generate(plik, okresy, start_date):
 
     print(start_date)
+
+    miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy)]
+
+    data = miesiace
+
+    with open(plik, 'w') as outfile:
+        yaml.dump(data, outfile, default_flow_style=False)
 
 if __name__ == '__main__':
 
