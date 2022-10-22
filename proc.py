@@ -12,10 +12,8 @@ class Zdarzenie:
     def __init__(self, data, desc):
         self.data = data
         self.desc = desc
-        
-
-    
-
+    def __lt__(self, other):
+        return self.data < other.data
 
 if __name__== "__main__":
 
