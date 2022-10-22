@@ -15,9 +15,29 @@ if __name__== "__main__":
     p = dane['p']/100.0
     S = dane['K']
     N = dane['N']
+    dni = dane['daty_splaty']
 
     L = (S*p)
     M = k*(1-pow(k/(k+p), N))
     I = L/M
+
+    dzien_o = dt.datetime.strptime(dane['start'], '%Y-%m-%d')
+    Kap = float(S)
+    for dzien in dni:
+        dzien_k = dt.datetime.strptime(dzien, '%Y-%m-%d')
+        
+        o_dni = (dzien_k - dzien_o).days
+
+        opr = (o_dni/365)*p
+
+        odsetki = opr*Kap
+
+        Kap = Kap - (I-odsetki)
+
+        dzien_o = dzien_k
+
+    print(Kap)
+
+
 
     print('I : {}'.format(I))

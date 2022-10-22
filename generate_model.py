@@ -20,12 +20,12 @@ if __name__ == '__main__':
 
     try:
 
-        opts, arg = getopt.getopt(sys.argv[1:], 'p:n:s:',  ["plik=", "okresy=", "startdate="])
+        opts, arg = getopt.getopt(sys.argv[1:], 'p:o:s:',  ["plik=", "okresy=", "startdate="])
         
        
         for opt, arg in opts:
             print("{} : {}".format(opt, arg))
-            if opt in ("-n", "--okresy"):
+            if opt in ("-o", "--okresy"):
                 okresy = int(arg)
             if opt in ("-s", "--startdate"):
                 start_date = dt.datetime.strptime(arg, '%Y-%m-%d')
