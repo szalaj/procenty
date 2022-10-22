@@ -1,8 +1,21 @@
 import yaml
 import sys
 import getopt
-import argparse
 import datetime as dt
+
+class Kredyt:
+    def __init__(self,K):
+        self.K = K
+        self.zdarzenia = []
+
+class Zdarzenie:
+    def __init__(self, data, desc):
+        self.data = data
+        self.desc = desc
+        
+
+    
+
 
 if __name__== "__main__":
 
@@ -16,6 +29,8 @@ if __name__== "__main__":
     S = dane['K']
     N = dane['N']
     dni = dane['daty_splaty']
+
+    kr = Kredyt(S)
 
     L = (S*p)
     M = k*(1-pow(k/(k+p), N))
