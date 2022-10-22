@@ -2,6 +2,8 @@ import yaml
 import sys
 import getopt
 import argparse
+import datetime as dt
+
 if __name__== "__main__":
 
     stream = open("./models/mod1.yml", 'r')
@@ -12,8 +14,10 @@ if __name__== "__main__":
     k = 12
     p = dane['p']/100.0
     S = dane['K']
+    N = dane['N']
+
     L = (S*p)
-    M = k*(1-pow(k/(k+p),360))
+    M = k*(1-pow(k/(k+p), N))
     I = L/M
 
     print('I : {}'.format(I))
