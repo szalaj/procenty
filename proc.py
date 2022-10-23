@@ -2,18 +2,38 @@ import yaml
 import sys
 import getopt
 import datetime as dt
+from dataclasses import dataclass
+from enum import auto, Enum
+from decimal import Decimal
 
-class Kredyt:
-    def __init__(self,K):
-        self.K = K
-        self.zdarzenia = []
 
+class Rodzaj(Enum):
+    SPLATA = auto()
+    OPROCENTOWANIE = auto()
+    NADPLATA = auto()
+
+@dataclass
 class Zdarzenie:
-    def __init__(self, data, desc):
-        self.data = data
-        self.desc = desc
+    data:dt.datetime
+    rodzaj:Rodzaj
+    wartosc:object
     def __lt__(self, other):
         return self.data < other.data
+
+class Kredyt:
+    def __init__(self,K:Decimal, N:int, p:Decimal, start:dt.datetime):
+        
+        self.K = K
+        self.N = N
+        self.p = p
+        self.start = start
+
+
+        self.zdarzenia = []
+
+    def __repr__(self) -> str:
+        
+        return " K: {}\n N: {} \n p: {} \n start_dzien: {}".format(self.K, self.N, self.p, self.start)
 
 if __name__== "__main__":
 
@@ -28,7 +48,8 @@ if __name__== "__main__":
     N = dane['N']
     dni = dane['daty_splaty']
 
-    kr = Kredyt(S)
+    kr = Kredyt('aa', 23, 3, '2022-01-01')
+    print(kr)
 
     L = (S*p)
     M = k*(1-pow(k/(k+p), N))
