@@ -29,6 +29,7 @@ class Kredyt:
         self.p = p
         self.start = start
         self.zdarzenia = []
+        print(type(K))
 
     def __repr__(self) -> str:
         return " K: {}\n N: {} \n p: {} \n start_dzien: {}".format(self.K, self.N, self.p, self.start)
@@ -60,17 +61,17 @@ if __name__== "__main__":
     stream = open("./models/{}.yml".format(plik_model), 'r')
     dane = yaml.safe_load(stream)
 
+    print(dane['oprocentowanie'])
+
     k = 12
-    p = dane['p']/100.0
-    K = dane['K']
+    p = Decimal(dane['p']/100.0)
+    K = Decimal(dane['K'])
     dni = dane['daty_splaty']
     N = len(dni)
 
     kr = Kredyt(K, N, p, dt.datetime.strptime(dane['start'], '%Y-%m-%d'))
     for dzien_splaty in dane['daty_splaty']:
         kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(dzien_splaty, '%Y-%m-%d'), Rodzaj.SPLATA, 0))
-    
-    print(kr)
 
     I = kr.rata()
 
@@ -78,11 +79,11 @@ if __name__== "__main__":
     for zdarzenie in sorted(kr.zdarzenia):
         dzien_k = zdarzenie.data
         o_dni = (dzien_k - dzien_o).days
-        opr = (o_dni/365)*kr.p
+        opr = Decimal((o_dni/365))*kr.p
         odsetki = opr*kr.K
         kr.K = kr.K - (I-odsetki)
         dzien_o = dzien_k
 
-    print('I : {}'.format(I))
+    print('I : {}'.format(I.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
 
-    print("kapital na koniec : {}".format(kr.K))
+    print("kapital na koniec : {}".format(kr.K.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
