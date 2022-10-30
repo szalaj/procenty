@@ -1,3 +1,4 @@
+from xmlrpc.client import Boolean
 import yaml
 import sys
 import getopt
@@ -24,22 +25,84 @@ class Zdarzenie:
 
 class Kredyt:
     def __init__(self,K:Decimal, N:int, p:Decimal, start:dt.datetime):
+
         self.K = K
         self.N = N
         self.p = p
         self.start = start
+        self.dzien_odsetki = start
         self.zdarzenia = []
-        print(type(K))
+    
+        self.odsetki_naliczone = 0
+        self.I = 0
 
     def __repr__(self) -> str:
         return " K: {}\n N: {} \n p: {} \n start_dzien: {}".format(self.K, self.N, self.p, self.start)
 
-    def rata(self) -> Decimal:  
+    def oblicz_rate(self) -> Decimal:  
         k = 12
-        L = (self.K * self.p)
+
+        do_splaty = self.K + self.odsetki_naliczone
+
+        L = (do_splaty * self.p)
         M = k*(1-pow(k/(k+self.p),self.N) )
         I =L/M
         return I
+        
+
+    def zmien_oprocentowanie(self, dzien_zmiany:dt.datetime, nowe_p:Decimal) -> Boolean:
+
+        # nalicz odsetki do dnia zmiany raty
+        o_dni = (dzien_zmiany - self.dzien_odsetki).days
+
+        opr = Decimal((o_dni/365))*self.p
+
+        self.odsetki_naliczone = self.odsetki_naliczone +  opr*self.K
+
+        self.p = Decimal(nowe_p/100.0)
+
+        self.dzien_odsetki = dzien_zmiany
+
+
+    def splata_raty(self, dzien_raty:dt.datetime) -> Boolean:
+
+        
+
+        o_dni = (dzien_raty - self.dzien_odsetki).days
+
+        opr = Decimal((o_dni/365))*self.p
+
+        self.odsetki_naliczone = self.odsetki_naliczone + opr*self.K
+
+        print("dzien: {}, K:{}, odsetki: {}, rata: {}".format(dzien_raty, self.K, self.odsetki_naliczone, self.I))
+
+        self.I = self.oblicz_rate()
+
+
+        if self.odsetki_naliczone > self.I:
+            self.I = self.odsetki_naliczone
+    
+        self.K = self.K - (self.I-self.odsetki_naliczone)
+        self.odsetki_naliczone = 0
+
+        self.dzien_odsetki = dzien_raty
+        self.N -= 1
+
+    def symuluj(self):
+
+        
+
+        for zdarzenie in sorted(self.zdarzenia):
+            if zdarzenie.rodzaj == Rodzaj.OPROCENTOWANIE:
+                self.zmien_oprocentowanie(zdarzenie.data, zdarzenie.wartosc)
+            elif zdarzenie.rodzaj == Rodzaj.SPLATA:
+                self.splata_raty(zdarzenie.data)
+
+            
+            
+        
+
+
 
 
 if __name__== "__main__":
@@ -61,7 +124,6 @@ if __name__== "__main__":
     stream = open("./models/{}.yml".format(plik_model), 'r')
     dane = yaml.safe_load(stream)
 
-    print(dane['oprocentowanie'])
 
     k = 12
     p = Decimal(dane['p']/100.0)
@@ -70,20 +132,15 @@ if __name__== "__main__":
     N = len(dni)
 
     kr = Kredyt(K, N, p, dt.datetime.strptime(dane['start'], '%Y-%m-%d'))
+
     for dzien_splaty in dane['daty_splaty']:
         kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(dzien_splaty, '%Y-%m-%d'), Rodzaj.SPLATA, 0))
 
-    I = kr.rata()
+    if 'oprocentowanie' in dane:
+        for zmiana_opr in dane['oprocentowanie']:
+            kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(zmiana_opr['dzien'], '%Y-%m-%d'), Rodzaj.OPROCENTOWANIE, zmiana_opr['proc']))
 
-    dzien_o = kr.start
-    for zdarzenie in sorted(kr.zdarzenia):
-        dzien_k = zdarzenie.data
-        o_dni = (dzien_k - dzien_o).days
-        opr = Decimal((o_dni/365))*kr.p
-        odsetki = opr*kr.K
-        kr.K = kr.K - (I-odsetki)
-        dzien_o = dzien_k
+    kr.symuluj()
 
-    print('I : {}'.format(I.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
 
     print("kapital na koniec : {}".format(kr.K.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))

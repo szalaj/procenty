@@ -364,10 +364,3 @@ daty_splaty:
   - '2052-09-04'
   - '2052-10-04'
 
-oprocentowanie:
-  - dzien: '2023-12-14'
-    proc: 10
-  - dzien: '2026-09-13'
-    proc: 12
-  - dzien: '2030-02-22'
-    proc: 1
