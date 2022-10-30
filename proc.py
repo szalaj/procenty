@@ -34,16 +34,21 @@ class Kredyt:
         self.zdarzenia = []
     
         self.odsetki_naliczone = 0
+        self.I = 0
 
     def __repr__(self) -> str:
         return " K: {}\n N: {} \n p: {} \n start_dzien: {}".format(self.K, self.N, self.p, self.start)
 
-    def rata(self) -> Decimal:  
+    def oblicz_rate(self) -> Decimal:  
         k = 12
-        L = (self.K * self.p)
+
+        do_splaty = self.K + self.odsetki_naliczone
+
+        L = (do_splaty * self.p)
         M = k*(1-pow(k/(k+self.p),self.N) )
         I =L/M
         return I
+        
 
     def zmien_oprocentowanie(self, dzien_zmiany:dt.datetime, nowe_p:Decimal) -> Boolean:
 
@@ -56,34 +61,44 @@ class Kredyt:
 
         self.p = Decimal(nowe_p/100.0)
 
+        self.dzien_odsetki = dzien_zmiany
+
 
     def splata_raty(self, dzien_raty:dt.datetime) -> Boolean:
 
-        I = self.rata()
-            
+        
+
         o_dni = (dzien_raty - self.dzien_odsetki).days
 
         opr = Decimal((o_dni/365))*self.p
 
         self.odsetki_naliczone = self.odsetki_naliczone + opr*self.K
 
-        if self.odsetki_naliczone > I:
-            self.odsetki_naliczone - I
-        else:
+        print("dzien: {}, K:{}, odsetki: {}, rata: {}".format(dzien_raty, self.K, self.odsetki_naliczone, self.I))
 
-            self.K = self.K - (I-self.odsetki_naliczone)
-            self.odsetki_naliczone = 0
+        self.I = self.oblicz_rate()
+
+
+        if self.odsetki_naliczone > self.I:
+            self.I = self.odsetki_naliczone
+    
+        self.K = self.K - (self.I-self.odsetki_naliczone)
+        self.odsetki_naliczone = 0
 
         self.dzien_odsetki = dzien_raty
         self.N -= 1
 
     def symuluj(self):
 
-        for zdarzenie in sorted(kr.zdarzenia):
+        
+
+        for zdarzenie in sorted(self.zdarzenia):
             if zdarzenie.rodzaj == Rodzaj.OPROCENTOWANIE:
-                kr.zmien_oprocentowanie(zdarzenie.data, zdarzenie.wartosc)
+                self.zmien_oprocentowanie(zdarzenie.data, zdarzenie.wartosc)
             elif zdarzenie.rodzaj == Rodzaj.SPLATA:
-                kr.splata_raty(zdarzenie.data)
+                self.splata_raty(zdarzenie.data)
+
+            
             
         
 
@@ -121,13 +136,11 @@ if __name__== "__main__":
     for dzien_splaty in dane['daty_splaty']:
         kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(dzien_splaty, '%Y-%m-%d'), Rodzaj.SPLATA, 0))
 
-    for zmiana_opr in dane['oprocentowanie']:
-        kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(zmiana_opr['dzien'], '%Y-%m-%d'), Rodzaj.OPROCENTOWANIE, zmiana_opr['proc']))
+    if 'oprocentowanie' in dane:
+        for zmiana_opr in dane['oprocentowanie']:
+            kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(zmiana_opr['dzien'], '%Y-%m-%d'), Rodzaj.OPROCENTOWANIE, zmiana_opr['proc']))
 
     kr.symuluj()
 
-
-
-    #print('I : {}'.format(I.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
 
     print("kapital na koniec : {}".format(kr.K.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
