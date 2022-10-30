@@ -374,6 +374,6 @@ oprocentowanie:
 
 nadplaty:
   - dzien: '2023-11-03'
-    kwota: 1000
+    kwota: 20000
   - dzien: '2025-07-01'
-    kwota: 97000
+    kwota: 20000
