@@ -1,3 +1,4 @@
+from this import d
 from xmlrpc.client import Boolean
 import yaml
 import sys
@@ -63,6 +64,19 @@ class Kredyt:
 
         self.dzien_odsetki = dzien_zmiany
 
+    def zrob_nadplate(self, dzien_nadplaty:dt.datetime, kwota:Decimal) -> Boolean:
+
+        o_dni = (dzien_nadplaty - self.dzien_odsetki).days
+
+        opr = Decimal((o_dni/365))*self.p
+
+        self.odsetki_naliczone = self.odsetki_naliczone +  opr*self.K
+
+        self.K = self.K - kwota
+
+        self.dzien_odsetki = dzien_nadplaty
+
+
 
     def splata_raty(self, dzien_raty:dt.datetime) -> Boolean:
 
@@ -74,13 +88,15 @@ class Kredyt:
 
         self.odsetki_naliczone = self.odsetki_naliczone + opr*self.K
 
-        print("dzien: {}, K:{}, odsetki: {}, rata: {}".format(dzien_raty, self.K, self.odsetki_naliczone, self.I))
+       
 
         self.I = self.oblicz_rate()
 
 
         if self.odsetki_naliczone > self.I:
             self.I = self.odsetki_naliczone
+
+        print("dzien: {}, K:{}, odsetki: {}, rata: {}".format(dzien_raty, self.K, self.odsetki_naliczone, self.I))
     
         self.K = self.K - (self.I-self.odsetki_naliczone)
         self.odsetki_naliczone = 0
@@ -97,6 +113,8 @@ class Kredyt:
                 self.zmien_oprocentowanie(zdarzenie.data, zdarzenie.wartosc)
             elif zdarzenie.rodzaj == Rodzaj.SPLATA:
                 self.splata_raty(zdarzenie.data)
+            elif zdarzenie.rodzaj == Rodzaj.NADPLATA:
+                self.zrob_nadplate(zdarzenie.data, zdarzenie.wartosc)
 
             
             
@@ -139,6 +157,11 @@ if __name__== "__main__":
     if 'oprocentowanie' in dane:
         for zmiana_opr in dane['oprocentowanie']:
             kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(zmiana_opr['dzien'], '%Y-%m-%d'), Rodzaj.OPROCENTOWANIE, zmiana_opr['proc']))
+
+    if 'nadplaty' in dane:
+        for nadplata in dane['nadplaty']:
+            kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(nadplata['dzien'], '%Y-%m-%d'), Rodzaj.NADPLATA, nadplata['kwota']))
+
 
     kr.symuluj()
 
