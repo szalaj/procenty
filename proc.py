@@ -1,3 +1,4 @@
+from xmlrpc.client import Boolean
 import yaml
 import sys
 import getopt
@@ -24,12 +25,15 @@ class Zdarzenie:
 
 class Kredyt:
     def __init__(self,K:Decimal, N:int, p:Decimal, start:dt.datetime):
+
         self.K = K
         self.N = N
         self.p = p
         self.start = start
+        self.dzien_odsetki = start
         self.zdarzenia = []
-        print(type(K))
+    
+        self.odsetki_naliczone = 0
 
     def __repr__(self) -> str:
         return " K: {}\n N: {} \n p: {} \n start_dzien: {}".format(self.K, self.N, self.p, self.start)
@@ -40,6 +44,23 @@ class Kredyt:
         M = k*(1-pow(k/(k+self.p),self.N) )
         I =L/M
         return I
+
+    def splata_raty(self, dzien_raty:dt.datetime) -> Boolean:
+
+        I = kr.rata()
+            
+        o_dni = (dzien_raty - self.dzien_odsetki).days
+
+        opr = Decimal((o_dni/365))*self.p
+
+        odsetki = self.odsetki_naliczone +  opr*self.K
+
+        self.K = self.K - (I-odsetki)
+        self.dzien_odsetki = dzien_raty
+
+        self.N -= 1
+
+
 
 
 if __name__== "__main__":
@@ -70,20 +91,24 @@ if __name__== "__main__":
     N = len(dni)
 
     kr = Kredyt(K, N, p, dt.datetime.strptime(dane['start'], '%Y-%m-%d'))
+
     for dzien_splaty in dane['daty_splaty']:
         kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(dzien_splaty, '%Y-%m-%d'), Rodzaj.SPLATA, 0))
 
-    I = kr.rata()
+    for zmiana_opr in dane['oprocentowanie']:
+        kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(zmiana_opr['dzien'], '%Y-%m-%d'), Rodzaj.OPROCENTOWANIE, zmiana_opr['proc']))
+
+    
 
     dzien_o = kr.start
     for zdarzenie in sorted(kr.zdarzenia):
-        dzien_k = zdarzenie.data
-        o_dni = (dzien_k - dzien_o).days
-        opr = Decimal((o_dni/365))*kr.p
-        odsetki = opr*kr.K
-        kr.K = kr.K - (I-odsetki)
-        dzien_o = dzien_k
 
-    print('I : {}'.format(I.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
+        if zdarzenie.rodzaj == Rodzaj.OPROCENTOWANIE:
+            print(zdarzenie.rodzaj)
+        elif zdarzenie.rodzaj == Rodzaj.SPLATA:
+            kr.splata_raty(zdarzenie.data)
+            
+
+    #print('I : {}'.format(I.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
 
     print("kapital na koniec : {}".format(kr.K.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
