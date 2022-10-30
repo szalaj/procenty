@@ -45,20 +45,47 @@ class Kredyt:
         I =L/M
         return I
 
+    def zmien_oprocentowanie(self, dzien_zmiany:dt.datetime, nowe_p:Decimal) -> Boolean:
+
+        # nalicz odsetki do dnia zmiany raty
+        o_dni = (dzien_zmiany - self.dzien_odsetki).days
+
+        opr = Decimal((o_dni/365))*self.p
+
+        self.odsetki_naliczone = self.odsetki_naliczone +  opr*self.K
+
+        self.p = Decimal(nowe_p/100.0)
+
+
     def splata_raty(self, dzien_raty:dt.datetime) -> Boolean:
 
-        I = kr.rata()
+        I = self.rata()
             
         o_dni = (dzien_raty - self.dzien_odsetki).days
 
         opr = Decimal((o_dni/365))*self.p
 
-        odsetki = self.odsetki_naliczone +  opr*self.K
+        self.odsetki_naliczone = self.odsetki_naliczone + opr*self.K
 
-        self.K = self.K - (I-odsetki)
+        if self.odsetki_naliczone > I:
+            self.odsetki_naliczone - I
+        else:
+
+            self.K = self.K - (I-self.odsetki_naliczone)
+            self.odsetki_naliczone = 0
+
         self.dzien_odsetki = dzien_raty
-
         self.N -= 1
+
+    def symuluj(self):
+
+        for zdarzenie in sorted(kr.zdarzenia):
+            if zdarzenie.rodzaj == Rodzaj.OPROCENTOWANIE:
+                kr.zmien_oprocentowanie(zdarzenie.data, zdarzenie.wartosc)
+            elif zdarzenie.rodzaj == Rodzaj.SPLATA:
+                kr.splata_raty(zdarzenie.data)
+            
+        
 
 
 
@@ -82,7 +109,6 @@ if __name__== "__main__":
     stream = open("./models/{}.yml".format(plik_model), 'r')
     dane = yaml.safe_load(stream)
 
-    print(dane['oprocentowanie'])
 
     k = 12
     p = Decimal(dane['p']/100.0)
@@ -98,16 +124,9 @@ if __name__== "__main__":
     for zmiana_opr in dane['oprocentowanie']:
         kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(zmiana_opr['dzien'], '%Y-%m-%d'), Rodzaj.OPROCENTOWANIE, zmiana_opr['proc']))
 
-    
+    kr.symuluj()
 
-    dzien_o = kr.start
-    for zdarzenie in sorted(kr.zdarzenia):
 
-        if zdarzenie.rodzaj == Rodzaj.OPROCENTOWANIE:
-            print(zdarzenie.rodzaj)
-        elif zdarzenie.rodzaj == Rodzaj.SPLATA:
-            kr.splata_raty(zdarzenie.data)
-            
 
     #print('I : {}'.format(I.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
 
