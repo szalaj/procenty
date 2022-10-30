@@ -371,3 +371,9 @@ oprocentowanie:
     proc: 12
   - dzien: '2030-02-22'
     proc: 1
+
+nadplaty:
+  - dzien: '2023-11-03'
+    kwota: 1000
+  - dzien: '2025-07-01'
+    kwota: 97000
