@@ -1,12 +1,6 @@
 # procenty
 
-- obliczanie raty równej i malejącej kredytu hipotecznego
-
-# założenia
-
-Kwota udzielona K w czasie Ts.
-Spłata w N ratach miesięcznych.
-Oprocentowanie zmienne.
+obliczenia kredytu z ratą malejącą przy zmiennym oprocentowaniu i nadpłatach.
 
 Dodatkowo
  - realna wartosc nieruchomości w czasie
