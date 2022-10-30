@@ -9,8 +9,6 @@ from enum import auto, Enum
 import decimal
 from decimal import Decimal
 
-
-
 class Rodzaj(Enum):
     SPLATA = auto()
     OPROCENTOWANIE = auto()
@@ -38,7 +36,16 @@ class Kredyt:
         self.I = 0
 
     def __repr__(self) -> str:
-        return " K: {}\n N: {} \n p: {} \n start_dzien: {}".format(self.K, self.N, self.p, self.start)
+        return "kredyt : {}".format(self.K)
+
+    def wyswietl(self, dzien_raty):
+
+        grosze =  decimal.Decimal('.01')
+
+        return "dzien: {}, K: {} zł, odsetki: {} zł, rata: {} zł".format(dzien_raty, 
+                                                              self.K.quantize(grosze),  
+                                                              self.odsetki_naliczone.quantize(grosze), 
+                                                              self.I.quantize(grosze))
 
     def oblicz_rate(self) -> Decimal:  
         k = 12
@@ -96,7 +103,7 @@ class Kredyt:
         if self.odsetki_naliczone > self.I:
             self.I = self.odsetki_naliczone
 
-        print("dzien: {}, K:{}, odsetki: {}, rata: {}".format(dzien_raty, self.K, self.odsetki_naliczone, self.I))
+        print(self.wyswietl(dzien_raty))
     
         self.K = self.K - (self.I-self.odsetki_naliczone)
         self.odsetki_naliczone = 0
