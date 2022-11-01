@@ -8,6 +8,9 @@ from dataclasses import dataclass
 from enum import auto, Enum
 import decimal
 from decimal import Decimal
+import logging
+
+logging.basicConfig(filename='loginfo.log', encoding='utf-8', level=logging.DEBUG)
 
 class Rodzaj(Enum):
     SPLATA = auto()
@@ -125,17 +128,14 @@ class Kredyt:
 
             
             
-        
-
-
-
 
 if __name__== "__main__":
+
+    logging.info("{} start aplikacji".format(dt.datetime.now()))
 
     try:
 
         opts, arg = getopt.getopt(sys.argv[1:], 'm:',  ["model="])
-        
         
         for opt, arg in opts:
             if opt in ("-m", "--model"):
@@ -174,3 +174,5 @@ if __name__== "__main__":
 
 
     print("kapital na koniec : {}".format(kr.K.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
+
+    logging.info("{} koniec aplikacji".format(dt.datetime.now()))
