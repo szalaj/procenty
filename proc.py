@@ -1,16 +1,15 @@
-from this import d
 from xmlrpc.client import Boolean
 import yaml
 import sys
+import logging
 import getopt
 import datetime as dt
 from dataclasses import dataclass
 from enum import auto, Enum
 import decimal
 from decimal import Decimal
-import logging
 
-logging.basicConfig(filename='loginfo.log', encoding='utf-8', level=logging.DEBUG)
+
 
 class Rodzaj(Enum):
     SPLATA = auto()
@@ -38,6 +37,8 @@ class Kredyt:
         self.odsetki_naliczone = 0
         self.I = 0
 
+        self.wynik = []
+
     def __repr__(self) -> str:
         return "kredyt : {}".format(self.K)
 
@@ -49,6 +50,26 @@ class Kredyt:
                                                               self.K.quantize(grosze),  
                                                               self.odsetki_naliczone.quantize(grosze), 
                                                               self.I.quantize(grosze))
+
+    def zapisz_stan(self, dzien_raty):
+
+        grosze =  decimal.Decimal('.01')
+
+        data = {
+            'dzien': str(dzien_raty),
+            'K': str(self.K.quantize(grosze)),  
+            'odsetki': str(self.odsetki_naliczone.quantize(grosze)), 
+            'rata':str(self.I.quantize(grosze))
+        }
+
+        self.wynik.append(data)
+
+        
+
+        
+        return 1
+
+            
 
     def oblicz_rate(self) -> Decimal:  
         k = 12
@@ -90,21 +111,19 @@ class Kredyt:
 
     def splata_raty(self, dzien_raty:dt.datetime) -> Boolean:
 
-        
-
         o_dni = (dzien_raty - self.dzien_odsetki).days
 
         opr = Decimal((o_dni/365))*self.p
 
         self.odsetki_naliczone = self.odsetki_naliczone + opr*self.K
 
-       
-
         self.I = self.oblicz_rate()
 
 
         if self.odsetki_naliczone > self.I:
             self.I = self.odsetki_naliczone
+
+        self.zapisz_stan(dzien_raty)
 
         print(self.wyswietl(dzien_raty))
     
@@ -116,8 +135,6 @@ class Kredyt:
 
     def symuluj(self):
 
-        
-
         for zdarzenie in sorted(self.zdarzenia):
             if zdarzenie.rodzaj == Rodzaj.OPROCENTOWANIE:
                 self.zmien_oprocentowanie(zdarzenie.data, zdarzenie.wartosc)
@@ -126,10 +143,18 @@ class Kredyt:
             elif zdarzenie.rodzaj == Rodzaj.NADPLATA:
                 self.zrob_nadplate(zdarzenie.data, zdarzenie.wartosc)
 
+    def zapisz_do_pliku(self, nazwa_pliku):
+
+        zapis = {"raty": self.wynik, "kapital_na_koniec": str(self.K.quantize(decimal.Decimal('0.01')))}
+
+        yaml.dump(zapis, open(nazwa_pliku, 'w'), default_flow_style=False)
+
             
             
 
 if __name__== "__main__":
+
+    logging.basicConfig(filename='loginfo.log', encoding='utf-8', level=logging.DEBUG)
 
     logging.info("{} start aplikacji".format(dt.datetime.now()))
 
@@ -140,8 +165,7 @@ if __name__== "__main__":
         for opt, arg in opts:
             if opt in ("-m", "--model"):
                 plik_model = str(arg)
-        
-             
+                
     except getopt.error as err:
         # output error, and return with an error code
         print (str(err))
@@ -174,5 +198,7 @@ if __name__== "__main__":
 
 
     print("kapital na koniec : {}".format(kr.K.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
+
+    kr.zapisz_do_pliku('wynik_mod2.yml')
 
     logging.info("{} koniec aplikacji".format(dt.datetime.now()))
