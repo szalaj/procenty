@@ -1,18 +1,15 @@
 from xmlrpc.client import Boolean
 import yaml
 import sys
+import logging
 import getopt
 import datetime as dt
 from dataclasses import dataclass
 from enum import auto, Enum
 import decimal
 from decimal import Decimal
-import logging
 
 
-
-
-logging.basicConfig(filename='loginfo.log', encoding='utf-8', level=logging.DEBUG)
 
 class Rodzaj(Enum):
     SPLATA = auto()
