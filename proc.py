@@ -9,6 +9,9 @@ import decimal
 from decimal import Decimal
 import logging
 
+
+
+
 logging.basicConfig(filename='loginfo.log', encoding='utf-8', level=logging.DEBUG)
 
 class Rodzaj(Enum):
