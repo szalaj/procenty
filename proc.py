@@ -1,4 +1,3 @@
-from xmlrpc.client import Boolean
 import yaml
 import sys
 import logging
@@ -8,8 +7,6 @@ from dataclasses import dataclass
 from enum import auto, Enum
 import decimal
 from decimal import Decimal
-
-
 
 class Rodzaj(Enum):
     SPLATA = auto()
@@ -56,7 +53,7 @@ class Kredyt:
         grosze =  decimal.Decimal('.01')
 
         data = {
-            'dzien': str(dzien_raty),
+            'dzien': str(dzien_raty.strftime('%Y-%m-%d')),
             'K': str(self.K.quantize(grosze)),  
             'odsetki': str(self.odsetki_naliczone.quantize(grosze)), 
             'rata':str(self.I.quantize(grosze))
@@ -74,7 +71,9 @@ class Kredyt:
     def oblicz_rate(self) -> Decimal:  
         k = 12
 
-        do_splaty = self.K + self.odsetki_naliczone
+        #do_splaty = self.K + self.odsetki_naliczone
+
+        do_splaty = self.K
 
         L = (do_splaty * self.p)
         M = k*(1-pow(k/(k+self.p),self.N) )
@@ -82,7 +81,7 @@ class Kredyt:
         return I
         
 
-    def zmien_oprocentowanie(self, dzien_zmiany:dt.datetime, nowe_p:Decimal) -> Boolean:
+    def zmien_oprocentowanie(self, dzien_zmiany:dt.datetime, nowe_p:Decimal):
 
         # nalicz odsetki do dnia zmiany raty
         o_dni = (dzien_zmiany - self.dzien_odsetki).days
@@ -95,7 +94,7 @@ class Kredyt:
 
         self.dzien_odsetki = dzien_zmiany
 
-    def zrob_nadplate(self, dzien_nadplaty:dt.datetime, kwota:Decimal) -> Boolean:
+    def zrob_nadplate(self, dzien_nadplaty:dt.datetime, kwota:Decimal):
 
         o_dni = (dzien_nadplaty - self.dzien_odsetki).days
 
@@ -109,18 +108,32 @@ class Kredyt:
 
 
 
-    def splata_raty(self, dzien_raty:dt.datetime) -> Boolean:
+    def splata_raty(self, dzien_raty:dt.datetime):
+
+        #2021-12-18		SPŁATA KREDYTU	-2 261,13 PLN	
+        #2022-01-18		SPŁATA KREDYTU	-2 261,13 PLN	
+	    #2022-02-18		SPŁATA KREDYTU	-2 261,13 PLN	
+        #2022-03-18		SPŁATA KREDYTU	-3 078,38 PLN	
+        #2022-04-19		SPŁATA KREDYTU	-3 078,38 PLN	
+        #2022-05-04		SPŁATA KREDYTU	-3 048,85 PLN
+        #2022-06-04		SPŁATA KREDYTU	-4 000,55 PLN
+        #2022-07-04		SPŁATA KREDYTU	-4 000,55 PLN
 
         o_dni = (dzien_raty - self.dzien_odsetki).days
 
         opr = Decimal((o_dni/365))*self.p
 
+        self.I = self.oblicz_rate()
+
         self.odsetki_naliczone = self.odsetki_naliczone + opr*self.K
 
-        self.I = self.oblicz_rate()
+        
 
 
         if self.odsetki_naliczone > self.I:
+            
+            raise Exception('odsetki większe niż rata')
+            
             self.I = self.odsetki_naliczone
 
         self.zapisz_stan(dzien_raty)
@@ -174,13 +187,13 @@ if __name__== "__main__":
     dane = yaml.safe_load(stream)
 
 
-    k = 12
     p = Decimal(dane['p']/100.0)
     K = Decimal(dane['K'])
     dni = dane['daty_splaty']
     N = len(dni)
+    start_kredytu = dt.datetime.strptime(dane['start'], '%Y-%m-%d')
 
-    kr = Kredyt(K, N, p, dt.datetime.strptime(dane['start'], '%Y-%m-%d'))
+    kr = Kredyt(K, N, p, start_kredytu)
 
     for dzien_splaty in dane['daty_splaty']:
         kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(dzien_splaty, '%Y-%m-%d'), Rodzaj.SPLATA, 0))
@@ -199,6 +212,9 @@ if __name__== "__main__":
 
     print("kapital na koniec : {}".format(kr.K.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
 
-    kr.zapisz_do_pliku('wynik_mod2.yml')
+    kr.zapisz_do_pliku('wynik_mod4.yml')
 
     logging.info("{} koniec aplikacji".format(dt.datetime.now()))
+
+
+    print("koniec")
