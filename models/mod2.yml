@@ -366,7 +366,7 @@ daty_splaty:
 
 oprocentowanie:
   - dzien: '2023-12-14'
-    proc: 10
+    proc: 10.46
   - dzien: '2026-09-13'
     proc: 12
   - dzien: '2030-02-22'

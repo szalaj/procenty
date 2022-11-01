@@ -364,3 +364,13 @@ daty_splaty:
   - '2052-09-04'
   - '2052-10-04'
 
+oprocentowanie:
+  - dzien: '2022-12-14'
+    proc: 11.46
+
+
+nadplaty:
+  - dzien: '2023-11-03'
+    kwota: 0
+  - dzien: '2025-07-01'
+    kwota: 0
