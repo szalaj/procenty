@@ -4,17 +4,22 @@ import getopt
 import argparse
 import datetime as dt
 from dateutil.relativedelta import relativedelta
+from collections import OrderedDict
 
 def generate(plik, okresy, start_date):
 
     print(start_date)
 
-    miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy)]
+    miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
 
-    data = miesiace
+    
+    data = {"K": 46000,
+            "p": 2.3,
+            "start": miesiace[0],
+            "daty_splaty": miesiace[1:]}
 
     with open(plik, 'w') as outfile:
-        yaml.dump(data, outfile, default_flow_style=False)
+        yaml.dump(data, outfile, default_flow_style=False, sort_keys=False)
 
 if __name__ == '__main__':
 
