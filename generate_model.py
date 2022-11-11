@@ -6,15 +6,15 @@ import datetime as dt
 from dateutil.relativedelta import relativedelta
 from collections import OrderedDict
 
-def generate(plik, okresy, start_date):
+def generate(plik, kapital, oprocentowanie, okresy, start_date):
 
     print(start_date)
 
     miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
 
     
-    data = {"K": 46000,
-            "p": 2.3,
+    data = {"K": kapital,
+            "p": oprocentowanie,
             "start": miesiace[0],
             "daty_splaty": miesiace[1:]}
 
@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     try:
 
-        opts, arg = getopt.getopt(sys.argv[1:], 'p:o:s:',  ["plik=", "okresy=", "startdate="])
+        opts, arg = getopt.getopt(sys.argv[1:], 'p:k:r:o:s:',  ["plik=", "kapital=", "oprocentowanie=", "okresy=", "startdate="])
         
        
         for opt, arg in opts:
@@ -36,8 +36,12 @@ if __name__ == '__main__':
                 start_date = dt.datetime.strptime(arg, '%Y-%m-%d')
             if opt in ("-p", "--plik"):
                 plik = str(arg)
+            if opt in ("-k", "--kapital"):
+                kapital = float(arg)
+            if opt in ("-r", "--oprocentowanie"):
+                oprocentowanie = float(arg)
             
-        generate(plik, okresy, start_date)
+        generate(plik, kapital, oprocentowanie, okresy, start_date)
         
              
     except getopt.error as err:
