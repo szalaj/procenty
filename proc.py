@@ -215,6 +215,3 @@ if __name__== "__main__":
     kr.zapisz_do_pliku('wynik_mod4.yml')
 
     logging.info("{} koniec aplikacji".format(dt.datetime.now()))
-
-
-    print("koniec")
