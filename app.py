@@ -169,10 +169,10 @@ def porownanie():
 
 
     return render_template('porownanie.html', results = res_kredyt1,
-                                               results2 = res_kredyt2,
-                                               wykres_stopy = wykres_stopy,
-                                               inflacja_dane = inflacja_wykres_dane,
-                                               portfele = portfele_dane)
+                                              results2 = res_kredyt2,
+                                              wykres_stopy = wykres_stopy,
+                                              inflacja_dane = inflacja_wykres_dane,
+                                              portfele = portfele_dane)
 
 @app.route("/portfel")
 def portfel():
