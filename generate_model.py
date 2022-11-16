@@ -33,26 +33,26 @@ class Oprocentowanie:
         delta_p1 = p1 - p0
 
         self.a1 = delta_p1/delta_d1
-        self.b1 = p0 - d0*self.a1
+        self.b1 = p0 - time.mktime(d0.timetuple())*self.a1
 
         delta_d2 =  time.mktime(d2.timetuple()) - time.mktime(d1b.timetuple())
         delta_p2 = p2 - p1
 
         self.a2 = delta_p2/delta_d2
-        self.b2 = p1 - d1b*self.a2
+        self.b2 = p1 - time.mktime(d1b.timetuple())*self.a2
 
-    def getOpr(self, dzien:dt.timestamp):
-
+    def getOpr(self, dzien:dt.datetime):
 
         if dzien >= self.d0 and dzien < self.d1a:
             dx = time.mktime(dzien.timetuple())
             return self.a1*dx + self.b1
         elif dzien >= self.d1a and dzien < self.d1b:
             return self.p1
-        elif dzien >= self.d1b < self.d2:
+        elif dzien >= self.d1b and dzien < self.d2:
             dx = time.mktime(dzien.timetuple())
             return self.a2*dx + self.b2
         elif dzien > self.d2:
+            print('wiecej')
             return self.p2
         else:
             raise Exception("dzien spoza przedzialu")
@@ -63,11 +63,25 @@ def generate(plik, kapital, oprocentowanie, okresy, start_date):
 
     miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
 
+    opr = Oprocentowanie(oprocentowanie, 4.0, 2.0, 
+                                start_date,
+                                dt.datetime.strptime('2023-04-02', '%Y-%m-%d'),
+                                dt.datetime.strptime('2024-11-09', '%Y-%m-%d'),
+                                dt.datetime.strptime('2026-04-02', '%Y-%m-%d') )
+
     
+    opr_arr = []
+    for i in range(0, int(okresy/3)+1):
+       wibor_day =  start_date + relativedelta(months=3*i)
+       wibor_value = opr.getOpr(wibor_day)
+
+       opr_arr.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": wibor_value})
+
     data = {"K": kapital,
             "p": oprocentowanie,
             "start": miesiace[0],
-            "daty_splaty": miesiace[1:]}
+            "daty_splaty": miesiace[1:],
+            "oprocentowanie": opr_arr}
 
     with open(plik, 'w') as outfile:
         yaml.dump(data, outfile, default_flow_style=False, sort_keys=False)
