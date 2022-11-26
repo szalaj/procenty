@@ -52,7 +52,7 @@ class Oprocentowanie:
             dx = time.mktime(dzien.timetuple())
             return self.a2*dx + self.b2
         elif dzien > self.d2:
-            print('wiecej')
+            #print('wiecej')
             return self.p2
         else:
             raise Exception("dzien spoza przedzialu")
