@@ -55,10 +55,116 @@
   <body>
     <div class="container">
 
+        <div id="chart" class="divelement">
+        </div>
+
       hello
       <script type="text/javascript">
 
         console.log({{dane | tojson|safe}})
+
+        var kredyt_dane = JSON.parse('{{dane | tojson|safe}}');
+
+        
+
+        var parseDate = d3.timeParse("%Y-%m-%d");
+        var parseDateInfl = d3.timeParse("%m/%Y");
+
+        kredyt_dane['raty'].forEach(function (d) {
+            d.dzien = parseDate(d.dzien)
+            d.K = parseFloat(d.K)
+
+        });
+
+        var margin = { top: 60, right: 50, bottom: 70, left: 100 },
+    width = 1300 - margin.left - margin.right,
+    height = 450 - margin.top - margin.bottom;
+
+
+  // append the svg object to the body of the page
+  var svg = d3.select("#chart")
+    .append("svg")
+    .attr("class", "svg-holder")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .attr("style", "border:1px solid black;")
+    .style('background', "white")
+    .append("g")
+    .attr("transform",
+      "translate(" + margin.left + "," + margin.top + ")");
+
+  var xscale = d3.scaleTime()
+    .domain(d3.extent(kredyt_dane['raty'], d => d.dzien))
+    .range([0, width]);
+
+
+
+
+  svg.append("g")
+    .attr("class", "xAxis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
+    .selectAll("text")
+    .attr("transform", "translate(-10,0)rotate(-45)")
+    .style("text-anchor", "end")
+    .style("font-size", "13px");
+
+
+  d3.selectAll("g.xAxis g.tick")
+    .append("line")
+    .attr("class", "gridline")
+    .attr("x1", 0)
+    .attr("y1", -height)
+    .attr("x2", 0)
+    .attr("y2", 0);
+
+
+
+  var maxYvalue = d3.max(kredyt_dane['raty'], function (d) { return d.K });
+  var minYvalue = d3.min(kredyt_dane['raty'], function (d) { return d.K });
+  // Add Y axis
+
+  var yscale = d3.scaleLinear()
+    .domain([0, maxYvalue])
+    .range([height, 0]);
+
+  formatPerc = function (d) { return d3.format(".2f")(d) + " zł"; }
+
+  svg.append("g")
+    .attr("class", "yAxis")
+    .call(d3.axisLeft(yscale).tickFormat(formatPerc))
+    .style("font-size", "13px");
+
+  d3.selectAll("g.yAxis g.tick")
+    .append("line")
+    .attr("class", "gridline")
+    .attr("x1", 0)
+    .attr("y1", 0)
+    .attr("x2", width)
+    .attr("y2", 0);
+
+
+
+  var mybars = svg.selectAll(".mybar").data(kredyt_dane['raty'])
+
+  mybars
+    .enter()
+    .append("rect")
+    .attr("x", function (d) { return xscale(d.dzien); })
+    .attr("y", function (d) { return yscale(d.K); })
+    .attr("width", 1)
+    .attr("height", function (d) { return height - yscale(d.K); })
+    .attr("class", "mybar");
+
+
+
+
+  svg.append("text")
+    .attr("class", "text-tytul")
+    .attr("x", -50)
+    .attr("y", -20)
+    .text("kapitał do spłaty")
+
 
       </script>
 
