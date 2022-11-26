@@ -163,12 +163,12 @@ class Kredyt:
         yaml.dump(zapis, open(nazwa_pliku, 'w'), default_flow_style=False)
 
             
-            
+
+
 
 if __name__== "__main__":
 
     logging.basicConfig(filename='loginfo.log', encoding='utf-8', level=logging.DEBUG)
-
     logging.info("{} start aplikacji".format(dt.datetime.now()))
 
     try:
