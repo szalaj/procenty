@@ -83,7 +83,7 @@ def generate(plik, kapital, oprocentowanie, okresy, start_date):
             "daty_splaty": miesiace[1:],
             "oprocentowanie": opr_arr}
 
-    with open(plik, 'w') as outfile:
+    with open('./models/{}'.format(plik), 'w') as outfile:
         yaml.dump(data, outfile, default_flow_style=False, sort_keys=False)
 
 if __name__ == '__main__':

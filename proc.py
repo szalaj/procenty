@@ -212,6 +212,6 @@ if __name__== "__main__":
 
     print("kapital na koniec : {}".format(kr.K.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
 
-    kr.zapisz_do_pliku('wynik_mod4.yml')
+    kr.zapisz_do_pliku('./results/last_result.yml')
 
     logging.info("{} koniec aplikacji".format(dt.datetime.now()))

@@ -34,21 +34,48 @@ W czasie $t_0$ następuje wypłata kredytu, i zaczynają być naliczanie odsetki
 ## Uruchomienie modelu
 
 ```
-$ python proc.py
+$ python proc.py -m nazwa_modelu
 ```
-# Konto bieżące
 
-# Nadpłaty
+`nazwa_modelu` to plik `.yaml` znajdujący się w katalogu `./models`.
+ 
+ składa się z następujących części:
 
-# Lokaty
+ 1. `K` - kapitał kredytu
+ 2. `start` - data uruchomienia kredytu (start naliczania odsetek)
+ 3. `p` - początkowa stopa procentowa kredytu
+ 4. lista `daty_splaty` - dni w których następuję płatność raty. Ich suma tworzy `N` - liczbę rat.
+ 5. opcjanalna lista zmian oprocentowania `oprocentowanie`. Każdy element listy zawiera dwie pozycje:
+  - `dzien` zmiany oprocenotowania
+  - `proc` nowa stopa procentowa
+ 6. opcjonalna lista nadpłat `nadplaty`. Każdy element listy zawiera dwie pozycje:
+  - `dzien` nadpłaty
+  - `kwota` nadpłaty
 
-    3. Opcjonalnie : Obliczenie Lokat (ModelLokata)
-    4. Opcjonalnie, bbliczenia danych rzeczywistych
+Przykład:
+```
+---
+K: 460000
+start: '2022-11-04'
+p: 4.9
 
-# Nieruchomość
+daty_splaty:
+  - '2022-12-04'
+  - '2023-01-04'
+  - '2023-02-04'
+  - '2023-03-04'
+  - '2023-04-04'
+...
 
-    Jak zmienia się wartość nieruchomości w czasie
+oprocentowanie:
+  - dzien: '2023-12-14'
+    proc: 10.46
+  - dzien: '2026-09-13'
+    proc: 12
 
-# Portfel
-
-Podsumowanie powyższych. Na tej podstawie można wybrać najlepszy sposób postępowania dla kredytobiorcy.
+nadplaty:
+  - dzien: '2023-11-03'
+    kwota: 20000
+  - dzien: '2025-07-01'
+    kwota: 20000
+    ```
