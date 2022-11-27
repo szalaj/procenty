@@ -53,12 +53,17 @@
     </style>
   </head>
   <body>
-    <div class="container">
+
 
         <div id="chart" class="divelement">
         </div>
 
-      hello
+
+        
+        <div id="chart2" class="divelement">
+        </div>
+
+      
       <script type="text/javascript">
 
        
@@ -168,8 +173,25 @@
 
       </script>
 
+    <script type="text/javascript">
+
+
+
+        var svg = d3.select("#chart2")
+        .append("svg")
+        .attr("class", "svg-holder")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("style", "border:1px solid black;")
+        .style('background', "white")
+        .append("g")
+        .attr("transform",
+        "translate(" + margin.left + "," + margin.top + ")");
+        
+    </script>
+
       
-    </div>
+    
 
   </body>
 </html>
