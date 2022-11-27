@@ -168,7 +168,7 @@ class Kredyt:
 
 if __name__== "__main__":
 
-    logging.basicConfig(filename='loginfo.log', encoding='utf-8', level=logging.DEBUG)
+    logging.basicConfig(filename='.logs/loginfo.log', encoding='utf-8', level=logging.DEBUG)
     logging.info("{} start aplikacji".format(dt.datetime.now()))
 
     try:
