@@ -12,10 +12,8 @@ app = Flask(__name__)
 @app.route("/", methods=['GET'])
 def main():
 
-    with open("wynik_mod4.yml", 'r') as yaml_in:
+    with open("./results/last_result.yml", 'r') as yaml_in:
         yaml_object = yaml.safe_load(yaml_in)
-
-
 
     return render_template('wykres.html', dane=yaml_object)
 
