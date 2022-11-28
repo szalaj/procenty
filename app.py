@@ -9,8 +9,15 @@ import yaml
 app = Flask(__name__)
 
 
-@app.route("/", methods=['GET'])
+@app.route("/", methods=['GET', 'POST'])
 def main():
+
+    if request.method == 'POST':
+
+        print(request.form)
+
+    else:
+        pass
 
     with open("./results/last_result.yml", 'r') as yaml_in:
         yaml_object = yaml.safe_load(yaml_in)
