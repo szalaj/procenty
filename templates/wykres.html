@@ -35,6 +35,12 @@
         stroke: black;
       }
 
+      path.kret {
+        fill: none;
+        stroke-width: 4px;
+        stroke: rgb(181, 32, 32);
+      }
+
       body {
          background-color: lightblue;
       }          
@@ -78,6 +84,7 @@
         kredyt_dane['raty'].forEach(function (d) {
             d.dzien = parseDate(d.dzien)
             d.K = parseFloat(d.K)
+            d.rata = parseFloat(d.rata)
 
         });
 
@@ -150,19 +157,19 @@
 
 
 
-  var mybars = svg.selectAll(".mybar").data(kredyt_dane['raty'])
-
-  mybars
-    .enter()
-    .append("rect")
-    .attr("x", function (d) { return xscale(d.dzien); })
-    .attr("y", function (d) { return yscale(d.K); })
-    .attr("width", 1)
-    .attr("height", function (d) { return height - yscale(d.K); })
-    .attr("class", "mybar");
 
 
 
+// Add the line
+svg.append("path")
+      .datum(kredyt_dane['raty'])
+      .attr("fill", "none")
+      .attr("class", "kret")
+      .attr("stroke-width", 1.5)
+      .attr("d", d3.line()
+        .x(function(d) { return xscale(d.dzien) })
+        .y(function(d) { return yscale(d.K) })
+        )
 
   svg.append("text")
     .attr("class", "text-tytul")
@@ -187,6 +194,72 @@
         .append("g")
         .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
+
+        svg.append("g")
+    .attr("class", "xAxis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
+    .selectAll("text")
+    .attr("transform", "translate(-10,0)rotate(-45)")
+    .style("text-anchor", "end")
+    .style("font-size", "13px");
+
+
+  d3.selectAll("g.xAxis g.tick")
+    .append("line")
+    .attr("class", "gridline")
+    .attr("x1", 0)
+    .attr("y1", -height)
+    .attr("x2", 0)
+    .attr("y2", 0);
+
+
+
+    var maxYvalue = d3.max(kredyt_dane['raty'], function (d) { return d.rata });
+  var minYvalue = d3.min(kredyt_dane['raty'], function (d) { return d.rata });
+  // Add Y axis
+
+  var yscale = d3.scaleLinear()
+    .domain([0, maxYvalue])
+    .range([height, 0]);
+
+  formatPerc = function (d) { return d3.format(".2f")(d) + " zł"; }
+
+  svg.append("g")
+    .attr("class", "yAxis")
+    .call(d3.axisLeft(yscale).tickFormat(formatPerc))
+    .style("font-size", "13px");
+
+  d3.selectAll("g.yAxis g.tick")
+    .append("line")
+    .attr("class", "gridline")
+    .attr("x1", 0)
+    .attr("y1", 0)
+    .attr("x2", width)
+    .attr("y2", 0);
+
+
+
+    var mybars = svg.selectAll(".mybar").data(kredyt_dane['raty'])
+
+mybars
+  .enter()
+  .append("circle")
+  .attr("cx", function (d) { return xscale(d.dzien); })
+  .attr("cy", function (d) { return yscale(d.rata); })
+  .attr("r", 3)
+  .attr("class", "mycircle");
+
+
+  mybars.enter().append("line").attr()
+
+
+svg.append("text")
+  .attr("class", "text-tytul")
+  .attr("x", -50)
+  .attr("y", -20)
+  .text("raty")
+
         
     </script>
 
