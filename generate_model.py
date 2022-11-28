@@ -63,11 +63,11 @@ def generate(plik, kapital, oprocentowanie, okresy, start_date):
 
     miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
 
-    opr = Oprocentowanie(oprocentowanie, 4.0, 2.0, 
+    opr = Oprocentowanie(oprocentowanie, 14.0, 0.1, 
                                 start_date,
-                                dt.datetime.strptime('2023-04-02', '%Y-%m-%d'),
-                                dt.datetime.strptime('2024-11-09', '%Y-%m-%d'),
-                                dt.datetime.strptime('2026-04-02', '%Y-%m-%d') )
+                                dt.datetime.strptime('2025-04-02', '%Y-%m-%d'),
+                                dt.datetime.strptime('2032-11-09', '%Y-%m-%d'),
+                                dt.datetime.strptime('2038-04-02', '%Y-%m-%d') )
 
     
     opr_arr = []
