@@ -6,6 +6,8 @@ from dateutil.relativedelta import relativedelta
 import json
 import yaml
 
+import generate_model
+
 app = Flask(__name__)
 
 
@@ -14,7 +16,10 @@ def main():
 
     if request.method == 'POST':
 
-        print(request.form)
+        opr = float(request.form['opr_max'])
+
+        generate_model.generate('nowy_model2.yml', 8888, 2, 120, '2022-10-09', opr)
+        
 
     else:
         pass

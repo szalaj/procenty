@@ -79,3 +79,10 @@ nadplaty:
   - dzien: '2025-07-01'
     kwota: 20000
     ```
+## generacja modelu
+
+p:k:r:o:s:',  ["plik=", "kapital=", "oprocentowanie=", "okresy=", "startdate="])
+
+python generate_model.py -p nowy_model.yml -k 450000 -r 10 -o 352 -s 2022-12-28
+
+python proc.py -m nowy_model

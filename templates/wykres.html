@@ -77,45 +77,22 @@
 
         <!-- Fire and Rescue Slider -->     
             <div class="col-md-4">
-                <h4>Fire and Rescue Services</h4>
+                <h4>Oprocentowanie maksymalne</h4>
             </div>  
             <div class="col-md-8">
                 <div class="""slidecontainer">
-                          <input type="range" min="0" max="100" value="50" class="slider" id="sliderFire" name="slider3">
-                          <br>
+                          <input type="range" min="0" max="20" value="4" class="slider" id="sliderFire" name="opr_max" oninput="this.nextElementSibling.value = this.value">
+                          <output>4</output>
                 </div>
             </div>  
 
-            <!-- Markets Slider -->     
-            <div class="col-md-4">
-                <h4>Markets and Shopping malls</h4>
-            </div>  
-            <div class="col-md-8">
-                <div class="""slidecontainer">
-                          <input type="range" min="0" max="100" value="50" class="slider" id="sliderMarket" name="slider2">
-                          <br>
-                </div>
-            </div>
-
-            <!-- Green spaces -->   
-            <div class="col-md-4">
-                <h4>Green spaces</h4>
-            </div>  
-            <div class="col-md-8">
-                <div class="""slidecontainer">
-                          <input type="range" min="0" max="100" value="50" class="slider" id="sliderparks" name="slider1">
-                          <p>Value: <span id="demo"></span></p><br>
-                </div>
-            </div>
+           
 
 
                 <div class="col-md-6 col-lg-offset-2">
                     <button type="reset" class="btn btn-default" onclick="myFunction()">Cancel</button>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
-                <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                              </div>
             </fieldset>
              </form> 
 
