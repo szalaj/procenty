@@ -74,10 +74,13 @@ class Kredyt:
         #do_splaty = self.K + self.odsetki_naliczone
 
         do_splaty = self.K
-
-        L = (do_splaty * self.p)
-        M = k*(1-pow(k/(k+self.p),self.N) )
-        I =L/M
+        if self.p>0:
+            L = (do_splaty * self.p)
+            M = k*(1-pow(k/(k+self.p),self.N) )
+            I =L/M
+        else: 
+            I = do_splaty/self.N
+            
         return I
         
 
