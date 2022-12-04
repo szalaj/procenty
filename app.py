@@ -7,6 +7,7 @@ import json
 import yaml
 
 import generate_model
+import proc
 
 app = Flask(__name__)
 
@@ -19,7 +20,9 @@ def main():
         opr = float(request.form['opr_max'])
 
         generate_model.generate('nowy_model2.yml', 8888, 2, 120, '2022-10-09', opr)
-        
+        kr = proc.create_kredyt('nowy_model2')
+        kr.symuluj()
+        kr.zapisz_do_pliku('./results/last_result.yml')
 
     else:
         pass
