@@ -80,7 +80,7 @@ class Kredyt:
             I =L/M
         else: 
             I = do_splaty/self.N
-            
+
         return I
         
 
@@ -135,7 +135,7 @@ class Kredyt:
 
         if self.odsetki_naliczone > self.I:
             
-            raise Exception('odsetki większe niż rata')
+            #raise Exception('odsetki większe niż rata')
             
             self.I = self.odsetki_naliczone
 
