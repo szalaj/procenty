@@ -74,10 +74,13 @@ class Kredyt:
         #do_splaty = self.K + self.odsetki_naliczone
 
         do_splaty = self.K
+        if self.p>0:
+            L = (do_splaty * self.p)
+            M = k*(1-pow(k/(k+self.p),self.N) )
+            I =L/M
+        else: 
+            I = do_splaty/self.N
 
-        L = (do_splaty * self.p)
-        M = k*(1-pow(k/(k+self.p),self.N) )
-        I =L/M
         return I
         
 
@@ -132,7 +135,7 @@ class Kredyt:
 
         if self.odsetki_naliczone > self.I:
             
-            raise Exception('odsetki większe niż rata')
+            #raise Exception('odsetki większe niż rata')
             
             self.I = self.odsetki_naliczone
 
@@ -164,24 +167,7 @@ class Kredyt:
 
             
 
-
-
-if __name__== "__main__":
-
-    logging.basicConfig(filename='logs/loginfo.log', encoding='utf-8', level=logging.DEBUG)
-    logging.info("{} start aplikacji".format(dt.datetime.now()))
-
-    try:
-
-        opts, arg = getopt.getopt(sys.argv[1:], 'm:',  ["model="])
-        
-        for opt, arg in opts:
-            if opt in ("-m", "--model"):
-                plik_model = str(arg)
-                
-    except getopt.error as err:
-        # output error, and return with an error code
-        print (str(err))
+def create_kredyt(plik_model) -> Kredyt:
 
     stream = open("./models/{}.yml".format(plik_model), 'r')
     dane = yaml.safe_load(stream)
@@ -206,6 +192,29 @@ if __name__== "__main__":
         for nadplata in dane['nadplaty']:
             kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(nadplata['dzien'], '%Y-%m-%d'), Rodzaj.NADPLATA, nadplata['kwota']))
 
+    return kr
+
+
+
+
+if __name__== "__main__":
+
+    logging.basicConfig(filename='logs/loginfo.log', encoding='utf-8', level=logging.DEBUG)
+    logging.info("{} start aplikacji".format(dt.datetime.now()))
+
+    try:
+
+        opts, arg = getopt.getopt(sys.argv[1:], 'm:',  ["model="])
+        
+        for opt, arg in opts:
+            if opt in ("-m", "--model"):
+                plik_model = str(arg)
+                
+    except getopt.error as err:
+        # output error, and return with an error code
+        print (str(err))
+
+    kr = create_kredyt(plik_model)
 
     kr.symuluj()
 

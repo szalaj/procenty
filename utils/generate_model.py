@@ -57,13 +57,14 @@ class Oprocentowanie:
         else:
             raise Exception("dzien spoza przedzialu")
 
-def generate(plik, kapital, oprocentowanie, okresy, start_date):
+def generate(plik, kapital, oprocentowanie, okresy, start_date, r_max):
 
-    print(start_date)
+    if type(start_date) == str:
+        start_date = dt.datetime.strptime(start_date, '%Y-%m-%d')
 
     miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
 
-    opr = Oprocentowanie(oprocentowanie, 14.0, 0.1, 
+    opr = Oprocentowanie(oprocentowanie, r_max, 1, 
                                 start_date,
                                 dt.datetime.strptime('2025-04-02', '%Y-%m-%d'),
                                 dt.datetime.strptime('2032-11-09', '%Y-%m-%d'),
