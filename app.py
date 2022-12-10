@@ -34,5 +34,12 @@ def main():
     return render_template('wykres.html', dane=yaml_object)
 
 
+
+@app.route("/f", methods=['GET', 'POST'])
+def formularz():
+
+    return render_template('formularz.html')
+
+
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
