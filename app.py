@@ -18,7 +18,7 @@ def main():
 
     if request.method == 'POST':
 
-        opr = float(request.form['opr_max'])
+        opr = float(request.form['r_obnizki'])
         kapital = float(request.form['kapital'])
 
         utils.generate_model.generate('nowy_model2.yml', kapital, 2, 360, '2022-10-09', opr)
