@@ -6,6 +6,8 @@ from dateutil.relativedelta import relativedelta
 import json
 import yaml
 
+import datetime as dt
+
 import utils.generate_model
 
 import utils.proc
@@ -18,21 +20,30 @@ def main():
 
     if request.method == 'POST':
 
-        opr = float(request.form['opr_max'])
+        opr = float(request.form['r_obnizki'])
         kapital = float(request.form['kapital'])
+        datestart = str(request.form['datastart'])
 
-        utils.generate_model.generate('nowy_model2.yml', kapital, 2, 360, '2022-10-09', opr)
-        kr = utils.proc.create_kredyt('nowy_model2')
-        kr.symuluj()
-        kr.zapisz_do_pliku('./results/last_result.yml')
+        start_date = dt.datetime.strptime(datestart, '%d/%m/%Y')
+
+        dane_kredytu = utils.generate_model.generate(kapital, 2, 360, start_date, opr)
+        kr = utils.proc.create_kredyt(dane_kredytu)
+        wynik = kr.symuluj()
+
+
+        return render_template('wykres.html', dane=wynik)
 
 
 
-    with open("./results/last_result.yml", 'r') as yaml_in:
-        yaml_object = yaml.safe_load(yaml_in)
+    return render_template('wykres.html', dane={})
 
-    return render_template('wykres.html', dane=yaml_object)
+
+
+@app.route("/f", methods=['GET', 'POST'])
+def formularz():
+
+    return render_template('formularz.html')
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)

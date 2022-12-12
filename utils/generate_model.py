@@ -57,10 +57,9 @@ class Oprocentowanie:
         else:
             raise Exception("dzien spoza przedzialu")
 
-def generate(plik, kapital, oprocentowanie, okresy, start_date, r_max):
+def generate(kapital, oprocentowanie, okresy, start_date, r_max, plik=None):
 
-    if type(start_date) == str:
-        start_date = dt.datetime.strptime(start_date, '%Y-%m-%d')
+   
 
     miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
 
@@ -83,9 +82,11 @@ def generate(plik, kapital, oprocentowanie, okresy, start_date, r_max):
             "start": miesiace[0],
             "daty_splaty": miesiace[1:],
             "oprocentowanie": opr_arr}
-
-    with open('./models/{}'.format(plik), 'w') as outfile:
-        yaml.dump(data, outfile, default_flow_style=False, sort_keys=False)
+    if plik:
+        with open('./models/{}'.format(plik), 'w') as outfile:
+            yaml.dump(data, outfile, default_flow_style=False, sort_keys=False)
+    
+    return data
 
 if __name__ == '__main__':
 

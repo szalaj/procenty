@@ -159,6 +159,8 @@ class Kredyt:
             elif zdarzenie.rodzaj == Rodzaj.NADPLATA:
                 self.zrob_nadplate(zdarzenie.data, zdarzenie.wartosc)
 
+        return {"raty": self.wynik, "kapital_na_koniec": str(self.K.quantize(decimal.Decimal('0.01')))}
+
     def zapisz_do_pliku(self, nazwa_pliku):
 
         zapis = {"raty": self.wynik, "kapital_na_koniec": str(self.K.quantize(decimal.Decimal('0.01')))}
@@ -167,11 +169,14 @@ class Kredyt:
 
             
 
-def create_kredyt(plik_model) -> Kredyt:
+def create_kredyt(dane_kredytu) -> Kredyt:
 
-    stream = open("./models/{}.yml".format(plik_model), 'r')
-    dane = yaml.safe_load(stream)
+    #stream = open("./models/{}.yml".format(plik_model), 'r')
+    #dane = yaml.safe_load(stream)
 
+    print(dane_kredytu)
+
+    dane = dane_kredytu
 
     p = Decimal(dane['p']/100.0)
     K = Decimal(dane['K'])
