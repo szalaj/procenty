@@ -6,6 +6,7 @@ import datetime as dt
 import time
 from dateutil.relativedelta import relativedelta
 from collections import OrderedDict
+import pandas as pd
 
 
 class Oprocentowanie:
@@ -59,6 +60,7 @@ class Oprocentowanie:
 
 def generate(kapital, oprocentowanie, okresy, start_date, r_max, plik=None):
 
+
    
 
     miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
@@ -88,6 +90,13 @@ def generate(kapital, oprocentowanie, okresy, start_date, r_max, plik=None):
     
     return data
 
+
+def generateFromWiborFile():
+
+    df = pd.read_csv('static\plopln3m_d.csv', usecols=[0,1], index_col=0)
+    print(df)
+
+
 if __name__ == '__main__':
 
     try:
@@ -114,4 +123,3 @@ if __name__ == '__main__':
     except getopt.error as err:
         # output error, and return with an error code
         print (str(err))
-
