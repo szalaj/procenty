@@ -20,15 +20,23 @@ def main():
 
     if request.method == 'POST':
 
-        opr = float(request.form['r_obnizki'])
+        
         kapital = float(request.form['kapital'])
         datestart = str(request.form['datastart'])
+        okresy = int(request.form['okresy'])
+        opr = float(request.form['r_obnizki'])
 
         start_date = dt.datetime.strptime(datestart, '%d/%m/%Y')
 
-        dane_kredytu = utils.generate_model.generate(kapital, 2, 360, start_date, opr)
+        #dane_kredytu = utils.generate_model.generate(kapital, 2, 360, start_date, opr)
+
+        dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital, okresy, start_date)
+
         kr = utils.proc.create_kredyt(dane_kredytu)
         wynik = kr.symuluj()
+
+
+       
 
 
         return render_template('wykres.html', dane=wynik)

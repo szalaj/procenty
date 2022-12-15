@@ -91,10 +91,30 @@ def generate(kapital, oprocentowanie, okresy, start_date, r_max, plik=None):
     return data
 
 
-def generateFromWiborFile():
+def generateFromWiborFile(kapital, okresy, start_date):
 
     df = pd.read_csv('static\plopln3m_d.csv', usecols=[0,1], index_col=0)
-    print(df)
+    df.index = pd.to_datetime(df.index, format='%Y-%m-%d')
+
+    #dt = pd.to_datetime("2002-11-12")
+
+    miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
+   
+    opr_arr = []
+    for i in range(0, int(okresy/3)+1):
+       wibor_day =  start_date + relativedelta(months=3*i)
+       iloc_idx = df.index.get_indexer([wibor_day], method='nearest')
+       wibor_value = df.iloc[iloc_idx].iloc[0][0]
+
+       opr_arr.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": wibor_value})
+
+    data = {"K": kapital,
+            "p": df.iloc[df.index.get_indexer([start_date], method='nearest')].iloc[0][0],
+            "start": miesiace[0],
+            "daty_splaty": miesiace[1:],
+            "oprocentowanie": opr_arr}
+
+    return data
 
 
 if __name__ == '__main__':
