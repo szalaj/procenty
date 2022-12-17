@@ -4,6 +4,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 import json
+import os
 import yaml
 
 import datetime as dt
@@ -72,4 +73,5 @@ def main():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', debug=True, port=port)
