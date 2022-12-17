@@ -43,7 +43,7 @@ def main():
 
 
 
-    return render_template('wykres.html', dane={})
+    return render_template('wykres.html')
 
 
 
