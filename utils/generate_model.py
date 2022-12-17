@@ -6,6 +6,7 @@ import datetime as dt
 import time
 from dateutil.relativedelta import relativedelta
 from collections import OrderedDict
+import pandas as pd
 
 
 class Oprocentowanie:
@@ -59,6 +60,7 @@ class Oprocentowanie:
 
 def generate(kapital, oprocentowanie, okresy, start_date, r_max, plik=None):
 
+
    
 
     miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
@@ -88,6 +90,33 @@ def generate(kapital, oprocentowanie, okresy, start_date, r_max, plik=None):
     
     return data
 
+
+def generateFromWiborFile(kapital, okresy, start_date, marza, obnizacz=0):
+
+    df = pd.read_csv('static\plopln3m_d.csv', usecols=[0,1], index_col=0)
+    df.index = pd.to_datetime(df.index, format='%Y-%m-%d')
+
+    miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
+   
+    opr_arr = []
+    for i in range(0, int(okresy/3)+1):
+       wibor_day =  start_date + relativedelta(months=3*i)
+       iloc_idx = df.index.get_indexer([wibor_day], method='nearest')
+       wibor_value = df.iloc[iloc_idx].iloc[0][0] - obnizacz
+       if wibor_value < 0:
+        wibor_value = 0
+
+       opr_arr.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": marza+wibor_value})
+
+    data = {"K": kapital,
+            "p": df.iloc[df.index.get_indexer([start_date], method='nearest')].iloc[0][0],
+            "start": miesiace[0],
+            "daty_splaty": miesiace[1:],
+            "oprocentowanie": opr_arr}
+
+    return data
+
+
 if __name__ == '__main__':
 
     try:
@@ -114,4 +143,3 @@ if __name__ == '__main__':
     except getopt.error as err:
         # output error, and return with an error code
         print (str(err))
-

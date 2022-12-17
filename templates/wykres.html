@@ -4,47 +4,71 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="{{url_for('static', filename='d3.js')}}"></script>
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-    <title>Hello, world!</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+     
+    <title>O jakie kwocie?</title>
+    <style>
+
+.top-buffer { margin-top:20px; }
+
+span {
+
+  font-size: large;
+}
+    </style>
   </head>
   <body>
 
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
- 
- 
-    <div class="container">
+
+  <div class="container">
  <!-- Image and text -->
- <div class="row">
-  <div class="col">
-<nav class="navbar navbar-light bg-light">
-  <h1>Wibor</h1>
-</nav>
-</div>
-</div>
+    <div class="row">
+      <div class="col">
+    <nav class="navbar navbar-light bg-light">
+      <h1>O jakiej kwocie mówimy?</h1>
+    </nav>
+    </div>
+    </div>
+    <div class="row top-buffer">
+      <div class="col">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert alert-primary" role="alert">
+      Niepoprawne dane w formularzu.
+    </div>
+    {% endif %}
+  {% endwith %}
+  </div></div>
+    
       <form id="upload-form" action="{{ url_for('main') }}" method="POST">
   
-        <div class="row">
-          <div class="col">
-            
-            <input type="text" class="form-control" placeholder="PLN Kwota kredytu" name="kapital" value="460000">
+        <div class="row top-buffer">
+          <div class="col-lg-3">
+            <label for="idKapital">Kapitał</label>
+            <input type="text" class="form-control" placeholder="Ile?" name="kapital"  id="idKapital">
           </div>
-          <div class="col">
-            <input type="text" class="form-control" placeholder="DD/MM/YYYY Data uruchomienia" name="datastart" value="04/11/2021">
+          <div class="col-lg-3">
+            <label for="idData">Data uruchomienia</label>
+            <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="datastart"  id="idData">
           </div>
-          <div class="col">
-            <input type="text" class="form-control" placeholder="X% Obniżenie wiboru" name="r_obnizki" value="2">
+          <div class="col-lg-3">
+            <label for="idOkresy">Liczba miesięcy</label>
+            <input type="text" class="form-control" placeholder="okresy" name="okresy"  id="idOkresy">
+          </div>
+          <div class="col-lg-3">
+            <label for="idWibor">Różnica wiboru</label>
+            <input type="text" class="form-control" placeholder="X% Obniżenie wiboru" name="r_obnizki"  id="idWibor">
           </div>
           </div>
            
-          <div class="text-right">
+          <div class="text-right top-buffer">
 
                 <button type="submit" class="btn btn-primary">Oblicz</button>
         </div>
@@ -53,23 +77,117 @@
            
 
       </form>
-      <div class="row">
+
+
+      {% if dane %}
+
+      <div class="row top-buffer">
         <div class="col">
+
+          <div class="card">
+            <div class="card-header">
+              Wariant A - różnica rat
+            </div>
+            <div class="card-body">
+
+              <p class="card-text">W tym wariancie oblicza się jedynie różnicę zapłaconych rat.</p>
+
+              <table class="table">
+                <tbody>
+                  <tr>
+                    <td>Suma rat 1.</td>
+                    <td id="suma_rat">233</td>
+
+                  </tr>
+                  <tr>
+
+                    <td>Suma rat 2.</td>
+                    <td id="suma_rat2">43</td>
+ 
+                  </tr>
+                  <tr>
+
+                    <td>Różnica</td>
+                    <td id="roznica">43</td>
+ 
+                  </tr>                 
+                </tbody>
+              </table>
+        
+              <a href="#" class="btn btn-info">Szczegóły</a>
+            </div>
+            
+          </div>
+
+      </div>
+    </div>
+
+    {% endif %}
+
+    <div class="row top-buffer">
+      <div class="col">
       <nav class="navbar navbar-light bg-light">
         <span class="navbar-text">
           Wyniki obliczeń są poglądowe.
         </span>
       </nav>
-      </div>
-      </div>
-  
     </div>
+
+  </div>
+
+
+
+  
+</div>
  
 
-    
-  <script type="text/javascript">
-    var kredyt_dane = JSON.parse('{{dane | tojson|safe}}');
-    console.log(kredyt_dane)
-  </script>
+
+    {% if dane %}
+
+    <script type="text/javascript">
+
+      
+
+      var dane_formularza = JSON.parse('{{form_data|tojson|safe}}');
+
+      
+
+      document.getElementById("idKapital").value = String(dane_formularza["kapital"]);
+      document.getElementById("idData").value = String(dane_formularza["datestart"]);
+      document.getElementById("idOkresy").value = String(dane_formularza["okresy"]);
+      document.getElementById("idWibor").value = String(dane_formularza["obnizacz"]);
+
+
+
+      var kredyt_dane = JSON.parse('{{dane | tojson|safe}}');
+
+
+      suma_rat = d3.sum(kredyt_dane['raty'], d => d.rata)
+      suma_odsetek = d3.sum(kredyt_dane['raty'], d => d.odsetki)
+
+      zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
+      
+      d3.select("#suma_rat").text(zloty(suma_rat))
+
+
+      var kredyt_dane2 = JSON.parse('{{dane2 | tojson|safe}}');
+
+
+      suma_rat2 = d3.sum(kredyt_dane2['raty'], d => d.rata)
+      suma_odsetek2 = d3.sum(kredyt_dane2['raty'], d => d.odsetki)
+
+      zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
+      
+      d3.select("#suma_rat").text(zloty(suma_rat))
+
+      d3.select("#suma_rat2").text(zloty(suma_rat2))
+
+      d3.select("#roznica").text(zloty(suma_rat - suma_rat2))
+
+
+    </script>
+
+  {% endif %}
+
   </body>
 </html>
