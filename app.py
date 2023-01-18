@@ -35,7 +35,7 @@ def main():
             start_date = dt.datetime.strptime(datestart, '%d/%m/%Y')
         except:
             error = "Wypełnij poprawnie formularz"
-            flash('You were successfully logged in')
+            flash('m')
             return render_template('wykres.html')
 
         
@@ -45,11 +45,9 @@ def main():
         dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital, okresy, start_date, 2.99, 0)
         dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital, okresy, start_date, 2.99, obnizacz)
 
-        kr = utils.proc.create_kredyt(dane_kredytu)
-        wynik = kr.symuluj()
+        wynik = utils.proc.create_kredyt(dane_kredytu)
+        wynik2 = utils.proc.create_kredyt(dane_kredytu_alt)
 
-        kr2 = utils.proc.create_kredyt(dane_kredytu_alt)
-        wynik2 = kr2.symuluj()
 
         form_data = {"kapital":kapital,
                      "datestart":datestart,

@@ -197,7 +197,7 @@ def create_kredyt(dane_kredytu) -> Kredyt:
         for nadplata in dane['nadplaty']:
             kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(nadplata['dzien'], '%Y-%m-%d'), Rodzaj.NADPLATA, nadplata['kwota']))
 
-    return kr
+    return kr.symuluj()
 
 
 
