@@ -26,11 +26,7 @@ def main():
             kapital = float(request.form['kapital'])
             datestart = str(request.form['datastart'])
             okresy = int(request.form['okresy'])
-
-            if not (request.form['r_obnizki']).isdigit():
-                obnizacz = 0
-            else:
-                obnizacz = float(request.form['r_obnizki'])
+            marza = float(request.form['marza'])
 
             start_date = dt.datetime.strptime(datestart, '%d/%m/%Y')
         except:
@@ -42,8 +38,8 @@ def main():
 
         #dane_kredytu = utils.generate_model.generate(kapital, 2, 360, start_date, opr)
 
-        dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital, okresy, start_date, 2.99, 0)
-        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital, okresy, start_date, 2.99, obnizacz)
+        dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital, okresy, start_date, marza, 0)
+        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital, okresy, start_date, marza, 0)
 
         wynik = utils.proc.create_kredyt(dane_kredytu)
         wynik2 = utils.proc.create_kredyt(dane_kredytu_alt)
@@ -52,7 +48,7 @@ def main():
         form_data = {"kapital":kapital,
                      "datestart":datestart,
                      "okresy":okresy,
-                     "obnizacz":obnizacz}
+                     "marza":marza}
                                                                                     
 
 
