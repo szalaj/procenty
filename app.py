@@ -1,19 +1,17 @@
 
 from flask import Flask, render_template, flash, redirect, url_for, jsonify, request, make_response
-import datetime
 from dateutil.relativedelta import relativedelta
-
 import json
 import yaml
-
 import datetime as dt
-
 import utils.generate_model
-
 import utils.proc
+
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
+
 
 @app.route("/", methods=['GET', 'POST'])
 def main():
@@ -72,6 +70,8 @@ def main():
 
         wynik = utils.proc.create_kredyt(dane_kredytu)
         wynik2 = utils.proc.create_kredyt(dane_kredytu_alt)
+
+
 
 
         form_data = {"kapital1":kapital1,
