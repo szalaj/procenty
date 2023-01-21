@@ -41,12 +41,15 @@ def main():
             checkTr2 = False
             checkTr3 = False
 
+            transze = []
+
             if 'checkTransza2' in request.form:
                 checkTr2 = True
                 kapital2 = float(request.form['kapital2'])
                 dataStart2 = str(request.form['dataStart2'])
                 data_start2 = dt.datetime.strptime(dataStart2, '%d/%m/%Y')
 
+                transze.append({'dzien': data_start2, 'wartosc':kapital2 })
 
             if 'checkTransza3' in request.form:
                 checkTr3 = True
@@ -54,6 +57,7 @@ def main():
                 dataStart3 = str(request.form['dataStart3'])
                 data_start3 = dt.datetime.strptime(dataStart3, '%d/%m/%Y')
 
+                transze.append({'dzien': data_start3, 'wartosc':kapital3 })
 
         except:
             error = "Wypełnij poprawnie formularz"
@@ -62,26 +66,30 @@ def main():
 
         
 
-        print(rodzajWiboru)
+        dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, transze)
 
-
-
-        #dane_kredytu = utils.generate_model.generate(kapital, 2, 360, start_date, opr)
-
-        dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, 0)
-        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, 0)
+        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, transze)
 
         wynik = utils.proc.create_kredyt(dane_kredytu)
         wynik2 = utils.proc.create_kredyt(dane_kredytu_alt)
 
 
-        form_data = {"kapital":kapital1,
-                     "datestart":dataStart1,
+        form_data = {"kapital1":kapital1,
+                     "dataStart1":dataStart1,
                      "okresy":okresy,
-                     "marza":marza}
-                                                                                    
+                     "marza":marza,
+                     "dataZamrozenia":dataZamrozenia}
 
+        form_data['checkTr2'] = checkTr2
+        form_data['checkTr3'] = checkTr3
 
+        if checkTr2:
+            form_data['kapital2'] = kapital2
+            form_data['dataStart2'] = dataStart2
+
+        if checkTr3:
+            form_data['kapital3'] = kapital3
+            form_data['dataStart3'] = dataStart3
 
 
         return render_template('wykres.html', dane=wynik, dane2=wynik2, form_data=form_data)
