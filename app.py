@@ -23,12 +23,38 @@ def main():
         error = None
 
         try:
-            kapital = float(request.form['kapital'])
-            datestart = str(request.form['datastart'])
+            kapital1 = float(request.form['kapital1'])
+            dataStart1 = str(request.form['dataStart1'])
             okresy = int(request.form['okresy'])
             marza = float(request.form['marza'])
 
-            start_date = dt.datetime.strptime(datestart, '%d/%m/%Y')
+            rodzajWiboru = str(request.form['rodzajWiboru'])
+            rodzajRat = str(request.form['rodzajRat'])
+            dataZamrozenia = str(request.form['dataZamrozenia'])
+
+
+            data_start1 = dt.datetime.strptime(dataStart1, '%d/%m/%Y')
+            data_zamrozenia = dt.datetime.strptime(dataZamrozenia, '%d/%m/%Y')
+
+            print(request.form)
+
+            checkTr2 = False
+            checkTr3 = False
+
+            if 'checkTransza2' in request.form:
+                checkTr2 = True
+                kapital2 = float(request.form['kapital2'])
+                dataStart2 = str(request.form['dataStart2'])
+                data_start2 = dt.datetime.strptime(dataStart2, '%d/%m/%Y')
+
+
+            if 'checkTransza3' in request.form:
+                checkTr3 = True
+                kapital3 = float(request.form['kapital3'])
+                dataStart3 = str(request.form['dataStart3'])
+                data_start3 = dt.datetime.strptime(dataStart3, '%d/%m/%Y')
+
+
         except:
             error = "Wypełnij poprawnie formularz"
             flash('m')
@@ -36,17 +62,21 @@ def main():
 
         
 
+        print(rodzajWiboru)
+
+
+
         #dane_kredytu = utils.generate_model.generate(kapital, 2, 360, start_date, opr)
 
-        dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital, okresy, start_date, marza, 0)
-        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital, okresy, start_date, marza, 0)
+        dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, 0)
+        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, 0)
 
         wynik = utils.proc.create_kredyt(dane_kredytu)
         wynik2 = utils.proc.create_kredyt(dane_kredytu_alt)
 
 
-        form_data = {"kapital":kapital,
-                     "datestart":datestart,
+        form_data = {"kapital":kapital1,
+                     "datestart":dataStart1,
                      "okresy":okresy,
                      "marza":marza}
                                                                                     

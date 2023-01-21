@@ -51,41 +51,87 @@ span {
   
         <div class="row top-buffer">
           <div class="col-lg-3">
-            <label for="idKapital">Kapitał</label>
-            <input type="text" class="form-control" placeholder="Ile?" name="kapital"  id="idKapital">
+            <label for="idKapital1">Wartość - Transza 1.</label>
+            <input type="text" class="form-control" placeholder="Ile?" name="kapital1"  id="idKapital1">
           </div>
           <div class="col-lg-3">
-            <label for="idData">Data uruchomienia</label>
-            <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="datastart"  id="idData">
+            <label for="idData1">Data uruchomienia 1.</label>
+            <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataStart1"  id="idData1">
           </div>
           <div class="col-lg-3">
             <label for="idOkresy">Liczba miesięcy</label>
             <input type="text" class="form-control" placeholder="okresy" name="okresy"  id="idOkresy">
           </div>
           <div class="col-lg-3">
-            <label for="idWibor">Marża</label>
+            <label for="idMarza">Marża</label>
             <input type="text" class="form-control" placeholder="marża" name="marza"  id="idMarza">
           </div>
           </div>
           <div class="row top-buffer">
           <div class="col-lg-3">
-            <label class="mr-sm-2" for="inlineFormCustomSelect">Rodzaj Wiboru</label>
-            <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
-              <option selected>Wybierz</option>
-              <option value="3M">Wibor 3M</option>
+            <label class="mr-sm-2" for="idRodzajWiboru">Rodzaj Wiboru</label>
+            <select class="custom-select mr-sm-2" id="idRodzajWiboru" name="rodzajWiboru">
+              <option value="3M" selected>Wibor 3M</option>
               <option value="6M">Wibor 6M</option>
             </select>
           </div>
           <div class="col-lg-3">
-            <label class="mr-sm-2" for="inlineFormCustomSelect">Rodzaj rat</label>
-            <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
-              <option selected>Wybierz</option>
-              <option value="malejace">malejące</option>
+            <label class="mr-sm-2" for="idRodzajRat">Rodzaj rat</label>
+            <select class="custom-select mr-sm-2" id="idRodzajRat" name="rodzajRat">
+              <option value="malejace" selected >malejące</option>
               <option value="stale">stałe</option>
             </select>
           </div>
+          <div class="col-lg-3">
+            <label for="idDataZamrozenia">Data zamrożenia wiboru</label>
+            <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataZamrozenia"  id="idDataZamrozenia">
+          </div>
         </div>
-          <div class="text-right top-buffer">
+        <div class="row top-buffer">
+          <div class="col-sm-10">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="idCheckTransza2" name="checkTransza2">
+              <label class="form-check-label" for="idCheckTransza2">
+                Transza 2.
+              </label>
+            </div>
+          </div>
+
+        </div>
+        <div class="row top-buffer">
+          <div class="col-lg-3">
+            <label for="idKapital2">Wartość - Transza 2.</label>
+            <input type="text" class="form-control" placeholder="Ile?" name="kapital2"  id="idKapital2" readonly>
+          </div>
+          <div class="col-lg-3">
+            <label for="idData2">Data uruchomienia 2.</label>
+            <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataStart2"  id="idData2" readonly>
+          </div>
+
+        </div>
+        <div class="row top-buffer">
+          <div class="col-sm-10">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="idCheckTransza3" name="checkTransza3">
+              <label class="form-check-label" for="idCheckTransza3">
+                Transza 3.
+              </label>
+            </div>
+          </div>
+
+        </div>
+        <div class="row top-buffer">
+          <div class="col-lg-3">
+            <label for="idKapital3">Wartość - Transza 3.</label>
+            <input type="text" class="form-control" placeholder="Ile?" name="kapital2"  id="idKapital3" readonly>
+          </div>
+          <div class="col-lg-3">
+            <label for="idData3">Data uruchomienia 3.</label>
+            <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataStart2"  id="idData3" readonly> 
+          </div>
+
+        </div>
+        <div class="text-right top-buffer">
 
                 <button type="submit" class="btn btn-primary">Oblicz</button>
         </div>
@@ -156,8 +202,32 @@ span {
 
   
 </div>
- 
 
+<script type="text/javascript">
+const checkboxTransza2 = document.getElementById('idCheckTransza2')
+
+checkboxTransza2.addEventListener('change', (event) => {
+  if (event.currentTarget.checked) {
+    document.getElementById('idKapital2').readOnly = false;
+    document.getElementById('idData2').readOnly = false;
+  } else {
+    document.getElementById('idKapital2').readOnly = true;
+    document.getElementById('idData2').readOnly = true;
+  }
+})
+
+const checkboxTransza3 = document.getElementById('idCheckTransza3')
+
+checkboxTransza3.addEventListener('change', (event) => {
+  if (event.currentTarget.checked) {
+    document.getElementById('idKapital3').readOnly = false;
+    document.getElementById('idData3').readOnly = false;
+  } else {
+    document.getElementById('idKapital3').readOnly = true;
+    document.getElementById('idData3').readOnly = true;
+  }
+})
+</script>
 
     {% if dane %}
 
