@@ -12,6 +12,7 @@ class Rodzaj(Enum):
     SPLATA = auto()
     OPROCENTOWANIE = auto()
     NADPLATA = auto()
+    TRANSZA = auto()
 
 @dataclass
 class Zdarzenie:
@@ -69,6 +70,7 @@ class Kredyt:
             
 
     def oblicz_rate(self) -> Decimal:  
+
         k = 12
 
         #do_splaty = self.K + self.odsetki_naliczone
@@ -109,6 +111,17 @@ class Kredyt:
 
         self.dzien_odsetki = dzien_nadplaty
 
+    def zrob_transze(self, dzien_transzy:dt.datetime, kwota:Decimal):
+
+        o_dni = (dzien_transzy - self.dzien_odsetki).days
+
+        opr = Decimal((o_dni/365))*self.p
+
+        self.odsetki_naliczone = self.odsetki_naliczone +  opr*self.K
+
+        self.K = self.K + kwota
+
+        self.dzien_odsetki = dzien_transzy
 
 
     def splata_raty(self, dzien_raty:dt.datetime):
@@ -131,11 +144,8 @@ class Kredyt:
         self.odsetki_naliczone = self.odsetki_naliczone + opr*self.K
 
         
-
-
         if self.odsetki_naliczone > self.I:
             
-            #raise Exception('odsetki większe niż rata')
             
             self.I = self.odsetki_naliczone
 
@@ -152,12 +162,15 @@ class Kredyt:
     def symuluj(self):
 
         for zdarzenie in sorted(self.zdarzenia):
+            #print(zdarzenie)
             if zdarzenie.rodzaj == Rodzaj.OPROCENTOWANIE:
                 self.zmien_oprocentowanie(zdarzenie.data, zdarzenie.wartosc)
             elif zdarzenie.rodzaj == Rodzaj.SPLATA:
                 self.splata_raty(zdarzenie.data)
             elif zdarzenie.rodzaj == Rodzaj.NADPLATA:
                 self.zrob_nadplate(zdarzenie.data, zdarzenie.wartosc)
+            elif zdarzenie.rodzaj == Rodzaj.TRANSZA:
+                self.zrob_transze(zdarzenie.data, zdarzenie.wartosc)
 
         return {"raty": self.wynik, "kapital_na_koniec": str(self.K.quantize(decimal.Decimal('0.01')))}
 
@@ -195,7 +208,12 @@ def create_kredyt(dane_kredytu) -> Kredyt:
 
     if 'nadplaty' in dane:
         for nadplata in dane['nadplaty']:
-            kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(nadplata['dzien'], '%Y-%m-%d'), Rodzaj.NADPLATA, nadplata['kwota']))
+            kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(nadplata['dzien'], '%Y-%m-%d'), Rodzaj.NADPLATA, Decimal(nadplata['kwota'])))
+            
+    if 'transze' in dane:
+        for transza in dane['transze']:
+            kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(transza['dzien'], '%Y-%m-%d'), Rodzaj.TRANSZA, Decimal(transza['kapital'])))
+
 
     return kr.symuluj()
 
