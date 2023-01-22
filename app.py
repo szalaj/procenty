@@ -68,15 +68,17 @@ def main():
 
         dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, transze, True)
 
-        wynik = utils.proc.create_kredyt(dane_kredytu)
-        wynik2 = utils.proc.create_kredyt(dane_kredytu_alt)
+        wynik = utils.proc.create_kredyt(dane_kredytu, rodzajRat)
+        wynik2 = utils.proc.create_kredyt(dane_kredytu_alt, rodzajRat)
 
 
         form_data = {"kapital1":kapital1,
                      "dataStart1":dataStart1,
                      "okresy":okresy,
                      "marza":marza,
-                     "dataZamrozenia":dataZamrozenia}
+                     "dataZamrozenia":dataZamrozenia,
+                     "rodzajWiboru":rodzajWiboru,
+                     "rodzajRat":rodzajRat}
 
         form_data['checkTr2'] = checkTr2
         form_data['checkTr3'] = checkTr3
