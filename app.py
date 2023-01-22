@@ -64,14 +64,12 @@ def main():
 
         
 
-        dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, transze)
+        dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, transze, False)
 
-        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, transze)
+        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, transze, True)
 
         wynik = utils.proc.create_kredyt(dane_kredytu)
         wynik2 = utils.proc.create_kredyt(dane_kredytu_alt)
-
-
 
 
         form_data = {"kapital1":kapital1,
@@ -92,7 +90,7 @@ def main():
             form_data['dataStart3'] = dataStart3
 
 
-        return render_template('wykres.html', dane=wynik, dane2=wynik2, form_data=form_data)
+        return render_template('wykres.html', dane=wynik, dane2=wynik2, data_zamrozenia=data_zamrozenia.strftime('%Y-%m-%d'), form_data=form_data)
 
 
 

@@ -37,6 +37,7 @@ class Kredyt:
 
         self.wynik = []
 
+
     def __repr__(self) -> str:
         return "kredyt : {}".format(self.K)
 
@@ -62,9 +63,7 @@ class Kredyt:
 
         self.wynik.append(data)
 
-        
 
-        
         return 1
 
             
@@ -126,15 +125,6 @@ class Kredyt:
 
     def splata_raty(self, dzien_raty:dt.datetime):
 
-        #2021-12-18		SPŁATA KREDYTU	-2 261,13 PLN	
-        #2022-01-18		SPŁATA KREDYTU	-2 261,13 PLN	
-	    #2022-02-18		SPŁATA KREDYTU	-2 261,13 PLN	
-        #2022-03-18		SPŁATA KREDYTU	-3 078,38 PLN	
-        #2022-04-19		SPŁATA KREDYTU	-3 078,38 PLN	
-        #2022-05-04		SPŁATA KREDYTU	-3 048,85 PLN
-        #2022-06-04		SPŁATA KREDYTU	-4 000,55 PLN
-        #2022-07-04		SPŁATA KREDYTU	-4 000,55 PLN
-
         o_dni = (dzien_raty - self.dzien_odsetki).days
 
         opr = Decimal((o_dni/365))*self.p
@@ -151,7 +141,7 @@ class Kredyt:
 
         self.zapisz_stan(dzien_raty)
 
-        print(self.wyswietl(dzien_raty))
+        #print(self.wyswietl(dzien_raty))
     
         self.K = self.K - (self.I-self.odsetki_naliczone)
         self.odsetki_naliczone = 0
@@ -162,7 +152,7 @@ class Kredyt:
     def symuluj(self):
 
         for zdarzenie in sorted(self.zdarzenia):
-            #print(zdarzenie)
+            print(zdarzenie)
             if zdarzenie.rodzaj == Rodzaj.OPROCENTOWANIE:
                 self.zmien_oprocentowanie(zdarzenie.data, zdarzenie.wartosc)
             elif zdarzenie.rodzaj == Rodzaj.SPLATA:
