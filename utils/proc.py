@@ -23,12 +23,14 @@ class Zdarzenie:
         return self.data < other.data
 
 class Kredyt:
-    def __init__(self,K:Decimal, N:int, p:Decimal, start:dt.datetime):
+    def __init__(self,K:Decimal, N:int, p:Decimal, start:dt.datetime, rodzajRat:str):
 
         self.K = K
         self.N = N
         self.p = p
         self.start = start
+        self.rodzajRat = rodzajRat
+
         self.dzien_odsetki = start
         self.zdarzenia = []
     
@@ -70,17 +72,21 @@ class Kredyt:
 
     def oblicz_rate(self) -> Decimal:  
 
-        k = 12
+        if self.rodzajRat=='stale':
+            k = 12
+            #do_splaty = self.K + self.odsetki_naliczone
+            do_splaty = self.K
+            if self.p>0:
+                L = (do_splaty * self.p)
+                M = k*(1-pow(k/(k+self.p),self.N) )
+                I =L/M
+            else: 
+                I = do_splaty/self.N
+        elif self.rodzajRat=='malejace':
+            I = (self.K/self.N)*(1+(self.p/12)*self.N)
+        else:
+            raise Exception('nie ma takich rat')
 
-        #do_splaty = self.K + self.odsetki_naliczone
-
-        do_splaty = self.K
-        if self.p>0:
-            L = (do_splaty * self.p)
-            M = k*(1-pow(k/(k+self.p),self.N) )
-            I =L/M
-        else: 
-            I = do_splaty/self.N
 
         return I
         
@@ -136,12 +142,11 @@ class Kredyt:
         
         if self.odsetki_naliczone > self.I:
             
-            
             self.I = self.odsetki_naliczone
 
         self.zapisz_stan(dzien_raty)
 
-        #print(self.wyswietl(dzien_raty))
+        print(self.wyswietl(dzien_raty))
     
         self.K = self.K - (self.I-self.odsetki_naliczone)
         self.odsetki_naliczone = 0
@@ -152,7 +157,7 @@ class Kredyt:
     def symuluj(self):
 
         for zdarzenie in sorted(self.zdarzenia):
-            print(zdarzenie)
+            #print(zdarzenie)
             if zdarzenie.rodzaj == Rodzaj.OPROCENTOWANIE:
                 self.zmien_oprocentowanie(zdarzenie.data, zdarzenie.wartosc)
             elif zdarzenie.rodzaj == Rodzaj.SPLATA:
@@ -172,7 +177,7 @@ class Kredyt:
 
             
 
-def create_kredyt(dane_kredytu) -> Kredyt:
+def create_kredyt(dane_kredytu, rodzajRat) -> Kredyt:
 
     #stream = open("./models/{}.yml".format(plik_model), 'r')
     #dane = yaml.safe_load(stream)
@@ -187,7 +192,7 @@ def create_kredyt(dane_kredytu) -> Kredyt:
     N = len(dni)
     start_kredytu = dt.datetime.strptime(dane['start'], '%Y-%m-%d')
 
-    kr = Kredyt(K, N, p, start_kredytu)
+    kr = Kredyt(K, N, p, start_kredytu, rodzajRat)
 
     for dzien_splaty in dane['daty_splaty']:
         kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(dzien_splaty, '%Y-%m-%d'), Rodzaj.SPLATA, 0))
