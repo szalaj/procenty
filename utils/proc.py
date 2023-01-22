@@ -37,6 +37,7 @@ class Kredyt:
 
         self.wynik = []
 
+
     def __repr__(self) -> str:
         return "kredyt : {}".format(self.K)
 
@@ -62,9 +63,7 @@ class Kredyt:
 
         self.wynik.append(data)
 
-        
 
-        
         return 1
 
             

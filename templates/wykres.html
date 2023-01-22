@@ -149,35 +149,82 @@ span {
 
           <div class="card">
             <div class="card-header">
-              Wariant A - różnica rat
+              WPSy
             </div>
             <div class="card-body">
 
-              <p class="card-text">W tym wariancie oblicza się jedynie różnicę zapłaconych rat.</p>
+              <p class="card-text">Raty przed zamrożeniem wiboru</p>
 
               <table class="table">
                 <tbody>
                   <tr>
                     <td>Suma rat 1.</td>
-                    <td id="suma_rat">233</td>
+                    <td id="suma_rat_A">233</td>
 
                   </tr>
                   <tr>
 
                     <td>Suma rat 2.</td>
-                    <td id="suma_rat2">43</td>
+                    <td id="suma_rat2_A">43</td>
  
                   </tr>
                   <tr>
 
                     <td>Różnica</td>
-                    <td id="roznica">43</td>
+                    <td id="roznica_A">43</td>
+ 
+                  </tr>                 
+                </tbody>
+              </table>
+
+              <p class="card-text">Raty po zamrożeniu wiboru</p>
+
+              <table class="table">
+                <tbody>
+                  <tr>
+                    <td>Suma rat 1.</td>
+                    <td id="suma_rat_B">233</td>
+
+                  </tr>
+                  <tr>
+
+                    <td>Suma rat 2.</td>
+                    <td id="suma_rat2_B">43</td>
+ 
+                  </tr>
+                  <tr>
+
+                    <td>Różnica</td>
+                    <td id="roznica_B">43</td>
+ 
+                  </tr>                 
+                </tbody>
+              </table>
+
+              <p class="card-text">Raty wszystkie</p>
+
+              <table class="table">
+                <tbody>
+                  <tr>
+                    <td>Suma rat 1.</td>
+                    <td id="suma_rat">N/A</td>
+
+                  </tr>
+                  <tr>
+
+                    <td>Suma rat 2.</td>
+                    <td id="suma_rat2">N/A</td>
+ 
+                  </tr>
+                  <tr>
+
+                    <td>Różnica</td>
+                    <td id="roznica">N/A</td>
  
                   </tr>                 
                 </tbody>
               </table>
         
-              <a href="#" class="btn btn-info">Szczegóły</a>
             </div>
             
           </div>
@@ -191,7 +238,7 @@ span {
       <div class="col">
       <nav class="navbar navbar-light bg-light">
         <span class="navbar-text">
-          Wyniki obliczeń są poglądowe.
+          2023
         </span>
       </nav>
     </div>
@@ -278,30 +325,54 @@ checkboxTransza3.addEventListener('change', (event) => {
       
       var kredyt_dane = JSON.parse('{{dane | tojson|safe}}');
 
+      var data_zamrozenia_str = '{{data_zamrozenia}}';
+
+      console.log(data_zamrozenia_str)
+
+      const parseDzien = d3.timeParse("%Y-%m-%d")
+
+      const data_zamrozenia = parseDzien(data_zamrozenia_str)
+
+      kredyt_dane_do_zamr = kredyt_dane['raty'].filter(function(d) { return parseDzien(d['dzien']) <= data_zamrozenia  } )
+
+      console.log(kredyt_dane_do_zamr)
 
       suma_rat = d3.sum(kredyt_dane['raty'], d => d.rata)
-      suma_odsetek = d3.sum(kredyt_dane['raty'], d => d.odsetki)
 
-      zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
-      
-      d3.select("#suma_rat").text(zloty(suma_rat))
+      suma_rat_A = d3.sum(kredyt_dane_do_zamr, d => d.rata)
 
 
       var kredyt_dane2 = JSON.parse('{{dane2 | tojson|safe}}');
 
+      kredyt_dane_do_zamr2 = kredyt_dane2['raty'].filter(function(d) { return parseDzien(d['dzien']) <= data_zamrozenia  } )
 
       suma_rat2 = d3.sum(kredyt_dane2['raty'], d => d.rata)
-      suma_odsetek2 = d3.sum(kredyt_dane2['raty'], d => d.odsetki)
+
+      suma_rat2_A = d3.sum(kredyt_dane_do_zamr2, d => d.rata)
+
+      suma_rat_B = suma_rat - suma_rat_A
+      suma_rat2_B = suma_rat2 - suma_rat2_A
 
       zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
       
+      d3.select("#suma_rat_A").text(zloty(suma_rat_A))
+
+      d3.select("#suma_rat2_A").text(zloty(suma_rat2_A))
+
+      d3.select("#roznica_A").text(zloty(suma_rat_A - suma_rat2_A))
+
+      d3.select("#suma_rat_B").text(zloty(suma_rat_B))
+
+      d3.select("#suma_rat2_B").text(zloty(suma_rat2_B))
+
+      d3.select("#roznica_B").text(zloty(suma_rat_B - suma_rat2_B))
+
+
       d3.select("#suma_rat").text(zloty(suma_rat))
 
       d3.select("#suma_rat2").text(zloty(suma_rat2))
 
       d3.select("#roznica").text(zloty(suma_rat - suma_rat2))
-
-
     </script>
 
   {% endif %}
