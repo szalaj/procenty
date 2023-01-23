@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="{{url_for('static', filename='d3.js')}}"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+     
+    <title>Oblicz WPS</title>
+    <style>
+
+.top-buffer { margin-top:20px; }
+
+span {
+
+  font-size: large;
+}
+    </style>
+  </head>
+  <body>
+
+
+
+  <div class="container">
+ <!-- Image and text -->
+    <div class="row">
+      <div class="col">
+    <nav class="navbar navbar-light bg-light">
+      <h1>Oblicz WPS</h1>
+    </nav>
+    </div>
+    </div>
+    <div class="row top-buffer">
+      <div class="col">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert alert-primary" role="alert">
+      Niepoprawne dane w formularzu.
+    </div>
+    {% endif %}
+  {% endwith %}
+  </div></div>
+    
+      <form id="upload-form" action="{{ url_for('login') }}" method="POST">
+  
+        <div class="row top-buffer">
+          <div class="col-lg-3">
+            <label for="idKapital1">Użytkownik</label>
+            <input type="text" class="form-control" placeholder="" name="uzytkownik"  id="idUzytkownik">
+          </div>
+          <div class="col-lg-3">
+            <label for="idData1">Hasło</label>
+            <input type="password" class="form-control" placeholder="" name="haslo"  id="idHaslo">
+          </div>
+
+          
+
+        </div>
+        <div class="text-right top-buffer">
+
+                <button type="submit" class="btn btn-primary">Zaloguj</button>
+        </div>
+
+  
+           
+
+      </form>
+
+
+     
+
+    <div class="row top-buffer">
+      <div class="col">
+      <nav class="navbar navbar-light bg-light">
+        <span class="navbar-text">
+          2023
+        </span>
+      </nav>
+    </div>
+
+  </div>
+
+
+
+  
+</div>
+
+    {% if dane %}
+
+    <script type="text/javascript">
+
+      
+
+      var dane_formularza = JSON.parse('{{form_data|tojson|safe}}');
+
+      console.log(dane_formularza)
+      
+
+      document.getElementById("idKapital1").value = String(dane_formularza["kapital1"]);
+      document.getElementById("idData1").value = String(dane_formularza["dataStart1"]);
+      document.getElementById("idOkresy").value = String(dane_formularza["okresy"]);
+      document.getElementById("idMarza").value = String(dane_formularza["marza"]);
+      document.getElementById("idDataZamrozenia").value = String(dane_formularza["dataZamrozenia"]);
+      document.getElementById("idRodzajRat").value = String(dane_formularza["rodzajRat"]);
+      document.getElementById("idRodzajWiboru").value = String(dane_formularza["rodzajWiboru"]);
+
+      console.log(dane_formularza["checkTr2"])
+
+      console.log(typeof dane_formularza["checkTr2"])
+
+      if (dane_formularza["checkTr2"]) {
+
+        document.getElementById('idCheckTransza2').checked = true;
+        document.getElementById('idKapital2').readOnly = false;
+        document.getElementById('idData2').readOnly = false;
+
+        document.getElementById('idKapital2').value = String(dane_formularza["kapital2"]);;
+        document.getElementById('idData2').value = String(dane_formularza["dataStart2"]);
+      } else 
+      {
+        document.getElementById('idCheckTransza2').checked = false;
+      }
+
+      if (dane_formularza["checkTr3"]) {
+
+      document.getElementById('idCheckTransza3').checked = true;
+      document.getElementById('idKapital3').readOnly = false;
+      document.getElementById('idData3').readOnly = false;
+
+      document.getElementById('idKapital3').value = String(dane_formularza["kapital3"]);;
+      document.getElementById('idData3').value = String(dane_formularza["dataStart3"]);
+      } else 
+      {
+      document.getElementById('idCheckTransza3').checked = false;
+      }
+      
+      var kredyt_dane = JSON.parse('{{dane | tojson|safe}}');
+
+      var data_zamrozenia_str = '{{data_zamrozenia}}';
+
+      console.log(data_zamrozenia_str)
+
+      const parseDzien = d3.timeParse("%Y-%m-%d")
+
+      const data_zamrozenia = parseDzien(data_zamrozenia_str)
+
+      kredyt_dane_do_zamr = kredyt_dane['raty'].filter(function(d) { return parseDzien(d['dzien']) <= data_zamrozenia  } )
+
+      console.log(kredyt_dane_do_zamr)
+
+      suma_rat = d3.sum(kredyt_dane['raty'], d => d.rata)
+
+      suma_rat_A = d3.sum(kredyt_dane_do_zamr, d => d.rata)
+
+
+      var kredyt_dane2 = JSON.parse('{{dane2 | tojson|safe}}');
+
+      kredyt_dane_do_zamr2 = kredyt_dane2['raty'].filter(function(d) { return parseDzien(d['dzien']) <= data_zamrozenia  } )
+
+      suma_rat2 = d3.sum(kredyt_dane2['raty'], d => d.rata)
+
+      suma_rat2_A = d3.sum(kredyt_dane_do_zamr2, d => d.rata)
+
+      suma_rat_B = suma_rat - suma_rat_A
+      suma_rat2_B = suma_rat2 - suma_rat2_A
+
+      zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
+      
+      d3.select("#suma_rat_A").text(zloty(suma_rat_A))
+
+      d3.select("#suma_rat2_A").text(zloty(suma_rat2_A))
+
+      d3.select("#roznica_A").text(zloty(suma_rat_A - suma_rat2_A))
+
+
+      d3.select("#suma_rat_B").text(zloty(suma_rat_B))
+
+      d3.select("#suma_rat2_B").text(zloty(suma_rat2_B))
+
+      d3.select("#roznica_B").text(zloty(suma_rat_B - suma_rat2_B))
+
+
+      d3.select("#suma_rat").text(zloty(suma_rat))
+
+      d3.select("#suma_rat2").text(zloty(suma_rat2))
+
+      d3.select("#roznica").text(zloty(suma_rat - suma_rat2))
+    </script>
+
+  {% endif %}
+
+  </body>
+</html>
