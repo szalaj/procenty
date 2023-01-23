@@ -118,9 +118,9 @@ def main():
 
         
 
-        dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, transze, False)
+        dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False)
 
-        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, transze, True)
+        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, True)
 
         wynik = utils.proc.create_kredyt(dane_kredytu, rodzajRat)
         wynik2 = utils.proc.create_kredyt(dane_kredytu_alt, rodzajRat)
