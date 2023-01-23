@@ -6,7 +6,7 @@ import utils.proc
 
 
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-
+from http import HTTPStatus
 
 app = Flask(__name__)
 app.secret_key = '33a42d649ff6cfd8662d550dabc5c3dbed65e34223c41ef2f24362133d829042'
@@ -16,8 +16,8 @@ login_manager.init_app(app)
 
 class User(UserMixin):   
     id = 1
-    name = '1'
-    password = '2'
+    name = 'aa'
+    password = 'a'
     email = 'a@b'                                                                                               
     def to_json(self):        
         return {"name": self.name,
@@ -41,18 +41,29 @@ def load_user(user_id):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # if current_user.is_authenticated:
-    #     return redirect(url_for('main'))
-    if request.method == 'POST':
-        login_user(User())
+    if current_user.is_authenticated:
         return redirect(url_for('main'))
+    if request.method == 'POST':
+
+        
+        uzytkownik = str(request.form['uzytkownik'])
+        haslo = str(request.form['haslo'])
+        if uzytkownik == 'kancelaria' and haslo =='wps':    
+        
+            login_user(User())
+            return redirect(url_for('main'))
 
     return render_template('login.html')
 
 @app.route('/logout', methods=['GET'])
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('main'))
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    return redirect(url_for('login'))
 
 @app.route("/", methods=['GET', 'POST'])
 @login_required
