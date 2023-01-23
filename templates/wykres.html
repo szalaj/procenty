@@ -45,13 +45,27 @@ span {
       <div class="col">
     {% with messages = get_flashed_messages() %}
     {% if messages %}
-    <div class="alert alert-primary" role="alert">
-      Niepoprawne dane w formularzu.
+    <div class="alert alert-warning" role="alert">
+      {{error}}
     </div>
     {% endif %}
   {% endwith %}
   </div></div>
-    
+
+  <div class="row top-buffer">
+
+    <div class="col-lg-4">
+      <nav class="navbar" style="background-color: #e3f2fd;">
+        Wibor 3M do: {{max_day_wibor3m}} 
+      </nav>
+      </div>
+      <div class="col-lg-4">
+        <nav class="navbar" style="background-color: #e3f2fd;">
+          Wibor 6M do: {{max_day_wibor6m}} 
+        </nav>
+        </div>
+ 
+  </div>
       <form id="upload-form" action="{{ url_for('main') }}" method="POST">
   
         <div class="row top-buffer">
@@ -281,7 +295,7 @@ checkboxTransza3.addEventListener('change', (event) => {
 })
 </script>
 
-    {% if dane %}
+  {% if form_data %}
 
     <script type="text/javascript">
 
@@ -329,6 +343,12 @@ checkboxTransza3.addEventListener('change', (event) => {
       {
       document.getElementById('idCheckTransza3').checked = false;
       }
+    </script>
+
+    {% endif %}
+
+{% if dane %}
+<script type="text/javascript">
       
       var kredyt_dane = JSON.parse('{{dane | tojson|safe}}');
 

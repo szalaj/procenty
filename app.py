@@ -8,6 +8,8 @@ import utils.proc
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from http import HTTPStatus
 
+import pandas as pd
+
 app = Flask(__name__)
 app.secret_key = '33a42d649ff6cfd8662d550dabc5c3dbed65e34223c41ef2f24362133d829042'
 
@@ -69,52 +71,85 @@ def unauthorized():
 @login_required
 def main():
 
+    df3 = pd.read_csv('static\plopln3m_d.csv', usecols=[0,1], index_col=0)
+    df3.index = pd.to_datetime(df3.index, format='%Y-%m-%d')
+
+    df6 = pd.read_csv('static\plopln6m_d.csv', usecols=[0,1], index_col=0)
+    df6.index = pd.to_datetime(df6.index, format='%Y-%m-%d')
+
+    max_day_wibor3m = df3.index.max()
+    max_day_wibor6m = df6.index.max()
 
     if request.method == 'POST':
 
         error = None
 
-        try:
-            kapital1 = float(request.form['kapital1'])
-            dataStart1 = str(request.form['dataStart1'])
-            okresy = int(request.form['okresy'])
-            marza = float(request.form['marza'])
+        form_data = {"kapital1":request.form['kapital1'],
+                     "kapital2":request.form['kapital2'],
+                     "kapital3":request.form['kapital3'],
+                     "dataStart1":request.form['dataStart1'],
+                     "dataStart2":request.form['dataStart2'],
+                     "dataStart3":request.form['dataStart3'],
+                     "okresy":request.form['okresy'],
+                     "marza":request.form['marza'],
+                     "dataZamrozenia":request.form['dataZamrozenia'],
+                     "rodzajWiboru":request.form['rodzajWiboru'],
+                     "rodzajRat":request.form['rodzajRat']}
 
-            rodzajWiboru = str(request.form['rodzajWiboru'])
-            rodzajRat = str(request.form['rodzajRat'])
-            dataZamrozenia = str(request.form['dataZamrozenia'])
+        if 'checkTransza2' in request.form:
+            form_data['checkTr2'] = True
+
+
+        if 'checkTransza2' in request.form:
+            form_data['checkTr3'] = True
+
+
+
+        try:
+            kapital1 = float(form_data['kapital1'])
+            dataStart1 = str(form_data['dataStart1'])
+            okresy = int(form_data['okresy'])
+            marza = float(form_data['marza'])
+
+            rodzajWiboru = str(form_data['rodzajWiboru'])
+            rodzajRat = str(form_data['rodzajRat'])
+            dataZamrozenia = str(form_data['dataZamrozenia'])
 
 
             data_start1 = dt.datetime.strptime(dataStart1, '%d/%m/%Y')
             data_zamrozenia = dt.datetime.strptime(dataZamrozenia, '%d/%m/%Y')
 
-            print(request.form)
-
-            checkTr2 = False
-            checkTr3 = False
 
             transze = []
 
             if 'checkTransza2' in request.form:
-                checkTr2 = True
-                kapital2 = float(request.form['kapital2'])
-                dataStart2 = str(request.form['dataStart2'])
+                kapital2 = float(form_data['kapital2'])
+                dataStart2 = str(form_data['dataStart2'])
                 data_start2 = dt.datetime.strptime(dataStart2, '%d/%m/%Y')
 
                 transze.append({'dzien': data_start2, 'wartosc':kapital2 })
 
             if 'checkTransza3' in request.form:
-                checkTr3 = True
-                kapital3 = float(request.form['kapital3'])
-                dataStart3 = str(request.form['dataStart3'])
+                kapital3 = float(form_data['kapital3'])
+                dataStart3 = str(form_data['dataStart3'])
                 data_start3 = dt.datetime.strptime(dataStart3, '%d/%m/%Y')
 
                 transze.append({'dzien': data_start3, 'wartosc':kapital3 })
 
+
+
+            if data_zamrozenia > max_day_wibor3m if rodzajWiboru=='3M' else max_day_wibor6m:
+                error = "Data zamrożenia wiboru większa niż dostępne dane."
+                flash('m')
+                return render_template('wykres.html', form_data=form_data, error=error, max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'), max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'))
+
+
+
+
         except:
             error = "Wypełnij poprawnie formularz"
             flash('m')
-            return render_template('wykres.html')
+            return render_template('wykres.html', form_data=form_data, error=error, max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'), max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'))
 
         
 
@@ -126,31 +161,13 @@ def main():
         wynik2 = utils.proc.create_kredyt(dane_kredytu_alt, rodzajRat)
 
 
-        form_data = {"kapital1":kapital1,
-                     "dataStart1":dataStart1,
-                     "okresy":okresy,
-                     "marza":marza,
-                     "dataZamrozenia":dataZamrozenia,
-                     "rodzajWiboru":rodzajWiboru,
-                     "rodzajRat":rodzajRat}
+        
 
-        form_data['checkTr2'] = checkTr2
-        form_data['checkTr3'] = checkTr3
-
-        if checkTr2:
-            form_data['kapital2'] = kapital2
-            form_data['dataStart2'] = dataStart2
-
-        if checkTr3:
-            form_data['kapital3'] = kapital3
-            form_data['dataStart3'] = dataStart3
-
-
-        return render_template('wykres.html', dane=wynik, dane2=wynik2, data_zamrozenia=data_zamrozenia.strftime('%Y-%m-%d'), form_data=form_data)
+        return render_template('wykres.html', max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'), max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'), dane=wynik, dane2=wynik2, data_zamrozenia=data_zamrozenia.strftime('%Y-%m-%d'), form_data=form_data)
 
 
 
-    return render_template('wykres.html')
+    return render_template('wykres.html', max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'), max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'))
 
 
 
