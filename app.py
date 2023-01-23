@@ -1,20 +1,63 @@
 
 from flask import Flask, render_template, flash, redirect, url_for, jsonify, request, make_response
-from dateutil.relativedelta import relativedelta
-import json
-import yaml
 import datetime as dt
 import utils.generate_model
 import utils.proc
 
 
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+
+
 app = Flask(__name__)
 app.secret_key = '33a42d649ff6cfd8662d550dabc5c3dbed65e34223c41ef2f24362133d829042'
 
+login_manager = LoginManager()
+login_manager.init_app(app)
 
+class User(UserMixin):   
+    id = 1
+    name = '1'
+    password = '2'
+    email = 'a@b'                                                                                               
+    def to_json(self):        
+        return {"name": self.name,
+                "email": self.email}
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):   
+        return True           
+
+    def is_anonymous(self):
+        return False          
+
+    def get_id(self):         
+        return str(User.id)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User()
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    # if current_user.is_authenticated:
+    #     return redirect(url_for('main'))
+    if request.method == 'POST':
+        login_user(User())
+        return redirect(url_for('main'))
+
+    return render_template('login.html')
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    logout_user()
+    return redirect(url_for('main'))
 
 @app.route("/", methods=['GET', 'POST'])
+@login_required
 def main():
+
 
     if request.method == 'POST':
 
