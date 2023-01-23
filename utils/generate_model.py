@@ -5,9 +5,20 @@ import decimal
 
 
 
-def generateFromWiborFile(kapital, okresy, start_date, marza, dzien_zamrozenia, transze, tylko_marza=False):
+def generateFromWiborFile(kapital, okresy, start_date, marza, dzien_zamrozenia, rodzajWiboru, transze, tylko_marza=False):
 
-    df = pd.read_csv('static\plopln3m_d.csv', usecols=[0,1], index_col=0)
+    print('--------------------------------')
+    print(rodzajWiboru)
+
+    file_name=''
+    if rodzajWiboru=='3M':
+        file_name = 'plopln3m_d.csv'
+        wibor_okres = 3
+    elif rodzajWiboru=='6M':
+        file_name = 'plopln6m_d.csv'
+        wibor_okres = 6
+
+    df = pd.read_csv('static\{}'.format(file_name), usecols=[0,1], index_col=0)
     df.index = pd.to_datetime(df.index, format='%Y-%m-%d')
 
     miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
@@ -21,7 +32,7 @@ def generateFromWiborFile(kapital, okresy, start_date, marza, dzien_zamrozenia, 
     
     opr_arr = []
     if not tylko_marza:
-        for i in range(0, int(okresy/3)+1):
+        for i in range(0, int(okresy/wibor_okres)+1):
 
             wibor_day =  start_date + relativedelta(months=3*i)
             if wibor_day > dzien_zamrozenia:
