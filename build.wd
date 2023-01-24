@@ -1,0 +1,26 @@
+python:3.8-slim (pandas przy alpine się wywala)
+
+
+--
+zbudowanie obrazu:
+
+docker image build -t flask_docker . 
+
+flask_docker to nazwa obrazu 
+
+--
+uruchomienie obrazu na porcie 5000
+
+docker run -p 5000:5000 -d flask_docker
+
+--
+cmd zeby wyslac do awsa image
+
+aws lightsail push-container-image --service-name flask-service --label flask-docker --image flask-docker
+
+
+- jest algorytm
+
+- nie ma sciagniecia worda
+- nie ma prezentacji danych
+- wykresow

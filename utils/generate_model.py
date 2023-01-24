@@ -18,7 +18,7 @@ def generateFromWiborFile(kapital, okresy, start_date, marza, dzien_zamrozenia, 
         file_name = 'plopln6m_d.csv'
         wibor_okres = 6
 
-    df = pd.read_csv('static\{}'.format(file_name), usecols=[0,1], index_col=0)
+    df = pd.read_csv('static/{}'.format(file_name), usecols=[0,1], index_col=0)
     df.index = pd.to_datetime(df.index, format='%Y-%m-%d')
 
     miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]

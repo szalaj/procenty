@@ -71,10 +71,10 @@ def unauthorized():
 @login_required
 def main():
 
-    df3 = pd.read_csv('static\plopln3m_d.csv', usecols=[0,1], index_col=0)
+    df3 = pd.read_csv('static/plopln3m_d.csv', usecols=[0,1], index_col=0)
     df3.index = pd.to_datetime(df3.index, format='%Y-%m-%d')
 
-    df6 = pd.read_csv('static\plopln6m_d.csv', usecols=[0,1], index_col=0)
+    df6 = pd.read_csv('static/plopln6m_d.csv', usecols=[0,1], index_col=0)
     df6.index = pd.to_datetime(df6.index, format='%Y-%m-%d')
 
     max_day_wibor3m = df3.index.max()
