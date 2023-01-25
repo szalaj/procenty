@@ -163,7 +163,12 @@ def main():
 
         
 
-        return render_template('wykres.html', max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'), max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'), dane=wynik, dane2=wynik2, data_zamrozenia=data_zamrozenia.strftime('%Y-%m-%d'), form_data=form_data)
+        return render_template('wykres.html', max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'),
+                                              max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'),
+                                              dane=wynik,
+                                              dane2=wynik2,
+                                              data_zamrozenia=data_zamrozenia.strftime('%Y-%m-%d'),
+                                              form_data=form_data)
 
 
 
@@ -175,4 +180,4 @@ def main():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -2,6 +2,8 @@
 <html lang="en">
   <head>
     <!-- Required meta tags -->
+    <meta name="robots" content="noindex">
+    <meta name="robots" content="nofollow">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script src="{{url_for('static', filename='d3.js')}}"></script>
@@ -162,6 +164,12 @@ span {
 
 
       {% if dane %}
+      <!-- wykres d3-->
+      <div class="row top-buffer">
+
+        <div id="chart"></div>
+
+      </div>
 
       <div class="row top-buffer">
         <div class="col">
@@ -314,9 +322,7 @@ checkboxTransza3.addEventListener('change', (event) => {
       document.getElementById("idRodzajRat").value = String(dane_formularza["rodzajRat"]);
       document.getElementById("idRodzajWiboru").value = String(dane_formularza["rodzajWiboru"]);
 
-      console.log(dane_formularza["checkTr2"])
-
-      console.log(typeof dane_formularza["checkTr2"])
+      
 
       if (dane_formularza["checkTr2"]) {
 
@@ -348,13 +354,24 @@ checkboxTransza3.addEventListener('change', (event) => {
     {% endif %}
 
 {% if dane %}
+
+
+<!-- tabelka-->
 <script type="text/javascript">
       
       var kredyt_dane = JSON.parse('{{dane | tojson|safe}}');
 
+
+      //wykres
+
+      console.log(kredyt_dane)
+
+
+      //tabelka
+
       var data_zamrozenia_str = '{{data_zamrozenia}}';
 
-      console.log(data_zamrozenia_str)
+  
 
       const parseDzien = d3.timeParse("%Y-%m-%d")
 
@@ -362,7 +379,7 @@ checkboxTransza3.addEventListener('change', (event) => {
 
       kredyt_dane_do_zamr = kredyt_dane['raty'].filter(function(d) { return parseDzien(d['dzien']) <= data_zamrozenia  } )
 
-      console.log(kredyt_dane_do_zamr)
+      //console.log(kredyt_dane_do_zamr)
 
       suma_rat = d3.sum(kredyt_dane['raty'], d => d.rata)
 
