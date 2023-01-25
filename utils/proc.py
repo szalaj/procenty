@@ -146,7 +146,7 @@ class Kredyt:
 
         self.zapisz_stan(dzien_raty)
 
-        print(self.wyswietl(dzien_raty))
+        #print(self.wyswietl(dzien_raty))
     
         self.K = self.K - (self.I-self.odsetki_naliczone)
         self.odsetki_naliczone = 0

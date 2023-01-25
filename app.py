@@ -100,7 +100,7 @@ def main():
             form_data['checkTr2'] = True
 
 
-        if 'checkTransza2' in request.form:
+        if 'checkTransza3' in request.form:
             form_data['checkTr3'] = True
 
 
@@ -138,7 +138,7 @@ def main():
 
 
 
-            if data_zamrozenia > max_day_wibor3m if rodzajWiboru=='3M' else max_day_wibor6m:
+            if data_zamrozenia > max_day_wibor3m if rodzajWiboru=='3M' else data_zamrozenia > max_day_wibor6m:
                 error = "Data zamrożenia wiboru większa niż dostępne dane."
                 flash('m')
                 return render_template('wykres.html', form_data=form_data, error=error, max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'), max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'))
@@ -175,4 +175,4 @@ def main():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000)

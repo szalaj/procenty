@@ -7,8 +7,8 @@ import decimal
 
 def generateFromWiborFile(kapital, okresy, start_date, marza, dzien_zamrozenia, rodzajWiboru, transze, tylko_marza=False):
 
-    print('--------------------------------')
-    print(rodzajWiboru)
+    # print('--------------------------------')
+    # print(rodzajWiboru)
 
     file_name=''
     if rodzajWiboru=='3M':
