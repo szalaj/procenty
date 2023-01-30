@@ -385,6 +385,7 @@ checkboxTransza3.addEventListener('change', (event) => {
       dane_wykres.forEach(function (d) {
         d.dzien = parseDate(d.dzien)
         d.rata = parseFloat(d.rata)
+        d.K = parseFloat(d.K)
 
       });
 
@@ -411,7 +412,14 @@ checkboxTransza3.addEventListener('change', (event) => {
 
     var yscale = d3.scaleLinear()
         .domain([0, maxYvalue])
-        .range([height, 0]);
+        .range([height/2, 0]);
+
+
+        var maxYvalue_saldo = d3.max(dane_wykres, function (d) { return d.K });
+        var yscale_saldo = d3.scaleLinear()
+        .domain([0, maxYvalue_saldo])
+        .range([0, height/2]);
+
 
       // append the svg object to the body of the page
       var svg = d3.select("#chart")
@@ -438,7 +446,18 @@ checkboxTransza3.addEventListener('change', (event) => {
         .attr("x2", width)
         .attr("y2", 0);
 
+        var x_axis = d3.axisBottom()
+        .scale(xscale);
 
+        svg.append("g")
+            .attr("transform", "translate(0, " + height/2  +")")
+            .call(x_axis)
+
+      svg.selectAll("g.c").append("line").attr("x1", 0)
+      .attr("class", "gridline")
+        .attr("y1",function (d) { return yscale(0); })
+        .attr("x2", width)
+        .attr("y2", function (d) { return yscale(0); })
 
     var mybars = svg.selectAll(".ratacirc").data(dane_wykres)
 
@@ -457,6 +476,15 @@ checkboxTransza3.addEventListener('change', (event) => {
       .attr("d", d3.line()
           .x(function (d) { return xscale(d.dzien) })
           .y(function (d) { return yscale(d.rata) })
+      )
+      .attr("class", "red")
+
+      svg.append("path")
+      .datum(dane_wykres)
+      .attr("fill", "none")
+      .attr("d", d3.line()
+          .x(function (d) { return xscale(d.dzien) })
+          .y(function (d) { return height/2+yscale_saldo(d.K) })
       )
       .attr("class", "red")
 
