@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, flash, redirect, url_for, jsonify, request, make_response
+from flask import Flask, render_template, flash, redirect, url_for, jsonify, request, make_response, send_file
 import datetime as dt
 import utils.generate_model
 import utils.proc
@@ -9,6 +9,9 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from http import HTTPStatus
 
 import pandas as pd
+
+from docx import Document
+from io import BytesIO
 
 app = Flask(__name__)
 app.secret_key = '33a42d649ff6cfd8662d550dabc5c3dbed65e34223c41ef2f24362133d829042'
@@ -170,9 +173,26 @@ def main():
     return render_template('wykres.html', max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'), max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'))
 
 
+@app.route("/doc", methods=['GET', 'POST'])
+@login_required
+def get_doc():
+
+    document = Document()
+    document.add_heading("Sample Press Release", 0)
+    f = BytesIO()
+    # do staff with document
+    document.save(f)
+    f.seek(0)
+
+    return send_file(
+        f,
+        as_attachment=True,
+        download_name='report.docx'
+    )
 
 
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run(port=5000, debug=True)
+    #app.run(host='0.0.0.0', port=5000, debug=True)
