@@ -63,7 +63,14 @@ span {
         <nav class="navbar" style="background-color: #e3f2fd;">
           Wibor 6M do: {{max_day_wibor6m}} 
         </nav>
-        </div>
+      </div>
+      <div class="col-lg-4">
+        <nav class="navbar" style="background-color: #e3f2fd; display: flex; justify-content: flex-end">
+          <a href="{{ url_for('wibor') }}" class="navbar-item">
+              Aktualizacja wiboru
+          </a>
+        </nav>
+      </div>
  
   </div>
       <form id="upload-form" action="{{ url_for('main') }}" method="POST">
