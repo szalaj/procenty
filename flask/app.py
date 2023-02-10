@@ -13,6 +13,8 @@ import pandas as pd
 from docx import Document
 from io import BytesIO
 
+import requests
+
 app = Flask(__name__)
 app.secret_key = '33a42d649ff6cfd8662d550dabc5c3dbed65e34223c41ef2f24362133d829042'
 
@@ -187,10 +189,24 @@ def get_doc():
     return send_file(
         f,
         as_attachment=True,
-        download_name='report.docx'
+        download_name   ='report.docx'
     )
 
+@app.route("/wibor", methods=['GET', 'POST'])
+@login_required
+def wibor():
 
+    response6m = requests.get('https://stooq.pl/q/d/l/?s=plopln6m&i=d')
+    
+    with open("./static/plopln6m_d.csv", "w") as f:
+        f.write(response6m.text)
+
+    response3m = requests.get('https://stooq.pl/q/d/l/?s=plopln3m&i=d')
+    
+    with open("./static/plopln3m_d.csv", "w") as f:
+        f.write(response3m.text)
+    
+    return redirect(url_for('main'))
 
 
 if __name__ == "__main__":
