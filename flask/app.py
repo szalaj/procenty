@@ -85,6 +85,9 @@ def main():
     max_day_wibor3m = df3.index.max()
     max_day_wibor6m = df6.index.max()
 
+    tech_data = {'max_day_wibor3m': max_day_wibor3m.strftime('%d-%m-%Y'),
+               'max_day_wibor6m': max_day_wibor6m.strftime('%d-%m-%Y')}
+
     if request.method == 'POST':
 
         error = None
@@ -108,7 +111,7 @@ def main():
         if 'checkTransza3' in request.form:
             form_data['checkTr3'] = True
 
-
+        tech_data['form_data'] = form_data
 
         try:
             kapital1 = float(form_data['kapital1'])
@@ -123,6 +126,7 @@ def main():
 
             data_start1 = dt.datetime.strptime(dataStart1, '%d/%m/%Y')
             data_zamrozenia = dt.datetime.strptime(dataZamrozenia, '%d/%m/%Y')
+
 
 
             transze = []
@@ -142,11 +146,12 @@ def main():
                 transze.append({'dzien': data_start3, 'wartosc':kapital3 })
 
 
+            
 
             if data_zamrozenia > max_day_wibor3m if rodzajWiboru=='3M' else data_zamrozenia > max_day_wibor6m:
                 error = "Data zamrożenia wiboru większa niż dostępne dane."
                 flash('m')
-                return render_template('wykres.html', form_data=form_data, error=error, max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'), max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'))
+                return render_template('wykres.html', error=error, tech_data=tech_data)
 
 
 
@@ -154,7 +159,7 @@ def main():
         except:
             error = "Wypełnij poprawnie formularz"
             flash('m')
-            return render_template('wykres.html', form_data=form_data, error=error, max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'), max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'))
+            return render_template('wykres.html', error=error, tech_data=tech_data)
 
         
 
@@ -165,14 +170,18 @@ def main():
         wynik = utils.proc.create_kredyt(dane_kredytu, rodzajRat)
         wynik2 = utils.proc.create_kredyt(dane_kredytu_alt, rodzajRat)
 
+        fin_data = {}
+        fin_data['dane'] = wynik
+        fin_data['dane2'] = wynik2
+
+        fin_data['data_zamrozenia'] = data_zamrozenia
 
         
-
-        return render_template('wykres.html', max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'), max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'), dane=wynik, dane2=wynik2, data_zamrozenia=data_zamrozenia.strftime('%Y-%m-%d'), form_data=form_data)
-
+        return render_template('wykres.html', tech_data=tech_data, fin_data=fin_data)
 
 
-    return render_template('wykres.html', max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'), max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'))
+
+    return render_template('wykres.html', tech_data=tech_data)
 
 
 @app.route("/doc", methods=['GET', 'POST'])

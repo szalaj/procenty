@@ -56,12 +56,12 @@ span {
 
     <div class="col-lg-4">
       <nav class="navbar" style="background-color: #e3f2fd;">
-        Wibor 3M do: {{max_day_wibor3m}} 
+        <div  id="wibor3mnav">a</div>
       </nav>
       </div>
       <div class="col-lg-4">
         <nav class="navbar" style="background-color: #e3f2fd;">
-          Wibor 6M do: {{max_day_wibor6m}} 
+          <div  id="wibor6mnav"></div>
         </nav>
       </div>
       <div class="col-lg-4">
@@ -168,7 +168,7 @@ span {
       </form>
 
 
-      {% if dane %}
+      {% if fin_data %}
 
       <div class="row top-buffer">
         <div class="col">
@@ -277,6 +277,16 @@ span {
 </div>
 
 <script type="text/javascript">
+
+
+var tech_data = JSON.parse('{{tech_data|tojson|safe}}');
+console.log(tech_data)
+
+console.log(tech_data["max_day_wibor3m"])
+
+document.getElementById('wibor3mnav').innerHTML = "Wibor 3M do: " + String(tech_data["max_day_wibor3m"]);
+document.getElementById('wibor6mnav').innerHTML = "Wibor 6M do: " + String(tech_data["max_day_wibor6m"]);
+
 const checkboxTransza2 = document.getElementById('idCheckTransza2')
 
 checkboxTransza2.addEventListener('change', (event) => {
@@ -300,15 +310,14 @@ checkboxTransza3.addEventListener('change', (event) => {
     document.getElementById('idData3').readOnly = true;
   }
 })
-</script>
 
-  {% if form_data %}
 
-    <script type="text/javascript">
+  if (tech_data['form_data']) {
+
 
       
 
-      var dane_formularza = JSON.parse('{{form_data|tojson|safe}}');
+      var dane_formularza = tech_data['form_data'];
 
       console.log(dane_formularza)
       
@@ -321,9 +330,6 @@ checkboxTransza3.addEventListener('change', (event) => {
       document.getElementById("idRodzajRat").value = String(dane_formularza["rodzajRat"]);
       document.getElementById("idRodzajWiboru").value = String(dane_formularza["rodzajWiboru"]);
 
-      console.log(dane_formularza["checkTr2"])
-
-      console.log(typeof dane_formularza["checkTr2"])
 
       if (dane_formularza["checkTr2"]) {
 
@@ -331,7 +337,7 @@ checkboxTransza3.addEventListener('change', (event) => {
         document.getElementById('idKapital2').readOnly = false;
         document.getElementById('idData2').readOnly = false;
 
-        document.getElementById('idKapital2').value = String(dane_formularza["kapital2"]);;
+        document.getElementById('idKapital2').value = String(dane_formularza["kapital2"]);
         document.getElementById('idData2').value = String(dane_formularza["dataStart2"]);
       } else 
       {
@@ -344,22 +350,27 @@ checkboxTransza3.addEventListener('change', (event) => {
       document.getElementById('idKapital3').readOnly = false;
       document.getElementById('idData3').readOnly = false;
 
-      document.getElementById('idKapital3').value = String(dane_formularza["kapital3"]);;
+      document.getElementById('idKapital3').value = String(dane_formularza["kapital3"]);
       document.getElementById('idData3').value = String(dane_formularza["dataStart3"]);
       } else 
       {
       document.getElementById('idCheckTransza3').checked = false;
       }
+
+  }
     </script>
 
-    {% endif %}
 
-{% if dane %}
+
+{% if fin_data %}
 <script type="text/javascript">
       
-      var kredyt_dane = JSON.parse('{{dane | tojson|safe}}');
+      var fin_data = JSON.parse('{{fin_data | tojson|safe}}');
 
       var data_zamrozenia_str = '{{data_zamrozenia}}';
+
+
+      var kredyt_dane = fin_data['dane']
 
       console.log(data_zamrozenia_str)
 
@@ -376,7 +387,7 @@ checkboxTransza3.addEventListener('change', (event) => {
       suma_rat_A = d3.sum(kredyt_dane_do_zamr, d => d.rata)
 
 
-      var kredyt_dane2 = JSON.parse('{{dane2 | tojson|safe}}');
+      var kredyt_dane2 = fin_data['dane2']
 
       kredyt_dane_do_zamr2 = kredyt_dane2['raty'].filter(function(d) { return parseDzien(d['dzien']) <= data_zamrozenia  } )
 
