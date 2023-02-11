@@ -198,13 +198,13 @@ def wibor():
 
     response6m = requests.get('https://stooq.pl/q/d/l/?s=plopln6m&i=d')
     
-    with open("./static/plopln6m_d.csv", "w") as f:
-        f.write(response6m.text)
+    with open("./static/plopln6m_d.csv", "wb") as f:
+        f.write(response6m.content)
 
     response3m = requests.get('https://stooq.pl/q/d/l/?s=plopln3m&i=d')
     
-    with open("./static/plopln3m_d.csv", "w") as f:
-        f.write(response3m.text)
+    with open("./static/plopln3m_d.csv", "wb") as f:
+        f.write(response3m.content)
     
     return redirect(url_for('main'))
 
