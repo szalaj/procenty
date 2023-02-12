@@ -2,7 +2,7 @@
 from flask import Flask, render_template, flash, redirect, url_for, jsonify, request, make_response, send_file
 
 
-from wtforms import Form, BooleanField, StringField, PasswordField, validators
+from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, validators
 
 import datetime as dt
 import utils.generate_model
@@ -26,8 +26,22 @@ app.secret_key = '33a42d649ff6cfd8662d550dabc5c3dbed65e34223c41ef2f24362133d8290
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+
 class KredytForm(Form):
-    name = StringField('Username', [validators.Length(min=4, max=25)])
+
+    kapital1 = StringField('Kapitał - Transza 1.', [validators.Length(min=1, max=25)], description="Ile?")
+    kapital2 = StringField('Kapitał - Transza 2.', [validators.Length(min=1, max=25)], description="Ile?")
+    kapital3 = StringField('Kapital - Transza 3.', [validators.Length(min=1, max=25)], description="Ile?")
+    dataStart1 = StringField('Data uruchomienia 1', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
+    dataStart2 = StringField('Data uruchomienia 2', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
+    dataStart3 = StringField('Data uruchomienia 3', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
+    okresy = StringField('Ilość miesięcy', [validators.Length(min=1, max=25)], description="a")
+    marza = StringField('Marża', [validators.Length(min=1, max=25)], description="%")
+    dataZamrozenia = StringField('Data zamrozenia', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
+    rodzajWiboru = SelectField('Rodzaj wiboru', choices=[('3M', '3M'), ('6M', '6M')])
+    rodzajRat = SelectField('Rodzaj rat', choices=[('stale', 'stałe'), ('malejace', 'malejące')])
+
+
 
 
 class User(UserMixin):   

@@ -12,14 +12,112 @@
   </head>
   <body>
     {% from "_form_helper.html" import render_field %}
-    <form id="upload-form" action="{{ url_for('formularz') }}" method="POST">
-      <dl>
-        {{ render_field(form.name) }}
-   
-      </dl>
-      <p><input type=submit value=Register>
+
+    <form id="upload-form" action="{{ url_for('main') }}" method="POST">
+  
+      <div class="row top-buffer">
+        <div class="col-lg-3">
+          {{ render_field(form.kapital1) }}
+        </div>
+        <div class="col-lg-3">
+          {{ render_field(form.dataStart1) }}
+        </div>
+        <div class="col-lg-3">
+          {{ render_field(form.okresy ) }}
+        </div>
+        <div class="col-lg-3">
+          {{ render_field(form.marza) }}
+        </div>
+        </div>
+        <div class="row top-buffer">
+        <div class="col-lg-3">
+          {{ render_field(form.rodzajWiboru) }}
+        </div>
+        <div class="col-lg-3">
+          {{ render_field(form.rodzajRat) }}
+        </div>
+        <div class="col-lg-3">
+          {{ render_field(form.dataZamrozenia) }}
+        </div>
+      </div>
+      <div class="row top-buffer">
+        <div class="col-sm-10">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="idCheckTransza2" name="checkTransza2">
+            <label class="form-check-label" for="idCheckTransza2">
+              Transza 2.
+            </label>
+          </div>
+        </div>
+
+      </div>
+      <div class="row top-buffer">
+        <div class="col-lg-3">
+          {{ render_field(form.kapital2, True) }}
+        </div>
+        <div class="col-lg-3">
+          {{ render_field(form.dataStart2, True) }}
+        </div>
+
+      </div>
+      <div class="row top-buffer">
+        <div class="col-sm-10">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="idCheckTransza3" name="checkTransza3">
+            <label class="form-check-label" for="idCheckTransza3">
+              Transza 3.
+            </label>
+          </div>
+        </div>
+
+      </div>
+      <div class="row top-buffer">
+        <div class="col-lg-3">
+          {{ render_field(form.kapital3, True) }}
+        </div>
+        <div class="col-lg-3">
+          {{ render_field(form.dataStart3, True) }}
+        </div>
+
+      </div>
+      <div class="text-right top-buffer">
+
+              <button type="submit" class="btn btn-primary">Oblicz</button>
+      </div>
+
+
+      <script type="text/javascript">
+
+
+        
+        
+        const checkboxTransza2 = document.getElementById('idCheckTransza2')
+        
+        checkboxTransza2.addEventListener('change', (event) => {
+          if (event.currentTarget.checked) {
+            document.getElementById('id{{form.kapital2.id}}').readOnly = false;
+            document.getElementById('id{{form.dataStart2.id}}').readOnly = false;
+          } else {
+            document.getElementById('id{{form.kapital2.id}}').readOnly = true;
+            document.getElementById('id{{form.dataStart2.id}}').readOnly = true;
+          }
+        })
+        
+        const checkboxTransza3 = document.getElementById('idCheckTransza3')
+        
+        checkboxTransza3.addEventListener('change', (event) => {
+          if (event.currentTarget.checked) {
+            document.getElementById('id{{form.kapital3.id}}').readOnly = false;
+            document.getElementById('id{{form.dataStart3.id}}').readOnly = false;
+          } else {
+            document.getElementById('id{{form.kapital3.id}}').readOnly = true;
+            document.getElementById('id{{form.dataStart3.id}}').readOnly = true;
+          }
+        })
+        
+            </script>
+         
+
     </form>
-
-
   </body>
 </html>
