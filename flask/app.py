@@ -1,5 +1,9 @@
 
 from flask import Flask, render_template, flash, redirect, url_for, jsonify, request, make_response, send_file
+
+
+from wtforms import Form, BooleanField, StringField, PasswordField, validators
+
 import datetime as dt
 import utils.generate_model
 import utils.proc
@@ -18,8 +22,13 @@ import requests
 app = Flask(__name__)
 app.secret_key = '33a42d649ff6cfd8662d550dabc5c3dbed65e34223c41ef2f24362133d829042'
 
+
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+class KredytForm(Form):
+    name = StringField('Username', [validators.Length(min=4, max=25)])
+
 
 class User(UserMixin):   
     id = 1
@@ -72,6 +81,25 @@ def logout():
 def unauthorized():
     return redirect(url_for('login'))
 
+@app.route("/formularz", methods=['GET', 'POST'])
+@login_required
+def formularz():
+
+    form = KredytForm(request.form)
+    print(form.validate())
+    message = ""
+    if request.method == 'POST' and form.validate():
+        print('validate')
+        name = form.name.data
+        flash('Thanks for registering')
+        return redirect(url_for('main'))
+       
+    
+
+    return render_template('formularz.html', form=form, message=message)
+    
+
+
 @app.route("/", methods=['GET', 'POST'])
 @login_required
 def main():
@@ -87,6 +115,8 @@ def main():
 
     tech_data = {'max_day_wibor3m': max_day_wibor3m.strftime('%d-%m-%Y'),
                'max_day_wibor6m': max_day_wibor6m.strftime('%d-%m-%Y')}
+
+    
 
     if request.method == 'POST':
 
