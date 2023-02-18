@@ -171,8 +171,6 @@ def main():
             data_start1 = dt.datetime.strptime(dataStart1, '%d/%m/%Y')
             data_zamrozenia = dt.datetime.strptime(dataZamrozenia, '%d/%m/%Y')
 
-
-
             transze = []
 
             if 'checkTransza2' in request.form:
@@ -209,7 +207,11 @@ def main():
 
         dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False)
 
-        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, True)
+        wibor_start = dane_kredytu["p"]
+        zamrozona_stopa = round(dane_kredytu["p"] + marza,2)
+     
+        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, zamrozona_stopa, data_zamrozenia, rodzajWiboru, transze, True)
+
 
         wynik = utils.proc.create_kredyt(dane_kredytu, rodzajRat)
         wynik2 = utils.proc.create_kredyt(dane_kredytu_alt, rodzajRat)
@@ -219,6 +221,10 @@ def main():
         fin_data['dane2'] = wynik2
 
         fin_data['data_zamrozenia'] = data_zamrozenia
+        fin_data['wibor_start'] = wibor_start
+
+        
+        fin_data['zamrozona_stopa'] = zamrozona_stopa
 
         
         return render_template('wykres.html', tech_data=tech_data, fin_data=fin_data)
