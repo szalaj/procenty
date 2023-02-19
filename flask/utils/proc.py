@@ -36,6 +36,8 @@ class Kredyt:
     
         self.odsetki_naliczone = 0
         self.I = 0
+        
+        self.licznik_rat = 0
 
         self.wynik = []
 
@@ -60,7 +62,8 @@ class Kredyt:
             'dzien': str(dzien_raty.strftime('%Y-%m-%d')),
             'K': str(self.K.quantize(grosze)),  
             'odsetki': str(self.odsetki_naliczone.quantize(grosze)), 
-            'rata':str(self.I.quantize(grosze))
+            'rata':str(self.I.quantize(grosze)),
+            'nr_raty': self.licznik_rat
         }
 
         self.wynik.append(data)
@@ -144,6 +147,7 @@ class Kredyt:
             
             self.I = self.odsetki_naliczone
 
+        self.licznik_rat += 1
         self.zapisz_stan(dzien_raty)
 
         #print(self.wyswietl(dzien_raty))

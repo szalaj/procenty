@@ -220,7 +220,7 @@ def main():
         fin_data['dane'] = wynik
         fin_data['dane2'] = wynik2
 
-        fin_data['data_zamrozenia'] = data_zamrozenia
+        fin_data['data_zamrozenia'] = data_zamrozenia.strftime('%d/%m/%Y')
         fin_data['wibor_start'] = wibor_start
 
         
