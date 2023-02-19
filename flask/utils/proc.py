@@ -187,7 +187,7 @@ def create_kredyt(dane_kredytu, rodzajRat) -> Kredyt:
     #stream = open("./models/{}.yml".format(plik_model), 'r')
     #dane = yaml.safe_load(stream)
 
-    print(dane_kredytu)
+    #print(dane_kredytu)
 
     dane = dane_kredytu
 
@@ -242,7 +242,7 @@ if __name__== "__main__":
     kr.symuluj()
 
 
-    print("kapital na koniec : {}".format(kr.K.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
+    #print("kapital na koniec : {}".format(kr.K.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
 
     kr.zapisz_do_pliku('./results/last_result.yml')
 

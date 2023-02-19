@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, flash, redirect, url_for, jsonify, request, make_response, send_file
+from flask import Flask, render_template, flash, redirect, url_for, jsonify, request, make_response, send_file, session
 
 
 from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, validators
@@ -231,6 +231,8 @@ def main():
         fin_data['stala_stopa_uruch'] = round(dane_kredytu["p"] + marza,2)
 
 
+
+
         
         return render_template('wykres.html', tech_data=tech_data, fin_data=fin_data)
 
@@ -243,18 +245,28 @@ def main():
 @login_required
 def get_doc():
 
-    document = Document()
-    document.add_heading("Sample Press Release", 0)
-    f = BytesIO()
-    # do staff with document
-    document.save(f)
-    f.seek(0)
+    print("doc")
 
-    return send_file(
-        f,
-        as_attachment=True,
-        download_name   ='report.docx'
-    )
+    if request.method == 'POST':
+        
+
+        knk = request.get_json()['dane']['kapital_na_koniec']
+        print(knk)
+
+        document = Document()
+        document.add_heading("Sample Press Release", 0)
+        document.add_heading(knk, 1)
+        f = BytesIO()
+        # do staff with document
+        document.save(f)
+        f.seek(0)
+
+        return send_file(
+            f,
+            mimetype='application/msword',
+            as_attachment=True, 
+            download_name   ='report.docx'
+        )
 
 @app.route("/wibor", methods=['GET', 'POST'])
 @login_required
