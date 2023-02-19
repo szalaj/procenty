@@ -27,7 +27,7 @@ span {
 
 
 
-  <div class="container">
+ <div class="container">
  <!-- Image and text -->
     <div class="row">
       <div class="col">
@@ -56,12 +56,12 @@ span {
 
     <div class="col-lg-4">
       <nav class="navbar" style="background-color: #e3f2fd;">
-        Wibor 3M do: {{max_day_wibor3m}} 
+        <div  id="wibor3mnav">a</div>
       </nav>
       </div>
       <div class="col-lg-4">
         <nav class="navbar" style="background-color: #e3f2fd;">
-          Wibor 6M do: {{max_day_wibor6m}} 
+          <div  id="wibor6mnav"></div>
         </nav>
       </div>
       <div class="col-lg-4">
@@ -109,7 +109,7 @@ span {
             </select>
           </div>
           <div class="col-lg-3">
-            <label for="idDataZamrozenia">Data zamrożenia wiboru</label>
+            <label for="idDataZamrozenia">Data zamrożenia Wiboru</label>
             <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataZamrozenia"  id="idDataZamrozenia">
           </div>
         </div>
@@ -168,95 +168,85 @@ span {
       </form>
 
 
-      {% if dane %}
+      {% if fin_data %}
+
+        <div class="row top-buffer">
+          <div class="col">
+
+          <div class="card text-bg-primary">
+            <div class="card-header">
+              Zamrożone oprocentowanie kredytu w dniu uruchomienia kredytu
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><div style="float: left">(A). Marża</div><div style="float: right"  id="idMarzaUmowa">aa</div></li>
+              <li class="list-group-item"><div style="float: left">(B). Wibor z dnia uruchomienia kredytu</div><div style="float: right" id="idWiborUmowa">aa</div></li>
+              <li class="list-group-item" style="background-color: #e1e1e1"><div style="float: left">(A+B). Oprocentowanie w dniu uruchomienia kredytu</div><div style="float: right" id="idStopaUmowa"></div></li>
+              <li class="list-group-item"><div style="float: left">(C). Wibor w dniu zamrożenia</div><div style="float: right" id="idZamrWibor"></div></li>
+              <li class="list-group-item" style="background-color: #e1e1e1"><div style="float: left">(A+C). Oprocentowanie w dniu zamrożenia kredytu</div><div style="float: right" id="idZamrStopa"></div></li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
 
       <div class="row top-buffer">
         <div class="col">
 
-          <div class="card">
+          <div class="card text-bg-primary bg-success">
             <div class="card-header">
-              WPSy
+              Raty przed zamrożeniem wiboru
             </div>
-            <div class="card-body">
-
-              <p class="card-text">Raty przed zamrożeniem wiboru</p>
-
-              <table class="table">
-                <tbody>
-                  <tr>
-                    <td>Suma rat marża + wibor</td>
-                    <td id="suma_rat_A">233</td>
-
-                  </tr>
-                  <tr>
-
-                    <td>Suma rat marża</td>
-                    <td id="suma_rat2_A">43</td>
- 
-                  </tr>
-                  <tr>
-
-                    <td>Różnica</td>
-                    <td id="roznica_A">43</td>
- 
-                  </tr>                 
-                </tbody>
-              </table>
-
-              <p class="card-text">Raty po zamrożeniu wiboru</p>
-
-              <table class="table">
-                <tbody>
-                  <tr>
-                    <td>Suma rat marża + wibor</td>
-                    <td id="suma_rat_B">233</td>
-
-                  </tr>
-                  <tr>
-
-                    <td>Suma rat marża</td>
-                    <td id="suma_rat2_B">43</td>
- 
-                  </tr>
-                  <tr>
-
-                    <td>Różnica</td>
-                    <td id="roznica_B">43</td>
- 
-                  </tr>                 
-                </tbody>
-              </table>
-
-              <p class="card-text">Raty wszystkie</p>
-
-              <table class="table">
-                <tbody>
-                  <tr>
-                    <td>Suma rat marża + wibor</td>
-                    <td id="suma_rat">N/A</td>
-
-                  </tr>
-                  <tr>
-
-                    <td>Suma rat marża</td>
-                    <td id="suma_rat2">N/A</td>
- 
-                  </tr>
-                  <tr>
-
-                    <td>Różnica</td>
-                    <td id="roznica">N/A</td>
- 
-                  </tr>                 
-                </tbody>
-              </table>
-        
-            </div>
-            
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><div style="float: left">Liczba rat</div><div style="float: right"  id="idIloscRatPrzed">aa</div></li>
+              <li class="list-group-item"><div style="float: left">(A). Suma rat - marża + zmienny wibor</div><div style="float: right"  id="suma_rat_A">aa</div></li>
+              <li class="list-group-item"><div style="float: left">(B). Suma rat - oprocentowanie z dnia uruchomienia</div><div style="float: right" id="suma_rat2_A">aa</div></li>
+              <li class="list-group-item" style="background-color: #ceffa8"><div style="float: left">(A - B). Do zwrotu</div><div style="float: right" id="roznica_A"></div></li>
+              <li class="list-group-item" style="background-color: #ceffa8"><div style="float: left">Saldo kredytu</div><div style="float: right" id="idSaldoPrzed"></div></li>
+            </ul>
           </div>
 
+        </div>
       </div>
-    </div>
+
+      <div class="row top-buffer">
+        <div class="col">
+
+          <div class="card text-bg-primary bg-warning">
+            <div class="card-header">
+              Raty po zamrożeniu wiboru
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><div style="float: left">Liczba rat</div><div style="float: right"  id="idIloscRatPo">aa</div></li>
+              <li class="list-group-item"><div style="float: left">(A). Suma rat - marża + zamrożony wibor</div><div style="float: right"  id="suma_rat_B">aa</div></li>
+              <li class="list-group-item"><div style="float: left">(B). Suma rat - oprocentowanie z dnia uruchomienia</div><div style="float: right" id="suma_rat2_B">aa</div></li>
+              <li class="list-group-item" style="background-color: #ffe4ad"><div style="float: left">(A - B). Do zwrotu</div><div style="float: right" id="roznica_B"></div></li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="row top-buffer">
+        <div class="col">
+
+          <div class="card text-bg-primary bg-primary">
+            <div class="card-header">
+              Raty wszystkie
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><div style="float: left">Liczba rat</div><div style="float: right"  id="idIloscRatWszystkie">aa</div></li>
+              <li class="list-group-item"><div style="float: left">(A). Suma rat - marża + wibor (zmienny i zamrożony)</div><div style="float: right"  id="suma_rat">aa</div></li>
+              <li class="list-group-item"><div style="float: left">(B). Suma rat - oprocentowanie z dnia uruchomienia</div><div style="float: right" id="suma_rat2">aa</div></li>
+              <li class="list-group-item" style="background-color: #badfff"><div style="float: left">(A - B). Do zwrotu</div><div style="float: right" id="roznica"></div></li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+
+
+
 
     {% endif %}
 
@@ -277,6 +267,14 @@ span {
 </div>
 
 <script type="text/javascript">
+
+
+var tech_data = JSON.parse('{{tech_data|tojson|safe}}');
+
+
+document.getElementById('wibor3mnav').innerHTML = "Wibor 3M do: " + String(tech_data["max_day_wibor3m"]);
+document.getElementById('wibor6mnav').innerHTML = "Wibor 6M do: " + String(tech_data["max_day_wibor6m"]);
+
 const checkboxTransza2 = document.getElementById('idCheckTransza2')
 
 checkboxTransza2.addEventListener('change', (event) => {
@@ -300,17 +298,16 @@ checkboxTransza3.addEventListener('change', (event) => {
     document.getElementById('idData3').readOnly = true;
   }
 })
-</script>
 
-  {% if form_data %}
 
-    <script type="text/javascript">
+  if (tech_data['form_data']) {
+
 
       
 
-      var dane_formularza = JSON.parse('{{form_data|tojson|safe}}');
+      var dane_formularza = tech_data['form_data'];
 
-      console.log(dane_formularza)
+
       
 
       document.getElementById("idKapital1").value = String(dane_formularza["kapital1"]);
@@ -321,9 +318,6 @@ checkboxTransza3.addEventListener('change', (event) => {
       document.getElementById("idRodzajRat").value = String(dane_formularza["rodzajRat"]);
       document.getElementById("idRodzajWiboru").value = String(dane_formularza["rodzajWiboru"]);
 
-      console.log(dane_formularza["checkTr2"])
-
-      console.log(typeof dane_formularza["checkTr2"])
 
       if (dane_formularza["checkTr2"]) {
 
@@ -331,7 +325,7 @@ checkboxTransza3.addEventListener('change', (event) => {
         document.getElementById('idKapital2').readOnly = false;
         document.getElementById('idData2').readOnly = false;
 
-        document.getElementById('idKapital2').value = String(dane_formularza["kapital2"]);;
+        document.getElementById('idKapital2').value = String(dane_formularza["kapital2"]);
         document.getElementById('idData2').value = String(dane_formularza["dataStart2"]);
       } else 
       {
@@ -344,70 +338,97 @@ checkboxTransza3.addEventListener('change', (event) => {
       document.getElementById('idKapital3').readOnly = false;
       document.getElementById('idData3').readOnly = false;
 
-      document.getElementById('idKapital3').value = String(dane_formularza["kapital3"]);;
+      document.getElementById('idKapital3').value = String(dane_formularza["kapital3"]);
       document.getElementById('idData3').value = String(dane_formularza["dataStart3"]);
       } else 
       {
       document.getElementById('idCheckTransza3').checked = false;
       }
+
+  }
     </script>
 
-    {% endif %}
 
-{% if dane %}
+
+{% if fin_data %}
 <script type="text/javascript">
       
-      var kredyt_dane = JSON.parse('{{dane | tojson|safe}}');
+      var fin_data = JSON.parse('{{fin_data | tojson|safe}}');
 
-      var data_zamrozenia_str = '{{data_zamrozenia}}';
+      var data_zamrozenia_str = String(fin_data['data_zamrozenia'])
 
-      console.log(data_zamrozenia_str)
+      var kredyt_dane = fin_data['dane']
+
+      console.log(kredyt_dane)
 
       const parseDzien = d3.timeParse("%Y-%m-%d")
 
-      const data_zamrozenia = parseDzien(data_zamrozenia_str)
+      const data_zamrozenia = d3.timeParse("%d/%m/%Y")(data_zamrozenia_str)
+
 
       kredyt_dane_do_zamr = kredyt_dane['raty'].filter(function(d) { return parseDzien(d['dzien']) <= data_zamrozenia  } )
 
+      console.log("do zamr:")
       console.log(kredyt_dane_do_zamr)
 
-      suma_rat = d3.sum(kredyt_dane['raty'], d => d.rata)
+     
 
+      ilosc_rat_przed = d3.max(kredyt_dane_do_zamr, d=> d.nr_raty)
+      ilosc_rat_wszystkie = d3.max(kredyt_dane['raty'], d=> d.nr_raty)
+
+      ilosc_rat_po = ilosc_rat_wszystkie - ilosc_rat_przed
+
+
+
+      suma_rat = d3.sum(kredyt_dane['raty'], d => d.rata)
       suma_rat_A = d3.sum(kredyt_dane_do_zamr, d => d.rata)
 
 
-      var kredyt_dane2 = JSON.parse('{{dane2 | tojson|safe}}');
+      var kredyt_dane2 = fin_data['dane2']
 
       kredyt_dane_do_zamr2 = kredyt_dane2['raty'].filter(function(d) { return parseDzien(d['dzien']) <= data_zamrozenia  } )
 
       suma_rat2 = d3.sum(kredyt_dane2['raty'], d => d.rata)
-
       suma_rat2_A = d3.sum(kredyt_dane_do_zamr2, d => d.rata)
 
       suma_rat_B = suma_rat - suma_rat_A
       suma_rat2_B = suma_rat2 - suma_rat2_A
 
       zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
+
+
       
+     
+      d3.select("#idMarzaUmowa").text(dane_formularza["marza"] + "%")
+      d3.select("#idWiborUmowa").text(fin_data['wibor_start'] + "%")
+      d3.select("#idStopaUmowa").text(fin_data['stala_stopa_uruch'] + "%")
+      d3.select("#idZamrWibor").text(fin_data['wibor_zamrozony'] + "%")
+
+      suma_zamr =parseFloat(dane_formularza["marza"])+parseFloat(fin_data['wibor_zamrozony'])
+
+      kapital_do_splaty_po_zamr = d3.min(kredyt_dane_do_zamr, function(d) { return d.K_po;});
+
+
+      d3.select("#idZamrStopa").text(suma_zamr + "%")
+      
+      d3.select("#idIloscRatPrzed").text(ilosc_rat_przed + " / " + ilosc_rat_wszystkie)
       d3.select("#suma_rat_A").text(zloty(suma_rat_A))
-
       d3.select("#suma_rat2_A").text(zloty(suma_rat2_A))
-
       d3.select("#roznica_A").text(zloty(suma_rat_A - suma_rat2_A))
 
+      d3.select("#idSaldoPrzed").text(zloty(kapital_do_splaty_po_zamr))
 
+
+      d3.select("#idIloscRatPo").text(ilosc_rat_po + " / " + ilosc_rat_wszystkie)
       d3.select("#suma_rat_B").text(zloty(suma_rat_B))
-
       d3.select("#suma_rat2_B").text(zloty(suma_rat2_B))
-
       d3.select("#roznica_B").text(zloty(suma_rat_B - suma_rat2_B))
 
-
+      d3.select("#idIloscRatWszystkie").text(ilosc_rat_wszystkie)
       d3.select("#suma_rat").text(zloty(suma_rat))
-
       d3.select("#suma_rat2").text(zloty(suma_rat2))
-
       d3.select("#roznica").text(zloty(suma_rat - suma_rat2))
+
     </script>
 
   {% endif %}

@@ -1,5 +1,9 @@
 
 from flask import Flask, render_template, flash, redirect, url_for, jsonify, request, make_response, send_file
+
+
+from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, validators
+
 import datetime as dt
 import utils.generate_model
 import utils.proc
@@ -18,8 +22,27 @@ import requests
 app = Flask(__name__)
 app.secret_key = '33a42d649ff6cfd8662d550dabc5c3dbed65e34223c41ef2f24362133d829042'
 
+
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+
+class KredytForm(Form):
+
+    kapital1 = StringField('Kapitał - Transza 1.', [validators.Length(min=1, max=25)], description="Ile?")
+    kapital2 = StringField('Kapitał - Transza 2.', [validators.Length(min=1, max=25)], description="Ile?")
+    kapital3 = StringField('Kapital - Transza 3.', [validators.Length(min=1, max=25)], description="Ile?")
+    dataStart1 = StringField('Data uruchomienia 1', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
+    dataStart2 = StringField('Data uruchomienia 2', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
+    dataStart3 = StringField('Data uruchomienia 3', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
+    okresy = StringField('Ilość miesięcy', [validators.Length(min=1, max=25)], description="a")
+    marza = StringField('Marża', [validators.Length(min=1, max=25)], description="%")
+    dataZamrozenia = StringField('Data zamrozenia', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
+    rodzajWiboru = SelectField('Rodzaj wiboru', choices=[('3M', '3M'), ('6M', '6M')])
+    rodzajRat = SelectField('Rodzaj rat', choices=[('stale', 'stałe'), ('malejace', 'malejące')])
+
+
+
 
 class User(UserMixin):   
     id = 1
@@ -72,6 +95,25 @@ def logout():
 def unauthorized():
     return redirect(url_for('login'))
 
+@app.route("/formularz", methods=['GET', 'POST'])
+@login_required
+def formularz():
+
+    form = KredytForm(request.form)
+    print(form.validate())
+    message = ""
+    if request.method == 'POST' and form.validate():
+        print('validate')
+        name = form.name.data
+        flash('Thanks for registering')
+        return redirect(url_for('main'))
+       
+    
+
+    return render_template('formularz.html', form=form, message=message)
+    
+
+
 @app.route("/", methods=['GET', 'POST'])
 @login_required
 def main():
@@ -84,6 +126,11 @@ def main():
 
     max_day_wibor3m = df3.index.max()
     max_day_wibor6m = df6.index.max()
+
+    tech_data = {'max_day_wibor3m': max_day_wibor3m.strftime('%d-%m-%Y'),
+               'max_day_wibor6m': max_day_wibor6m.strftime('%d-%m-%Y')}
+
+    
 
     if request.method == 'POST':
 
@@ -108,7 +155,7 @@ def main():
         if 'checkTransza3' in request.form:
             form_data['checkTr3'] = True
 
-
+        tech_data['form_data'] = form_data
 
         try:
             kapital1 = float(form_data['kapital1'])
@@ -123,7 +170,6 @@ def main():
 
             data_start1 = dt.datetime.strptime(dataStart1, '%d/%m/%Y')
             data_zamrozenia = dt.datetime.strptime(dataZamrozenia, '%d/%m/%Y')
-
 
             transze = []
 
@@ -142,11 +188,12 @@ def main():
                 transze.append({'dzien': data_start3, 'wartosc':kapital3 })
 
 
+            
 
             if data_zamrozenia > max_day_wibor3m if rodzajWiboru=='3M' else data_zamrozenia > max_day_wibor6m:
                 error = "Data zamrożenia wiboru większa niż dostępne dane."
                 flash('m')
-                return render_template('wykres.html', form_data=form_data, error=error, max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'), max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'))
+                return render_template('wykres.html', error=error, tech_data=tech_data)
 
 
 
@@ -154,25 +201,42 @@ def main():
         except:
             error = "Wypełnij poprawnie formularz"
             flash('m')
-            return render_template('wykres.html', form_data=form_data, error=error, max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'), max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'))
+            return render_template('wykres.html', error=error, tech_data=tech_data)
 
         
 
         dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False)
 
-        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, True)
+        wibor_start = dane_kredytu["p"]
+        stala_stopa_uruch = round(dane_kredytu["p"] + marza,2)
+        wibor_zamrozony = dane_kredytu['wibor_zamrozony']
+
+
+     
+        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, stala_stopa_uruch, data_zamrozenia, rodzajWiboru, transze, True)
+
 
         wynik = utils.proc.create_kredyt(dane_kredytu, rodzajRat)
         wynik2 = utils.proc.create_kredyt(dane_kredytu_alt, rodzajRat)
 
+        fin_data = {}
+        fin_data['dane'] = wynik
+        fin_data['dane2'] = wynik2
+
+        fin_data['data_zamrozenia'] = data_zamrozenia.strftime('%d/%m/%Y')
+        fin_data['wibor_start'] = wibor_start
+        fin_data['wibor_zamrozony'] = wibor_zamrozony
 
         
-
-        return render_template('wykres.html', max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'), max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'), dane=wynik, dane2=wynik2, data_zamrozenia=data_zamrozenia.strftime('%Y-%m-%d'), form_data=form_data)
-
+        fin_data['stala_stopa_uruch'] = round(dane_kredytu["p"] + marza,2)
 
 
-    return render_template('wykres.html', max_day_wibor3m=max_day_wibor3m.strftime('%d-%m-%Y'), max_day_wibor6m=max_day_wibor6m.strftime('%d-%m-%Y'))
+        
+        return render_template('wykres.html', tech_data=tech_data, fin_data=fin_data)
+
+
+
+    return render_template('wykres.html', tech_data=tech_data)
 
 
 @app.route("/doc", methods=['GET', 'POST'])
@@ -198,13 +262,13 @@ def wibor():
 
     response6m = requests.get('https://stooq.pl/q/d/l/?s=plopln6m&i=d')
     
-    with open("./static/plopln6m_d.csv", "w") as f:
-        f.write(response6m.text)
+    with open("./static/plopln6m_d.csv", "wb") as f:
+        f.write(response6m.content)
 
     response3m = requests.get('https://stooq.pl/q/d/l/?s=plopln3m&i=d')
     
-    with open("./static/plopln3m_d.csv", "w") as f:
-        f.write(response3m.text)
+    with open("./static/plopln3m_d.csv", "wb") as f:
+        f.write(response3m.content)
     
     return redirect(url_for('main'))
 
