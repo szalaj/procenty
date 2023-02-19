@@ -63,7 +63,8 @@ class Kredyt:
             'K': str(self.K.quantize(grosze)),  
             'odsetki': str(self.odsetki_naliczone.quantize(grosze)), 
             'rata':str(self.I.quantize(grosze)),
-            'nr_raty': self.licznik_rat
+            'nr_raty': self.licznik_rat,
+            'K_po': str((self.K-(self.I-self.odsetki_naliczone)).quantize(grosze))
         }
 
         self.wynik.append(data)
