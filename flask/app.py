@@ -208,9 +208,12 @@ def main():
         dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False)
 
         wibor_start = dane_kredytu["p"]
-        zamrozona_stopa = round(dane_kredytu["p"] + marza,2)
+        stala_stopa_uruch = round(dane_kredytu["p"] + marza,2)
+        wibor_zamrozony = dane_kredytu['wibor_zamrozony']
+
+
      
-        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, zamrozona_stopa, data_zamrozenia, rodzajWiboru, transze, True)
+        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, stala_stopa_uruch, data_zamrozenia, rodzajWiboru, transze, True)
 
 
         wynik = utils.proc.create_kredyt(dane_kredytu, rodzajRat)
@@ -222,9 +225,11 @@ def main():
 
         fin_data['data_zamrozenia'] = data_zamrozenia.strftime('%d/%m/%Y')
         fin_data['wibor_start'] = wibor_start
+        fin_data['wibor_zamrozony'] = wibor_zamrozony
 
         
-        fin_data['zamrozona_stopa'] = zamrozona_stopa
+        fin_data['stala_stopa_uruch'] = round(dane_kredytu["p"] + marza,2)
+
 
         
         return render_template('wykres.html', tech_data=tech_data, fin_data=fin_data)

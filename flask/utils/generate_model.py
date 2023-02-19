@@ -61,7 +61,8 @@ def generateFromWiborFile(kapital, okresy, start_date, marza, dzien_zamrozenia, 
             "start": miesiace[0],
             "daty_splaty": miesiace[1:],
             "oprocentowanie": opr_arr,
-            "dzien_zamrozenia": dzien_zamrozenia.strftime('%Y-%m-%d')}
+            "dzien_zamrozenia": dzien_zamrozenia.strftime('%Y-%m-%d'),
+            "wibor_zamrozony": wibor_zamr_value }
 
     return data
 
