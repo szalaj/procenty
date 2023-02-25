@@ -250,12 +250,20 @@ def get_doc():
     if request.method == 'POST':
         
 
-        knk = request.get_json()['dane']['kapital_na_koniec']
-        print(knk)
+        dane = request.get_json()['form_data']
+
 
         document = Document()
-        document.add_heading("Sample Press Release", 0)
-        document.add_heading(knk, 1)
+        document.add_paragraph("dane o kredycie:")
+        
+        document.add_paragraph(
+            dane['kapital1'], style='List Bullet'
+        )
+        document.add_paragraph(
+            dane['okresy'], style='List Bullet'
+        )
+
+
         f = BytesIO()
         # do staff with document
         document.save(f)
