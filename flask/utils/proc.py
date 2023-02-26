@@ -36,6 +36,8 @@ class Kredyt:
     
         self.odsetki_naliczone = 0
         self.I = 0
+        
+        self.licznik_rat = 0
 
         self.wynik = []
 
@@ -60,7 +62,9 @@ class Kredyt:
             'dzien': str(dzien_raty.strftime('%Y-%m-%d')),
             'K': str(self.K.quantize(grosze)),  
             'odsetki': str(self.odsetki_naliczone.quantize(grosze)), 
-            'rata':str(self.I.quantize(grosze))
+            'rata':str(self.I.quantize(grosze)),
+            'nr_raty': self.licznik_rat,
+            'K_po': str((self.K-(self.I-self.odsetki_naliczone)).quantize(grosze))
         }
 
         self.wynik.append(data)
@@ -144,6 +148,7 @@ class Kredyt:
             
             self.I = self.odsetki_naliczone
 
+        self.licznik_rat += 1
         self.zapisz_stan(dzien_raty)
 
         #print(self.wyswietl(dzien_raty))
@@ -182,7 +187,7 @@ def create_kredyt(dane_kredytu, rodzajRat) -> Kredyt:
     #stream = open("./models/{}.yml".format(plik_model), 'r')
     #dane = yaml.safe_load(stream)
 
-    print(dane_kredytu)
+    #print(dane_kredytu)
 
     dane = dane_kredytu
 
@@ -237,7 +242,7 @@ if __name__== "__main__":
     kr.symuluj()
 
 
-    print("kapital na koniec : {}".format(kr.K.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
+    #print("kapital na koniec : {}".format(kr.K.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
 
     kr.zapisz_do_pliku('./results/last_result.yml')
 
