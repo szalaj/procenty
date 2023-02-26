@@ -7,6 +7,7 @@ from wtforms import Form, BooleanField, StringField, PasswordField, SelectField,
 import datetime as dt
 import utils.generate_model
 import utils.proc
+import utils.create_document
 
 
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
@@ -14,7 +15,7 @@ from http import HTTPStatus
 
 import pandas as pd
 
-from docx import Document
+
 from io import BytesIO
 
 import requests
@@ -250,19 +251,10 @@ def get_doc():
     if request.method == 'POST':
         
 
-        dane = request.get_json()['form_data']
+        dane = request.get_json()
 
-
-        document = Document()
-        document.add_paragraph("dane o kredycie:")
+        document = utils.create_document.create_document(dane)
         
-        document.add_paragraph(
-            dane['kapital1'], style='List Bullet'
-        )
-        document.add_paragraph(
-            dane['okresy'], style='List Bullet'
-        )
-
 
         f = BytesIO()
         # do staff with document
