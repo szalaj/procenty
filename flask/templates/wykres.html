@@ -70,6 +70,12 @@
     stroke-dasharray: 5;
   }
 
+  #wykres {
+    margin-left: 0px;
+    padding-left: 0px;
+
+  }
+
   </style>
 </head>
 
@@ -362,7 +368,7 @@
     <div class="row top-buffer">
       <div class="col">
 
-        <div id="wykres"></div>
+        <div class="col-lg-12" id="wykres"></div>
 
       </div>
     </div>
@@ -567,8 +573,10 @@
 
     });
 
+    var width_docs = document.getElementById('wykres').clientWidth;
+
     var margin = { top: 60, right: 30, bottom: 70, left: 80 },
-      width = 800 - margin.left - margin.right,
+      width = width_docs - margin.left - margin.right,
       height = 450 - margin.top - margin.bottom;
 
     var svg = d3.select("#wykres")
@@ -578,9 +586,10 @@
       .attr("height", height + margin.top + margin.bottom)
       .attr("style", "border:1px solid black;")
       .style('background', "white")
-      .append("g")
+      .append("g")  
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
+  
 
  var xscale = d3.scaleTime()
     .domain(d3.extent(dane_wykres, d => d.dzien))
@@ -657,6 +666,16 @@
     .attr("y", -24)
     .text("Kapitał do spłaty")
 
+    //We will build a basic function to handle window resizing.
+function resize() {
+    width = document.getElementById('wykres').clientWidth;
+
+    d3.select('#wykres svg')
+      .attr('width', width)
+}
+
+window.onresize = resize;
+//Call our resize function if the window size is changed.
 
     document.getElementById('idGuzikPlik').addEventListener('click', function (event) {
       event.preventDefault(); // To prevent following the link (optional)
