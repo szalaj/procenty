@@ -30,52 +30,54 @@
 
       font-size: large;
     }
+
     path {
-        fill: none;
-        stroke-width: 1px;
-        stroke: black;
+      fill: none;
+      stroke-width: 1px;
+      stroke: black;
     }
+
     path.kreska {
-        fill: none;
-        stroke-width: 2px;
-        stroke: black;
+      fill: none;
+      stroke-width: 2px;
+      stroke: black;
     }
+
     path.red {
-    fill: none;
-    stroke-width: 2px;
-    stroke: red;
-  }
+      fill: none;
+      stroke-width: 2px;
+      stroke: red;
+    }
 
-  path.red-dot {
-    fill: none;
-    stroke-width: 1px;
-    stroke: red;
-    border-style: dotted;
-    stroke-dasharray: 5;
-  }
+    path.red-dot {
+      fill: none;
+      stroke-width: 1px;
+      stroke: red;
+      border-style: dotted;
+      stroke-dasharray: 5;
+    }
 
-  path.black-dot {
-    fill: none;
-    stroke-width: 1px;
-    stroke: black;
-    border-style: dotted;
-    stroke-dasharray: 5;
-  }
+    path.black-dot {
+      fill: none;
+      stroke-width: 1px;
+      stroke: black;
+      border-style: dotted;
+      stroke-dasharray: 5;
+    }
 
-  line.gridline {
-    fill: none;
-    stroke-width: 1px;
-    stroke: black;
-    border-style: dotted;
-    stroke-dasharray: 5;
-  }
+    line.gridline {
+      fill: none;
+      stroke-width: 1px;
+      stroke: black;
+      border-style: dotted;
+      stroke-dasharray: 5;
+    }
 
-  #wykres {
-    margin-left: 0px;
-    padding-left: 0px;
+    #wykres {
+      margin-left: 0px;
+      padding-left: 0px;
 
-  }
-
+    }
   </style>
 </head>
 
@@ -586,96 +588,113 @@
       .attr("height", height + margin.top + margin.bottom)
       .attr("style", "border:1px solid black;")
       .style('background', "white")
-      .append("g")  
+      .append("g")
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
-  
-
- var xscale = d3.scaleTime()
-    .domain(d3.extent(dane_wykres, d => d.dzien))
-    .range([0, width]);
 
 
-
-
-  svg.append("g")
-    .attr("class", "xAxis")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
-    .selectAll("text")
-    .attr("transform", "translate(-10,0)rotate(-45)")
-    .style("text-anchor", "end")
-    .style("font-size", "13px");
-
-
-
-  svg.append('g')
-  .selectAll('line')
-  .data(xscale.ticks())
-  .enter().append('line')
-  .attr('class', 'gridline')
-  .attr('x1', d => xscale(d))
-  .attr('x2', d => xscale(d))
-  .attr('y1', 0)
-  .attr('y2', height)
-  .attr('stroke', 'black')
-
-
-
-  var maxYvalue = d3.max(dane_wykres, function (d) { return d.K_po });
-  var minYvalue = d3.min(dane_wykres, function (d) { return d.K_po });
-
-
-
-  var yscale = d3.scaleLinear()
-    .domain([minYvalue, maxYvalue])
-    .range([height, 0]);
+    var xscale = d3.scaleTime()
+      .domain(d3.extent(dane_wykres, d => d.dzien))
+      .range([0, width]);
 
 
 
 
-  formatMoney = function (d) { return d3.format(".0f")(d) + " zł"; }
+    var xAxis = svg.append("g")
+      .attr("class", "xAxis")
+      .attr("transform", "translate(0," + height + ")")
+
+    xAxis.call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
+      .selectAll("text")
+      .attr("transform", "translate(-10,0)rotate(-45)")
+      .style("text-anchor", "end")
+      .style("font-size", "13px");
 
 
-  svg.append("g")
-    .attr("class", "yAxis")
-    .call(d3.axisLeft(yscale).tickFormat(formatMoney))
-    .style("font-size", "13px");
+
+    var grids = svg.append('g')
+      .selectAll('line')
+      .data(xscale.ticks())
+      .enter().append('line')
+      .attr('class', 'gridline')
+      .attr('x1', d => xscale(d))
+      .attr('x2', d => xscale(d))
+      .attr('y1', 0)
+      .attr('y2', height)
+      .attr('stroke', 'black')
 
 
 
+    var maxYvalue = d3.max(dane_wykres, function (d) { return d.K_po });
+    var minYvalue = d3.min(dane_wykres, function (d) { return d.K_po });
+
+
+
+    var yscale = d3.scaleLinear()
+      .domain([minYvalue, maxYvalue])
+      .range([height, 0]);
+
+
+
+
+    formatMoney = function (d) { return d3.format(".0f")(d) + " zł"; }
+
+
+    svg.append("g")
+      .attr("class", "yAxis")
+      .call(d3.axisLeft(yscale).tickFormat(formatMoney))
+      .style("font-size", "13px");
 
 
 
 
 
-  svg.append("path")
-    .datum(dane_wykres)
-    .attr("class", "kreska")
-    .attr("d", d3.line()
-      .x(function (d) { return xscale(d.dzien) })
-      .y(function (d) { return yscale(d.K_po) })
-    )
-
-  
 
 
-  svg.append("text")
-    .attr("class", "text-tytul")
-    .attr("x", 0)
-    .attr("y", -24)
-    .text("Kapitał do spłaty")
 
-    //We will build a basic function to handle window resizing.
-function resize() {
-    width = document.getElementById('wykres').clientWidth;
+    var kreska = svg.append("path")
+      .datum(dane_wykres)
+      .attr("class", "kreska")
+      .attr("d", d3.line()
+        .x(function (d) { return xscale(d.dzien) })
+        .y(function (d) { return yscale(d.K_po) })
+      )
 
-    d3.select('#wykres svg')
-      .attr('width', width)
-}
 
-window.onresize = resize;
-//Call our resize function if the window size is changed.
+    svg.append("text")
+      .attr("class", "text-tytul")
+      .attr("x", 0)
+      .attr("y", -24)
+      .text("Kapitał do spłaty")
+
+
+
+    function resize() {
+      width_docs = document.getElementById('wykres').clientWidth;
+
+      d3.select('#wykres svg')
+        .attr('width', width_docs)
+
+      xscale.range([0, width_docs - margin.left - margin.right]);
+
+
+      xAxis.call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
+
+      grids.attr("x1", function (d) { return xscale(d) })
+      grids.attr("x2", function (d) { return xscale(d) })
+
+      kreska.attr("d", d3.line()
+        .x(function (d) { return xscale(d.dzien) })
+        .y(function (d) { return yscale(d.K_po) })
+      )
+
+    }
+
+    window.addEventListener('resize', resize);
+
+
+
+    //Call our resize function if the window size is changed.
 
     document.getElementById('idGuzikPlik').addEventListener('click', function (event) {
       event.preventDefault(); // To prevent following the link (optional)
