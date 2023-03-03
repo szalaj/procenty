@@ -42,6 +42,13 @@
       stroke-width: 2px;
       stroke: black;
     }
+    path.kreska2 {
+      fill: none;
+      stroke-width: 2px;
+      stroke: rgb(57, 53, 83);
+      border-style: dotted;
+      stroke-dasharray: 5;
+    }
 
     path.red {
       fill: none;
@@ -565,11 +572,19 @@
     var parseDate = d3.timeParse("%Y-%m-%d");
 
     var dane_wykres = fin_data['dane']['raty'];
+    var dane_wykres2 = fin_data['dane2']['raty'];
 
     console.log("arty")
     console.log(dane_wykres)
 
     dane_wykres.forEach(function (d) {
+      d.dzien = parseDate(d.dzien)
+      d.K_po = parseFloat(d.K_po)
+
+    });
+
+    
+    dane_wykres2.forEach(function (d) {
       d.dzien = parseDate(d.dzien)
       d.K_po = parseFloat(d.K_po)
 
@@ -660,6 +675,22 @@
         .y(function (d) { return yscale(d.K_po) })
       )
 
+      var kreska2 = svg.append("path")
+      .datum(dane_wykres2)
+      .attr("class", "kreska2")
+      .attr("d", d3.line()
+        .x(function (d) { return xscale(d.dzien) })
+        .y(function (d) { return yscale(d.K_po) })
+      )
+
+      svg.append("line")
+    .attr("x1", xscale(data_zamrozenia))
+    .attr("y1", yscale(maxYvalue))
+    .attr("x2", xscale(data_zamrozenia))
+    .attr("y2", yscale(minYvalue))
+    .attr("stroke", "black")
+    .attr("stroke-width", 3)
+
 
     svg.append("text")
       .attr("class", "text-tytul")
@@ -684,6 +715,11 @@
       grids.attr("x2", function (d) { return xscale(d) })
 
       kreska.attr("d", d3.line()
+        .x(function (d) { return xscale(d.dzien) })
+        .y(function (d) { return yscale(d.K_po) })
+      )
+
+      kreska2.attr("d", d3.line()
         .x(function (d) { return xscale(d.dzien) })
         .y(function (d) { return yscale(d.K_po) })
       )
