@@ -25,7 +25,7 @@ var margin = { top: 60, right: 30, bottom: 70, left: 80 },
   width = width_docs - margin.left - margin.right,
   height = 450 - margin.top - margin.bottom;
 
-var svg = d3.select("#wykres_kapital")
+var svg_kapital = d3.select("#wykres_kapital")
   .append("svg")
   .attr("class", "svg-holder")
   .attr("width", width + margin.left + margin.right)
@@ -44,7 +44,7 @@ var xscale = d3.scaleTime()
 
 
 
-var xAxis = svg.append("g")
+var xAxis = svg_kapital.append("g")
   .attr("class", "xAxis")
   .attr("transform", "translate(0," + height + ")")
 
@@ -56,7 +56,7 @@ xAxis.call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
 
 
 
-var grids = svg.append('g')
+var grids_kapital = svg_kapital.append('g')
   .selectAll('line')
   .data(xscale.ticks())
   .enter().append('line')
@@ -74,7 +74,7 @@ var minYvalue = d3.min(dane_wykres, function (d) { return d.K_po });
 
 
 
-var yscale = d3.scaleLinear()
+var yscale_kapital = d3.scaleLinear()
   .domain([minYvalue, maxYvalue])
   .range([height, 0]);
 
@@ -84,9 +84,9 @@ var yscale = d3.scaleLinear()
 formatMoney = function (d) { return d3.format(".0f")(d) + " zł"; }
 
 
-svg.append("g")
+svg_kapital.append("g")
   .attr("class", "yAxis")
-  .call(d3.axisLeft(yscale).tickFormat(formatMoney))
+  .call(d3.axisLeft(yscale_kapital).tickFormat(formatMoney))
   .style("font-size", "13px");
 
 
@@ -96,32 +96,32 @@ svg.append("g")
 
 
 
-var kreska = svg.append("path")
+var kreska_kapital_real = svg_kapital.append("path")
   .datum(dane_wykres)
   .attr("class", "kreska")
   .attr("d", d3.line()
     .x(function (d) { return xscale(d.dzien) })
-    .y(function (d) { return yscale(d.K_po) })
+    .y(function (d) { return yscale_kapital(d.K_po) })
   )
 
-  var kreska2 = svg.append("path")
+  var kreska_kapital_zamr = svg_kapital.append("path")
   .datum(dane_wykres2)
   .attr("class", "kreska2")
   .attr("d", d3.line()
     .x(function (d) { return xscale(d.dzien) })
-    .y(function (d) { return yscale(d.K_po) })
+    .y(function (d) { return yscale_kapital(d.K_po) })
   )
 
-  svg.append("line")
+  svg_kapital.append("line")
 .attr("x1", xscale(data_zamrozenia))
-.attr("y1", yscale(maxYvalue))
+.attr("y1", yscale_kapital(maxYvalue))
 .attr("x2", xscale(data_zamrozenia))
-.attr("y2", yscale(minYvalue))
+.attr("y2", yscale_kapital(minYvalue))
 .attr("stroke", "black")
 .attr("stroke-width", 3)
 
 
-svg.append("text")
+svg_kapital.append("text")
   .attr("class", "text-tytul")
   .attr("x", 0)
   .attr("y", -24)
@@ -132,7 +132,7 @@ svg.append("text")
 
 
 
-var svg2 = d3.select("#wykres_raty")
+var svg_raty = d3.select("#wykres_raty")
   .append("svg")
   .attr("class", "svg-holder")
   .attr("width", width + margin.left + margin.right)
@@ -144,17 +144,17 @@ var svg2 = d3.select("#wykres_raty")
     "translate(" + margin.left + "," + margin.top + ")");
 
 
-    var xAxis3 = svg2.append("g")
+    var xAxis_raty = svg_raty.append("g")
   .attr("class", "xAxis")
   .attr("transform", "translate(0," + height + ")")
 
-xAxis3.call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
-  .selectAll("text")
-  .attr("transform", "translate(-10,0)rotate(-45)")
-  .style("text-anchor", "end")
-  .style("font-size", "13px");
+  xAxis_raty.call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
+    .selectAll("text")
+    .attr("transform", "translate(-10,0)rotate(-45)")
+    .style("text-anchor", "end")
+    .style("font-size", "13px");
 
-  var grids2 = svg2.append('g')
+  var grids_raty = svg_raty.append('g')
   .selectAll('line')
   .data(xscale.ticks())
   .enter().append('line')
@@ -166,54 +166,54 @@ xAxis3.call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
   .attr('stroke', 'black')
   
 
-    var maxYvalue2 = d3.max(dane_wykres, function (d) { return d.rata });
-    var minYvalue2 = d3.min(dane_wykres, function (d) { return d.rata });
+    var maxYvalue_raty = d3.max(dane_wykres, function (d) { return d.rata });
     
     
     
-    var yscale2 = d3.scaleLinear()
-      .domain([0, maxYvalue2])
+    
+    var yscale_raty = d3.scaleLinear()
+      .domain([0, maxYvalue_raty])
       .range([height, 0]);
     
 
 
-      svg2.append("g")
+      svg_raty.append("g")
       .attr("class", "yAxis")
-      .call(d3.axisLeft(yscale2).tickFormat(formatMoney))
+      .call(d3.axisLeft(yscale_raty).tickFormat(formatMoney))
       .style("font-size", "13px");
 
-    // var mybars = svg2.selectAll(".mybar").data(dane_wykres)
+    // var mybars = svg_raty.selectAll(".mybar").data(dane_wykres)
 
     // mybars
     //   .enter()
     //   .append("circle")
     //   .attr("cx", function (d) { return xscale(d.dzien); })
-    //   .attr("cy", function (d) { return yscale2(d.rata); })
+    //   .attr("cy", function (d) { return yscale_raty(d.rata); })
     //   .attr("r", 2)
     //   .attr("class", "mybar");
 
 
-      var kreska3 = svg2.append("path")
+      var kreska_raty_real = svg_raty.append("path")
       .datum(dane_wykres)
       .attr("class", "kreska")
       .attr("d", d3.line()
         .x(function (d) { return xscale(d.dzien) })
-        .y(function (d) { return yscale2(d.rata) })
+        .y(function (d) { return yscale_raty(d.rata) })
       )
 
 
       
-  var kreska4 = svg2.append("path")
+  var kreska_raty_zamr = svg_raty.append("path")
   .datum(dane_wykres2)
   .attr("class", "kreska2")
   .attr("d", d3.line()
     .x(function (d) { return xscale(d.dzien) })
-    .y(function (d) { return yscale2(d.rata) })
+    .y(function (d) { return yscale_raty(d.rata) })
   )
 
 
   
-svg2.append("text")
+svg_raty.append("text")
 .attr("class", "text-tytul")
 .attr("x", 0)
 .attr("y", -24)
@@ -222,9 +222,12 @@ svg2.append("text")
 
 
     function resize() {
-      width_docs = document.getElementById('wykres').clientWidth;
+      width_docs = document.getElementById('wykres_kapital').clientWidth;
     
-      d3.select('#wykres svg')
+      d3.select('#wykres_kapital svg')
+        .attr('width', width_docs)
+
+        d3.select('#wykres_raty svg')
         .attr('width', width_docs)
     
       xscale.range([0, width_docs - margin.left - margin.right]);
@@ -232,17 +235,31 @@ svg2.append("text")
     
       xAxis.call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
     
-      grids.attr("x1", function (d) { return xscale(d) })
-      grids.attr("x2", function (d) { return xscale(d) })
+      grids_kapital.attr("x1", function (d) { return xscale(d) })
+      grids_kapital.attr("x2", function (d) { return xscale(d) })
+
+      grids_raty.attr("x1", function (d) { return xscale(d) })
+      grids_raty.attr("x2", function (d) { return xscale(d) })
     
-      kreska.attr("d", d3.line()
+      kreska_kapital_real.attr("d", d3.line()
         .x(function (d) { return xscale(d.dzien) })
-        .y(function (d) { return yscale(d.K_po) })
+        .y(function (d) { return yscale_kapital(d.K_po) })
       )
     
-      kreska2.attr("d", d3.line()
+      kreska_kapital_zamr.attr("d", d3.line()
         .x(function (d) { return xscale(d.dzien) })
-        .y(function (d) { return yscale(d.K_po) })
+        .y(function (d) { return yscale_kapital(d.K_po) })
+      )
+
+          
+      kreska_raty_real.attr("d", d3.line()
+        .x(function (d) { return xscale(d.dzien) })
+        .y(function (d) { return yscale_raty(d.rata) })
+      )
+    
+      kreska_raty_zamr.attr("d", d3.line()
+        .x(function (d) { return xscale(d.dzien) })
+        .y(function (d) { return yscale_raty(d.rata) })
       )
     
     }
