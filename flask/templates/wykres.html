@@ -554,7 +554,7 @@ suma_zamr = parseFloat(dane_formularza["marza"]) + parseFloat(fin_data['wibor_za
 kapital_do_splaty_po_zamr = d3.min(kredyt_dane_do_zamr, function (d) { return d.K_po; });
 
 
-d3.select("#idZamrStopa").text(suma_zamr + "%")
+d3.select("#idZamrStopa").text(Math.round(suma_zamr * 100) / 100 + "%")
 
 d3.select("#idIloscRatPrzed").text(ilosc_rat_przed + " / " + ilosc_rat_wszystkie)
 d3.select("#suma_rat_A").text(zloty(suma_rat_A))
