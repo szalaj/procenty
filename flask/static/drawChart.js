@@ -211,7 +211,13 @@ var svg_raty = d3.select("#wykres_raty")
     .y(function (d) { return yscale_raty(d.rata) })
   )
 
-
+  svg_raty.append("line")
+.attr("x1", xscale(data_zamrozenia))
+.attr("y1", yscale_kapital(maxYvalue))
+.attr("x2", xscale(data_zamrozenia))
+.attr("y2", yscale_kapital(minYvalue))
+.attr("stroke", "black")
+.attr("stroke-width", 3)
   
 svg_raty.append("text")
 .attr("class", "text-tytul")

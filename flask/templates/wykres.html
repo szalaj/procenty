@@ -514,9 +514,18 @@ kredyt_dane_do_zamr = kredyt_dane['raty'].filter(function (d) { return parseDzie
 
 
 
+console.log(kredyt_dane_do_zamr.length)
 
+var ilosc_rat_przed=0
+if (typeof kredyt_dane_do_zamr !== 'undefined' && kredyt_dane_do_zamr.length > 0) {
+    // the array is defined and has at least one element
+    ilosc_rat_przed = d3.max(kredyt_dane_do_zamr, d => d.nr_raty)
+}
+else {
+  
 
-ilosc_rat_przed = d3.max(kredyt_dane_do_zamr, d => d.nr_raty)
+}
+
 ilosc_rat_wszystkie = d3.max(kredyt_dane['raty'], d => d.nr_raty)
 
 ilosc_rat_po = ilosc_rat_wszystkie - ilosc_rat_przed
