@@ -20,9 +20,24 @@ from io import BytesIO
 
 import requests
 
-app = Flask(__name__)
-app.secret_key = '33a42d649ff6cfd8662d550dabc5c3dbed65e34223c41ef2f24362133d829042'
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.utils import secure_filename
 
+app = Flask(__name__)
+app.config.from_object("project.config.Config")
+
+db = SQLAlchemy(app)
+
+
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(128), unique=True, nullable=False)
+    active = db.Column(db.Boolean(), default=True, nullable=False)
+
+    def __init__(self, email):
+        self.email = email
 
 login_manager = LoginManager()
 login_manager.init_app(app)
