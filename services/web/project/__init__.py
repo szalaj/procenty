@@ -5,9 +5,9 @@ from flask import Flask, render_template, flash, redirect, url_for, jsonify, req
 from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, validators
 
 import datetime as dt
-import utils.generate_model
-import utils.proc
-import utils.create_document
+import project.utils.generate_model
+import project.utils.proc
+import project.utils.create_document
 
 
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
@@ -134,10 +134,10 @@ def formularz():
 @login_required
 def main():
 
-    df3 = pd.read_csv('static/plopln3m_d.csv', usecols=[0,1], index_col=0)
+    df3 = pd.read_csv('project/static/plopln3m_d.csv', usecols=[0,1], index_col=0)
     df3.index = pd.to_datetime(df3.index, format='%Y-%m-%d')
 
-    df6 = pd.read_csv('static/plopln6m_d.csv', usecols=[0,1], index_col=0)
+    df6 = pd.read_csv('project/static/plopln6m_d.csv', usecols=[0,1], index_col=0)
     df6.index = pd.to_datetime(df6.index, format='%Y-%m-%d')
 
     max_day_wibor3m = df3.index.max()
@@ -221,7 +221,7 @@ def main():
 
         
 
-        dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False)
+        dane_kredytu =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False)
 
         wibor_start = dane_kredytu["p"]
         stala_stopa_uruch = round(dane_kredytu["p"] + marza,2)
@@ -229,11 +229,11 @@ def main():
 
 
      
-        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, stala_stopa_uruch, data_zamrozenia, rodzajWiboru, transze, True)
+        dane_kredytu_alt =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, stala_stopa_uruch, data_zamrozenia, rodzajWiboru, transze, True)
 
 
-        wynik = utils.proc.create_kredyt(dane_kredytu, rodzajRat)
-        wynik2 = utils.proc.create_kredyt(dane_kredytu_alt, rodzajRat)
+        wynik = project.utils.proc.create_kredyt(dane_kredytu, rodzajRat)
+        wynik2 = project.utils.proc.create_kredyt(dane_kredytu_alt, rodzajRat)
 
         fin_data = {}
         fin_data['dane'] = wynik
@@ -268,7 +268,7 @@ def get_doc():
 
         dane = request.get_json()
 
-        document = utils.create_document.create_document(dane)
+        document = project.utils.create_document.create_document(dane)
         
 
         f = BytesIO()
@@ -289,12 +289,12 @@ def wibor():
 
     response6m = requests.get('https://stooq.pl/q/d/l/?s=plopln6m&i=d')
     
-    with open("./static/plopln6m_d.csv", "wb") as f:
+    with open("./project/static/plopln6m_d.csv", "wb") as f:
         f.write(response6m.content)
 
     response3m = requests.get('https://stooq.pl/q/d/l/?s=plopln3m&i=d')
     
-    with open("./static/plopln3m_d.csv", "wb") as f:
+    with open("./project/static/plopln3m_d.csv", "wb") as f:
         f.write(response3m.content)
     
     return redirect(url_for('main'))
