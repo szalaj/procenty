@@ -20,24 +20,14 @@ from io import BytesIO
 
 import requests
 
-from flask_sqlalchemy import SQLAlchemy
+
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config.from_object("project.config.Config")
 
-db = SQLAlchemy(app)
 
 
-class User(db.Model):
-    __tablename__ = "users"
-
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(128), unique=True, nullable=False)
-    active = db.Column(db.Boolean(), default=True, nullable=False)
-
-    def __init__(self, email):
-        self.email = email
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -221,7 +211,7 @@ def main():
 
         
 
-        dane_kredytu =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False)
+        dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False)
 
         wibor_start = dane_kredytu["p"]
         stala_stopa_uruch = round(dane_kredytu["p"] + marza,2)

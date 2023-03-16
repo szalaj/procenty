@@ -13,6 +13,14 @@ uruchomienie obrazu na porcie 5000
 
 docker run -p 5000:5000 -d flask_docker
 
+-- compose
+
+docker-compose -f docker-compose.yml up -d --build
+
+ docker-compose down -v
+
+ docker-compose down --remove-orphans
+
 --
 cmd zeby wyslac do awsa image
 
