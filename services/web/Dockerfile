@@ -51,6 +51,7 @@ COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache /wheels/*
 
+EXPOSE 5000
 
 # copy project
 COPY . $APP_HOME
@@ -60,3 +61,5 @@ RUN chown -R app:app $APP_HOME
 
 # change to the app user
 USER app
+
+ENTRYPOINT ["./gunicorn.sh"]

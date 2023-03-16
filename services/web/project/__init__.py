@@ -255,12 +255,9 @@ def get_doc():
 
     if request.method == 'POST':
         
-
         dane = request.get_json()
-
         document = project.utils.create_document.create_document(dane)
         
-
         f = BytesIO()
         # do staff with document
         document.save(f)

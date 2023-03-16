@@ -26,9 +26,16 @@ cmd zeby wyslac do awsa image
 
 aws lightsail push-container-image --service-name flask-service --label app_docker4 --image app_docker4
 
+aws lightsail push-container-image --service-name flask-service --label flap3 --image flaskapp3
 
-- jest algorytm
+aws lightsail push-container-image --service-name flask-service --label nginx --image serwer
 
-- nie ma sciagniecia worda
-- nie ma prezentacji danych
-- wykresow
+
+
+flask-service.flap3.16
+
+flask-service.nginx.17
+
+docker run -p 5000:5000 -d  --name web --network todo-app flaskapp3
+
+docker run -p 80:80 -d --network todo-app --name nginx serwer
