@@ -211,7 +211,7 @@ def main():
 
         
 
-        dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False)
+        dane_kredytu =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False)
 
         wibor_start = dane_kredytu["p"]
         stala_stopa_uruch = round(dane_kredytu["p"] + marza,2)
