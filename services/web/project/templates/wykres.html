@@ -100,7 +100,7 @@
           <h1>Oblicz WPS</h1>
           {% if current_user.is_authenticated %}
           <a href="{{ url_for('logout') }}" class="navbar-item">
-            Wyloguj
+            {{current_user.id}} - Wyloguj
           </a>
           {% endif %}
         </nav>

@@ -11,12 +11,19 @@ import pandas as pd
 from io import BytesIO
 import requests
 from werkzeug.utils import secure_filename
+import sqlite3
+import json
 
 app = Flask(__name__)
 app.config.from_object("project.config.Config")
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+def get_db_connection():
+    conn = sqlite3.connect('./project/database.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
 class KredytForm(Form):
@@ -38,13 +45,13 @@ class KredytForm(Form):
 
 
 class User(UserMixin):   
-    id = 1
-    name = 'aa'
-    password = 'a'
-    email = 'a@b'                                                                                               
+
+
+    def __init__(self, nazwa):
+        self.id = nazwa             
+
     def to_json(self):        
-        return {"name": self.name,
-                "email": self.email}
+        return {"nazwa": self.nazwa}
 
     def is_authenticated(self):
         return True
@@ -56,11 +63,26 @@ class User(UserMixin):
         return False          
 
     def get_id(self):         
-        return str(User.id)
+        return str(self.id)
+    
+def zapisz_zapytanie(user_id, ip):
+
+    print(user_id)
+
+    con = get_db_connection()
+    cur = con.cursor()
+
+
+    cur.execute(f"INSERT INTO zapytania (nazwa, ip) VALUES ('{user_id}', '{ip}')")
+
+
+    con.commit()
+    con.close()
+
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User()
+    return User(user_id)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -68,12 +90,18 @@ def login():
         return redirect(url_for('main'))
     if request.method == 'POST':
 
-        
         uzytkownik = str(request.form['uzytkownik'])
         haslo = str(request.form['haslo'])
-        if uzytkownik == 'kancelaria' and haslo =='wps':    
+
+        conn = get_db_connection()
+        haslo_baza = conn.execute(f"SELECT haslo FROM users where nazwa='{uzytkownik}'").fetchone()
+        conn.close()
+
+        print()
+
+        if haslo_baza['haslo'] == haslo:    
         
-            login_user(User())
+            login_user(User(uzytkownik))
             return redirect(url_for('main'))
 
     return render_template('login.html')
@@ -227,7 +255,7 @@ def main():
         
         fin_data['stala_stopa_uruch'] = round(wibor_start + marza,2)
 
-
+        zapisz_zapytanie(current_user.id, request.remote_addr)
 
 
         
@@ -276,6 +304,18 @@ def wibor():
     return redirect(url_for('main'))
 
 
+@app.route("/logs", methods=['GET', 'POST'])
+@login_required
+def logs():
+
+    
+    cursor = sqlite3.connect('./project/database.db').cursor()
+    cursor.execute("SELECT * FROM zapytania;")
+    data = cursor.fetchall()
+    print(data)
+    return json.dumps(data)
+
+
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
-    #app.run(host='0.0.0.0', port=5000)
+    #app.run(port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000)
