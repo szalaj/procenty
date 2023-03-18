@@ -29,7 +29,7 @@ def create_document(dane):
     )
 
     document.add_paragraph(
-        f"Wibor z dnia uruchomienia kredytu: {dane['fin_data']['wibor_start']}%" , style='List Bullet'
+        f"Wibor z dnia podpisania umowy: {dane['fin_data']['wibor_start']}%" , style='List Bullet'
     )
 
     document.add_heading('Zamrożenie wiboru', level=3)
@@ -47,4 +47,17 @@ def create_document(dane):
         f"Saldo kredytu: {dane['kapital_do_splaty_po_zamr']}" , style='List Bullet'
     )
 
+    document.add_heading('Zestawienie rat', level=3)
+    table = document.add_table(rows=1, cols=4)
+    hdr_cells = table.rows[0].cells
+    hdr_cells[0].text = 'Dzień'
+    hdr_cells[1].text = 'Odsetki'
+    hdr_cells[2].text = 'Rata'
+    hdr_cells[3].text = "Kapitał do spłaty"
+    for d in dane['fin_data']['dane']['raty']:
+        row_cells = table.add_row().cells
+        row_cells[0].text = d['dzien'][:10]
+        row_cells[1].text = d['odsetki'] + " zł"
+        row_cells[2].text = d['rata'] + " zł"
+        row_cells[3].text = str(d['K_po']) + " zł"
     return document

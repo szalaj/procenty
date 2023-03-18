@@ -242,8 +242,6 @@ def main():
 @login_required
 def get_doc():
 
-    print("doc")
-
     if request.method == 'POST':
         
         dane = request.get_json()
