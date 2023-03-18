@@ -151,15 +151,19 @@
           <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataStart1" id="idData1">
         </div>
         <div class="col-lg-3">
-          <label for="idOkresy">Liczba miesięcy</label>
+          <label for="idUmowa">Data podpisania umowy</label>
+          <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataUmowa" id="idUmowa">
+        </div>
+        <div class="col-lg-3">
+          <label for="idOkresy">Liczba rat miesięcznych</label>
           <input type="text" class="form-control" placeholder="okresy" name="okresy" id="idOkresy">
         </div>
+      </div>
+      <div class="row top-buffer">
         <div class="col-lg-3">
           <label for="idMarza">Marża</label>
           <input type="text" class="form-control" placeholder="marża" name="marza" id="idMarza">
         </div>
-      </div>
-      <div class="row top-buffer">
         <div class="col-lg-3">
           <label class="mr-sm-2" for="idRodzajWiboru">Rodzaj Wiboru</label>
           <select class="custom-select mr-sm-2" id="idRodzajWiboru" name="rodzajWiboru">
@@ -249,15 +253,15 @@
               <div style="float: right" id="idMarzaUmowa">aa</div>
             </li>
             <li class="list-group-item">
-              <div style="float: left">(B). Wibor z dnia uruchomienia kredytu</div>
+              <div style="float: left">(B). Wibor z dnia podpisania umowy</div>
               <div style="float: right" id="idWiborUmowa">aa</div>
             </li>
             <li class="list-group-item" style="background-color: #e1e1e1">
-              <div style="float: left">(A+B). Oprocentowanie w dniu uruchomienia kredytu</div>
+              <div style="float: left">(A+B). Oprocentowanie w dniu podpisania umowy</div>
               <div style="float: right" id="idStopaUmowa"></div>
             </li>
             <li class="list-group-item">
-              <div style="float: left">(C). Wibor w dniu zamrożenia</div>
+              <div style="float: left">(C). Wibor w dniu zamrożenia kredytu</div>
               <div style="float: right" id="idZamrWibor"></div>
             </li>
             <li class="list-group-item" style="background-color: #e1e1e1">
@@ -458,6 +462,7 @@ if (tech_data['form_data']) {
 
   document.getElementById("idKapital1").value = String(dane_formularza["kapital1"]);
   document.getElementById("idData1").value = String(dane_formularza["dataStart1"]);
+  document.getElementById("idUmowa").value = String(dane_formularza["dataUmowa"]);
   document.getElementById("idOkresy").value = String(dane_formularza["okresy"]);
   document.getElementById("idMarza").value = String(dane_formularza["marza"]);
   document.getElementById("idDataZamrozenia").value = String(dane_formularza["dataZamrozenia"]);
