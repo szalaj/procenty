@@ -1,33 +1,19 @@
 
 from flask import Flask, render_template, flash, redirect, url_for, jsonify, request, make_response, send_file, session
-
-
 from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, validators
-
 import datetime as dt
 import project.utils.generate_model
 import project.utils.proc
 import project.utils.create_document
-
-
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from http import HTTPStatus
-
 import pandas as pd
-
-
 from io import BytesIO
-
 import requests
-
-
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config.from_object("project.config.Config")
-
-
-
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -41,6 +27,7 @@ class KredytForm(Form):
     dataStart1 = StringField('Data uruchomienia 1', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
     dataStart2 = StringField('Data uruchomienia 2', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
     dataStart3 = StringField('Data uruchomienia 3', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
+    dataUmowa = StringField('Data podpisania umowy', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
     okresy = StringField('Ilość miesięcy', [validators.Length(min=1, max=25)], description="a")
     marza = StringField('Marża', [validators.Length(min=1, max=25)], description="%")
     dataZamrozenia = StringField('Data zamrozenia', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
@@ -148,6 +135,7 @@ def main():
                      "dataStart1":request.form['dataStart1'],
                      "dataStart2":request.form['dataStart2'],
                      "dataStart3":request.form['dataStart3'],
+                     "dataUmowa":request.form['dataUmowa'],
                      "okresy":request.form['okresy'],
                      "marza":request.form['marza'],
                      "dataZamrozenia":request.form['dataZamrozenia'],
@@ -166,6 +154,7 @@ def main():
         try:
             kapital1 = float(form_data['kapital1'])
             dataStart1 = str(form_data['dataStart1'])
+            dataUmowa = str(form_data['dataUmowa'])
             okresy = int(form_data['okresy'])
             marza = float(form_data['marza'])
 
@@ -176,6 +165,7 @@ def main():
 
             data_start1 = dt.datetime.strptime(dataStart1, '%d/%m/%Y')
             data_zamrozenia = dt.datetime.strptime(dataZamrozenia, '%d/%m/%Y')
+            data_umowa = dt.datetime.strptime(dataUmowa, '%d/%m/%Y')
 
             transze = []
 
@@ -213,11 +203,12 @@ def main():
 
         dane_kredytu =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False)
 
-        wibor_start = dane_kredytu["p"]
-        stala_stopa_uruch = round(dane_kredytu["p"] + marza,2)
+        wibor = project.utils.generate_model.Wibor(rodzajWiboru)
+        wibor_start = wibor.getWibor(data_umowa)
+        stala_stopa_uruch = round(wibor_start + marza,2)
         wibor_zamrozony = dane_kredytu['wibor_zamrozony']
 
-
+        
      
         dane_kredytu_alt =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, stala_stopa_uruch, data_zamrozenia, rodzajWiboru, transze, True)
 
@@ -234,7 +225,7 @@ def main():
         fin_data['wibor_zamrozony'] = wibor_zamrozony
 
         
-        fin_data['stala_stopa_uruch'] = round(dane_kredytu["p"] + marza,2)
+        fin_data['stala_stopa_uruch'] = round(wibor_start + marza,2)
 
 
 
@@ -288,5 +279,5 @@ def wibor():
 
 
 if __name__ == "__main__":
-    #app.run(port=5000, debug=True)
-    app.run(host='0.0.0.0', port=5000)
+    app.run(port=5000, debug=True)
+    #app.run(host='0.0.0.0', port=5000)
