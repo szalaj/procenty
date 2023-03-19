@@ -13,6 +13,7 @@ import requests
 from werkzeug.utils import secure_filename
 import sqlite3
 import json
+import re
 
 app = Flask(__name__)
 app.config.from_object("project.config.Config")
@@ -157,6 +158,13 @@ def main():
 
         error = None
 
+        try:
+            marza_temp = re.search("^[\d\.\,\s]+(?=%?$)",request.form['marza']).group()
+            marza_temp = marza_temp.replace(',','.')
+        except:
+            marza_temp = request.form['marza']
+        
+
         form_data = {"kapital1":request.form['kapital1'],
                      "kapital2":request.form['kapital2'],
                      "kapital3":request.form['kapital3'],
@@ -165,7 +173,7 @@ def main():
                      "dataStart3":request.form['dataStart3'],
                      "dataUmowa":request.form['dataUmowa'],
                      "okresy":request.form['okresy'],
-                     "marza":request.form['marza'],
+                     "marza":marza_temp,
                      "dataZamrozenia":request.form['dataZamrozenia'],
                      "rodzajWiboru":request.form['rodzajWiboru'],
                      "rodzajRat":request.form['rodzajRat']}
@@ -184,7 +192,10 @@ def main():
             dataStart1 = str(form_data['dataStart1'])
             dataUmowa = str(form_data['dataUmowa'])
             okresy = int(form_data['okresy'])
-            marza = float(form_data['marza'])
+            
+            
+           
+            marza = float(marza_temp)
 
             rodzajWiboru = str(form_data['rodzajWiboru'])
             rodzajRat = str(form_data['rodzajRat'])
@@ -237,9 +248,13 @@ def main():
         wibor_zamrozony = dane_kredytu['wibor_zamrozony']
 
         
-     
+        
+
         dane_kredytu_alt =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, stala_stopa_uruch, data_zamrozenia, rodzajWiboru, transze, True)
 
+        print(dane_kredytu)
+
+        print(dane_kredytu_alt)
 
         wynik = project.utils.proc.create_kredyt(dane_kredytu, rodzajRat)
         wynik2 = project.utils.proc.create_kredyt(dane_kredytu_alt, rodzajRat)

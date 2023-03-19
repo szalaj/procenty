@@ -35,36 +35,24 @@ class Wibor:
 
 def generateFromWiborFile(kapital, okresy, start_date, marza, dzien_zamrozenia, rodzajWiboru, transze, tylko_marza=False):
 
-    # print('--------------------------------')
-    # print(rodzajWiboru)
-
-    file_name=''
-
 
     wibor = Wibor(rodzajWiboru)
 
-    
     miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
-
 
     wibor_zamr_value = wibor.getWibor(dzien_zamrozenia)
    
-
     grosze =  decimal.Decimal('.01')
-    
+
     opr_arr = []
     if not tylko_marza:
         for i in range(0, int(okresy/wibor.okres)+1):
+                wibor_day =  start_date + relativedelta(months=3*i)
+                if wibor_day < dzien_zamrozenia:
+                    wibor_value = wibor.getWibor(wibor_day)
+                    opr_arr.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_value).quantize(grosze))})
 
-            wibor_day =  start_date + relativedelta(months=3*i)
-            if wibor_day > dzien_zamrozenia:
-                wibor_value = wibor_zamr_value
-            else:
-                
-                wibor_value = wibor.getWibor(wibor_day)
-
-            opr_arr.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_value).quantize(grosze))})
-
+        opr_arr.append({"dzien":dzien_zamrozenia.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_zamr_value).quantize(grosze))})
 
     transze_out = []
     if transze:
@@ -75,7 +63,7 @@ def generateFromWiborFile(kapital, okresy, start_date, marza, dzien_zamrozenia, 
     if tylko_marza:
         p_start = float(decimal.Decimal(marza).quantize(grosze))
     else:
-        p_start = float(decimal.Decimal(wibor.getWibor(start_date)).quantize(grosze))
+        p_start = float(decimal.Decimal(wibor.getWibor(start_date)+marza).quantize(grosze))
 
     data = {"K": kapital,
             "transze": transze_out,

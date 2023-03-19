@@ -41,6 +41,8 @@ class Kredyt:
 
         self.wynik = []
 
+        self.przelicz_rate = True
+
 
     def __repr__(self) -> str:
         return "kredyt : {}".format(self.K)
@@ -108,6 +110,8 @@ class Kredyt:
 
         self.dzien_odsetki = dzien_zmiany
 
+        self.przelicz_rate = True
+
     def zrob_nadplate(self, dzien_nadplaty:dt.datetime, kwota:Decimal):
 
         o_dni = (dzien_nadplaty - self.dzien_odsetki).days
@@ -119,6 +123,8 @@ class Kredyt:
         self.K = self.K - kwota
 
         self.dzien_odsetki = dzien_nadplaty
+
+        self.przelicz_rate = True
 
     def zrob_transze(self, dzien_transzy:dt.datetime, kwota:Decimal):
 
@@ -132,6 +138,8 @@ class Kredyt:
 
         self.dzien_odsetki = dzien_transzy
 
+        self.przelicz_rate = True
+
 
     def splata_raty(self, dzien_raty:dt.datetime):
 
@@ -140,13 +148,18 @@ class Kredyt:
         opr = Decimal((o_dni/365))*self.p
 
         self.I = self.oblicz_rate()
+        self.przelicz_rate = False
 
         self.odsetki_naliczone = self.odsetki_naliczone + opr*self.K
 
         
         if self.odsetki_naliczone > self.I:
-            
             self.I = self.odsetki_naliczone
+
+        #ostatnia rata
+        if self.N == 1:
+            roznica_na_koniec = self.K - (self.I-self.odsetki_naliczone)
+            self.I += roznica_na_koniec
 
         self.licznik_rat += 1
         self.zapisz_stan(dzien_raty)
@@ -183,11 +196,6 @@ class Kredyt:
             
 
 def create_kredyt(dane_kredytu, rodzajRat) -> Kredyt:
-
-    #stream = open("./models/{}.yml".format(plik_model), 'r')
-    #dane = yaml.safe_load(stream)
-
-    #print(dane_kredytu)
 
     dane = dane_kredytu
 
