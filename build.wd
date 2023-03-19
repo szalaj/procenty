@@ -39,3 +39,6 @@ flask-service.nginx.17
 docker run -p 5000:5000 -d  --name web --network todo-app flaskapp3
 
 docker run -p 80:80 -d --network todo-app --name nginx serwer
+
+
+git tag -a v0.3 -m "super wersja 0.3"
