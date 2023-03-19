@@ -123,9 +123,9 @@ var kreska_kapital_real = svg_kapital.append("path")
 
 svg_kapital.append("text")
   .attr("class", "text-tytul")
-  .attr("x", 0)
-  .attr("y", -24)
-  .text("Kapitał do spłaty")
+  .attr("x", -20)
+  .attr("y", -28)
+  .text("Kapitał do spłaty. 1) wibor zmienny (linia ciągła) 2) stały (linia przer.)")
 
 
 
@@ -221,9 +221,9 @@ var svg_raty = d3.select("#wykres_raty")
   
 svg_raty.append("text")
 .attr("class", "text-tytul")
-.attr("x", 0)
-.attr("y", -24)
-.text("Raty")
+.attr("x", -20)
+.attr("y", -28)
+.text("Raty. 1) wibor zmienny (linia ciągła) 2) stały (linia przer.)")
 
 
 
