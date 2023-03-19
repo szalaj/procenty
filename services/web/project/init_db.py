@@ -16,7 +16,11 @@ cur.execute("INSERT INTO users (nazwa, haslo) VALUES (?, ?)",
             )
 
 cur.execute("INSERT INTO users (nazwa, haslo) VALUES (?, ?)",
-            ('gosc1', 'gosc1')
+            ('gosc1', 'witam1')
+            )
+
+cur.execute("INSERT INTO users (nazwa, haslo) VALUES (?, ?)",
+            ('admin', 'wspanialy')
             )
 
 connection.commit()
