@@ -252,9 +252,6 @@ def main():
 
         dane_kredytu_alt =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, stala_stopa_uruch, data_zamrozenia, rodzajWiboru, transze, True)
 
-        print(dane_kredytu)
-
-        print(dane_kredytu_alt)
 
         wynik = project.utils.proc.create_kredyt(dane_kredytu, rodzajRat)
         wynik2 = project.utils.proc.create_kredyt(dane_kredytu_alt, rodzajRat)
