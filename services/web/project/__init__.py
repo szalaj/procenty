@@ -1,11 +1,19 @@
 
 from flask import Flask, redirect, url_for
 from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
 
+
+db = SQLAlchemy()
 
 def init_app():
     app = Flask(__name__)
     app.config.from_object("project.config.Config")
+
+    
+    db.init_app(app)
+    
+
 
     login_manager = LoginManager()
     login_manager.init_app(app)
