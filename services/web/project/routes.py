@@ -14,8 +14,10 @@ import project.utils.proc
 import datetime as dt
 import project.utils.create_document
 from werkzeug.utils import secure_filename
+import datetime
 
-from .models import User
+from .models import User, Dom, Zapytanie
+from project import db
 
 bp = Blueprint('bp', __name__)
 
@@ -24,37 +26,8 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-class KredytForm(Form):
-
-    kapital1 = StringField('Kapitał - Transza 1.', [validators.Length(min=1, max=25)], description="Ile?")
-    kapital2 = StringField('Kapitał - Transza 2.', [validators.Length(min=1, max=25)], description="Ile?")
-    kapital3 = StringField('Kapital - Transza 3.', [validators.Length(min=1, max=25)], description="Ile?")
-    dataStart1 = StringField('Data uruchomienia 1', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
-    dataStart2 = StringField('Data uruchomienia 2', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
-    dataStart3 = StringField('Data uruchomienia 3', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
-    dataUmowa = StringField('Data podpisania umowy', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
-    okresy = StringField('Ilość miesięcy', [validators.Length(min=1, max=25)], description="a")
-    marza = StringField('Marża', [validators.Length(min=1, max=25)], description="%")
-    dataZamrozenia = StringField('Data zamrozenia', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
-    rodzajWiboru = SelectField('Rodzaj wiboru', choices=[('3M', '3M'), ('6M', '6M')])
-    rodzajRat = SelectField('Rodzaj rat', choices=[('stale', 'stałe'), ('malejace', 'malejące')])
 
     
-def zapisz_zapytanie(user_id, ip):
-
-    print(user_id)
-
-    con = get_db_connection()
-    cur = con.cursor()
-
-
-    cur.execute(f"INSERT INTO zapytania (nazwa, ip) VALUES ('{user_id}', '{ip}')")
-
-
-    con.commit()
-    con.close()
-
-
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -65,15 +38,9 @@ def login():
         uzytkownik = str(request.form['uzytkownik'])
         haslo = str(request.form['haslo'])
 
-        conn = get_db_connection()
-        haslo_baza = conn.execute(f"SELECT haslo FROM users where nazwa='{uzytkownik}'").fetchone()
-        conn.close()
-
-        print()
-
-        if haslo_baza['haslo'] == haslo:    
-        
-            login_user(User(uzytkownik))
+        u = User.query.filter_by(name=uzytkownik, password=haslo).first()
+        if u:
+            login_user(u)
             return redirect(url_for('bp.main'))
 
     return render_template('login.html')
@@ -236,8 +203,11 @@ def main():
         
         fin_data['stala_stopa_uruch'] = round(wibor_start + marza,2)
 
-        zapisz_zapytanie(current_user.id, request.remote_addr)
+        
 
+        zap = Zapytanie(user=current_user.name, created=datetime.datetime.utcnow)
+        db.session.add(zap)
+        db.session.commit()
 
         
         return render_template('wykres.html', tech_data=tech_data, fin_data=fin_data)
@@ -288,9 +258,37 @@ def wibor():
 @bp.route("/logs", methods=['GET', 'POST'])
 @login_required
 def logs():
-    cursor = sqlite3.connect('./project/database.db').cursor()
-    cursor.execute("SELECT * FROM zapytania;")
-    data = cursor.fetchall()
-    print(data)
-    return json.dumps(data)
+    
+    zap = Zapytanie.query.all()
 
+    resp = ""
+    for z in zap:
+        resp += z.user
+
+    print(resp)
+    return resp
+
+
+@bp.route('/domy')
+def dom():
+    domy = Dom.query.all()
+    r = ""
+    for d in domy:
+        r += d.data_zakupu
+    return r
+
+
+class KredytForm(Form):
+
+    kapital1 = StringField('Kapitał - Transza 1.', [validators.Length(min=1, max=25)], description="Ile?")
+    kapital2 = StringField('Kapitał - Transza 2.', [validators.Length(min=1, max=25)], description="Ile?")
+    kapital3 = StringField('Kapital - Transza 3.', [validators.Length(min=1, max=25)], description="Ile?")
+    dataStart1 = StringField('Data uruchomienia 1', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
+    dataStart2 = StringField('Data uruchomienia 2', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
+    dataStart3 = StringField('Data uruchomienia 3', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
+    dataUmowa = StringField('Data podpisania umowy', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
+    okresy = StringField('Ilość miesięcy', [validators.Length(min=1, max=25)], description="a")
+    marza = StringField('Marża', [validators.Length(min=1, max=25)], description="%")
+    dataZamrozenia = StringField('Data zamrozenia', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
+    rodzajWiboru = SelectField('Rodzaj wiboru', choices=[('3M', '3M'), ('6M', '6M')])
+    rodzajRat = SelectField('Rodzaj rat', choices=[('stale', 'stałe'), ('malejace', 'malejące')])

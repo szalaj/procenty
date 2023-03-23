@@ -100,7 +100,7 @@
           <h1>Oblicz WPS</h1>
           {% if current_user.is_authenticated %}
           <a href="{{ url_for('bp.logout') }}" class="navbar-item">
-            {{current_user.id}} - Wyloguj
+            {{current_user.name}} - Wyloguj
           </a>
           {% endif %}
         </nav>
@@ -130,7 +130,7 @@
           <div id="wibor6mnav"></div>
         </nav>
       </div>
-      {% if current_user.is_authenticated and current_user.id=='admin' %}
+      {% if current_user.is_authenticated and current_user.name=='admin' %}
       <div class="col-lg-4">
         
         <nav class="navbar" style="background-color: #e3f2fd; display: flex; justify-content: flex-end">
