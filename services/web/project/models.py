@@ -1,7 +1,7 @@
 from flask_login import UserMixin
 from . import db
 from sqlalchemy.sql import func
-
+import datetime
 
 class Dom(db.Model):
     __tablename__ = 'dom'
@@ -17,7 +17,7 @@ class Zapytanie(db.Model):
      __tablename__ = 'zapytanie'
      id = db.Column(db.Integer, primary_key=True)
      user = db.Column(db.String(1000))
-     created = db.DateTime()
+     created = db.Column(db.DateTime())
 
      def __repr__(self):
          return f"<{self.user} - {self.created}>"
