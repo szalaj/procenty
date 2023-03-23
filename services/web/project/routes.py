@@ -205,7 +205,7 @@ def main():
 
         
 
-        zap = Zapytanie(user=current_user.name, created=datetime.datetime.utcnow)
+        zap = Zapytanie(user=current_user.name, created=datetime.datetime.utcnow())
         db.session.add(zap)
         db.session.commit()
 
@@ -263,9 +263,9 @@ def logs():
 
     resp = ""
     for z in zap:
-        resp += z.user
+        resp += f" <<< {z.user} at {z.created} >>> "
 
-    print(resp)
+
     return resp
 
 
