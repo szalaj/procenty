@@ -1,10 +1,10 @@
 
 from flask import Blueprint, render_template, flash, redirect, url_for, request, send_file, session
 from flask_login import login_user, logout_user, login_required, current_user
-import sqlite3
-from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, validators
+
+
 import requests
-import sqlite3
+
 import json
 import re
 import project.utils.generate_model
@@ -16,40 +16,10 @@ import project.utils.create_document
 from werkzeug.utils import secure_filename
 import datetime
 
-from .models import User, Dom, Zapytanie
+from ..models import User, Dom, Zapytanie
 from project import db
 
 bp = Blueprint('bp', __name__)
-
-def get_db_connection():
-    conn = sqlite3.connect('./project/database.db')
-    conn.row_factory = sqlite3.Row
-    return conn
-
-
-    
-
-@bp.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('bp.main'))
-    if request.method == 'POST':
-
-        uzytkownik = str(request.form['uzytkownik'])
-        haslo = str(request.form['haslo'])
-
-        u = User.query.filter_by(name=uzytkownik, password=haslo).first()
-        if u:
-            login_user(u)
-            return redirect(url_for('bp.main'))
-
-    return render_template('login.html')
-
-@bp.route('/logout', methods=['GET'])
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('bp.main'))
 
 
 
@@ -255,40 +225,5 @@ def wibor():
     return redirect(url_for('bp.main'))
 
 
-@bp.route("/logs", methods=['GET', 'POST'])
-@login_required
-def logs():
-    
-    zap = Zapytanie.query.all()
-
-    resp = ""
-    for z in zap:
-        resp += f" <<< {z.user} at {z.created} >>> "
 
 
-    return resp
-
-
-@bp.route('/domy')
-def dom():
-    domy = Dom.query.all()
-    r = ""
-    for d in domy:
-        r += d.data_zakupu
-    return r
-
-
-class KredytForm(Form):
-
-    kapital1 = StringField('Kapitał - Transza 1.', [validators.Length(min=1, max=25)], description="Ile?")
-    kapital2 = StringField('Kapitał - Transza 2.', [validators.Length(min=1, max=25)], description="Ile?")
-    kapital3 = StringField('Kapital - Transza 3.', [validators.Length(min=1, max=25)], description="Ile?")
-    dataStart1 = StringField('Data uruchomienia 1', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
-    dataStart2 = StringField('Data uruchomienia 2', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
-    dataStart3 = StringField('Data uruchomienia 3', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
-    dataUmowa = StringField('Data podpisania umowy', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
-    okresy = StringField('Ilość miesięcy', [validators.Length(min=1, max=25)], description="a")
-    marza = StringField('Marża', [validators.Length(min=1, max=25)], description="%")
-    dataZamrozenia = StringField('Data zamrozenia', [validators.Length(min=1, max=25)], description="DD/MM/YYYY")
-    rodzajWiboru = SelectField('Rodzaj wiboru', choices=[('3M', '3M'), ('6M', '6M')])
-    rodzajRat = SelectField('Rodzaj rat', choices=[('stale', 'stałe'), ('malejace', 'malejące')])
