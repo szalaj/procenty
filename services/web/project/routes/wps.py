@@ -1,11 +1,7 @@
 
 from flask import Blueprint, render_template, flash, redirect, url_for, request, send_file, session
 from flask_login import login_user, logout_user, login_required, current_user
-
-
 import requests
-
-import json
 import re
 import project.utils.generate_model
 import pandas as pd
@@ -23,25 +19,8 @@ bp = Blueprint('bp', __name__)
 
 
 
-@bp.route("/formularz", methods=['GET', 'POST'])
-@login_required
-def formularz():
-
-    form = KredytForm(request.form)
-    print(form.validate())
-    message = ""
-    if request.method == 'POST' and form.validate():
-        print('validate')
-        name = form.name.data
-        flash('Thanks for registering')
-        return redirect(url_for('bp.main'))
-    
-    
-
-    return render_template('formularz.html', form=form, message=message)
-    
-
-
+## ENTRY POINT
+##
 @bp.route("/", methods=['GET', 'POST'])
 @login_required
 def main():
