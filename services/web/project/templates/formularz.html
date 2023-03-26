@@ -53,7 +53,19 @@
       </div>
       <div class="row">
         <div class="col">
-          <div id="response"></div>
+          <div id="response">
+
+            <table class="table" id="my-table">
+              <thead>
+                <tr>
+                  <th>Dzien</th>
+                  <th>Dzien wibor</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -135,13 +147,29 @@
 
           console.log(tech_data)
 
-         var divmain = d3.select("#response")
-          
-         var ps =  divmain.selectAll("p").data(tech_data).text(function(d) { return d.dzien; });
+          var tbody = d3.select("#my-table tbody");
 
-         ps.enter().append("p").text(function(d) { return d.dzien; });
+          var rows = tbody.selectAll("tr")
+  .data(tech_data);
+
+
+// Enter new rows
+rows.enter()
+  .append("tr")
+  .merge(rows)
+  .html(function(d) {
+    return "<td>" + d.dzien + "</td><td>" + d.dzienwibor + "</td>";
+  });
+
+// Exit old rows
+rows.exit().remove();
+          
+          
+        //  var ps =  divmain.selectAll("p").data(tech_data).text(function(d) { return d.dzien; });
+
+        //  ps.enter().append("p").text(function(d) { return d.dzien; });
          
-         ps.exit().remove();
+        //  ps.exit().remove();
 
 
 

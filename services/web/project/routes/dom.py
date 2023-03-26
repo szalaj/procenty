@@ -31,8 +31,13 @@ def kiedywibor():
     if request.method == 'POST':
         dzien = request.get_json()['dzien']
         start_date = dt.datetime.strptime(dzien, '%d/%m/%Y')
-        okresy = 20
-        miesiace = [{'dzien':(start_date + relativedelta(months=3*i)-BDay(2)).strftime('%d-%m-%Y')} for i in range(okresy+1)]
+        okresy = 10
+        miesiace = []
+        for i in range(okresy):
+            dzien = start_date + relativedelta(months=3*i)
+            dzienwibor = dzien - BDay(2)
+
+            miesiace.append({'dzien':dzien.strftime('%d-%m-%Y'), 'dzienwibor': dzienwibor.strftime('%d-%m-%Y')})
 
   
         return json.dumps(miesiace)
