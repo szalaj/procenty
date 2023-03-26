@@ -7,7 +7,7 @@ from wtforms import Form, BooleanField, StringField, PasswordField, SelectField,
 from dateutil.relativedelta import relativedelta
 import datetime as dt
 
-from ..forms import KredytForm
+import json
 
 dom = Blueprint('dom', __name__)
 
@@ -31,8 +31,8 @@ def kiedywibor():
         dzien = request.get_json()['dzien']
         start_date = dt.datetime.strptime(dzien, '%d/%m/%Y')
         okresy = 20
-        miesiace = [(start_date + relativedelta(months=3*i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
-        return miesiace  
+        miesiace = [{'dzien':(start_date + relativedelta(months=3*i)).strftime('%Y-%m-%d')} for i in range(okresy+1)]
+        return json.dumps(miesiace)
 
     return render_template('formularz.html', message=message)
 
