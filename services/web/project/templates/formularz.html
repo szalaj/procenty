@@ -17,6 +17,11 @@
       display: grid;
       place-items: center;
     }
+
+    .isInvalid {
+      border-width: 2;
+      border-color: red;
+    }
   </style>
   <title>Kiedy płatność raty</title>
 
@@ -30,7 +35,7 @@
     <div class="container">
       <div class="row">
         <div class="col">
-          Wpisz datę uruchomienia kredytu
+          <div id="tekstgora">Wpisz datę uruchomienia kredytu</div>
         </div>
       </div>
       <div class="row">
@@ -50,12 +55,81 @@
   </div>
 
   <script>
+    function isValidDate(str) {
+  // Regular expression to match dd/mm/yyyy date format
+  const regex = /^\d{2}\/\d{2}\/\d{4}$/;
+  
+  // Test the string against the regular expression
+  if (!regex.test(str)) {
+    return false;
+  }
+  
+  // Split the string into day, month, and year components
+  const [day, month, year] = str.split('/');
+  
+  // Convert the components to numbers
+  const dayNum = Number(day);
+  const monthNum = Number(month);
+  const yearNum = Number(year);
+
+  // Check if the date is valid
+  const date = new Date(yearNum, monthNum - 1, dayNum);
+  return (
+    date.getFullYear() === yearNum &&
+    date.getMonth() === monthNum - 1 &&
+    date.getDate() === dayNum
+  );
+}
 
     document.getElementById('guzik').addEventListener('click', function (event) {
       event.preventDefault(); // To prevent following the link (optional)
-      console.log("clik")
 
-      d3.select("#dataUruchomienia").attr("style", "border:3px solid #ff0000")
+      const input = document.getElementById('dataUruchomienia');
+      
+      console.log(input.value)
+      if (!isValidDate(input.value)) {
+       // input.classed('.isInvalid', true)
+        input.classList.add("isInvalid");
+        d3.select("#tekstgora").html("Nieprawidłowy format, spróbuj np. 12/03/2011")
+      }
+      else {
+        input.classList.remove("isInvalid");
+        d3.select("#tekstgora").html("Wspaniały dzień!")
+
+
+
+        // Create a new XMLHttpRequest object
+        const xhr = new XMLHttpRequest();
+
+        // Set the URL of the Flask server
+        const url = "{{ url_for('dom.kiedywibor') }}";
+
+        // Set the request method to POST
+        xhr.open("POST", url);
+
+        // Set the request header to JSON
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        // Create a JSON object to send as the request body
+        const data = { dzien: input.value };
+        const json = JSON.stringify(data);
+
+        // Send the request with the JSON object as the request body
+        xhr.send(json);
+
+        xhr.onload = function () {
+        if (xhr.status === 200) {
+          // Handle the response
+          console.log(xhr.responseText);
+          d3.select("#tekstgora").html(xhr.responseText);
+        }
+      };
+            
+
+
+
+      }
+      //d3.select("#dataUruchomienia").attr("style", "border:3px solid #ff0000")
 
     });
 

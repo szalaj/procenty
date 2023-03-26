@@ -4,6 +4,8 @@ from flask_login import login_user, logout_user, login_required, current_user
 from ..models import User, Dom, Zapytanie
 from project import db
 from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, validators
+from dateutil.relativedelta import relativedelta
+import datetime as dt
 
 from ..forms import KredytForm
 
@@ -17,23 +19,22 @@ def domy():
         r += d.data_zakupu
     return r
 
-# https://www.digitalocean.com/community/tutorials/how-to-use-and-validate-web-forms-with-flask-wtf
-@dom.route('/kiedy')
+
+@dom.route('/kiedy', methods=['GET', 'POST']) 
 @login_required
 def kiedywibor():
 
-    form = KredytForm(request.form)
-    print(form.validate())
+    # form = KredytForm(request.form)
+    # print(form.validate())
     message = ""
-    if request.method == 'POST' and form.validate():
-        print('validate')
-        name = form.name.data
-        flash('Thanks for registering')
-        return redirect(url_for('bp.main'))
-    
-    
+    if request.method == 'POST':
+        dzien = request.get_json()['dzien']
+        start_date = dt.datetime.strptime(dzien, '%d/%m/%Y')
+        okresy = 20
+        miesiace = [(start_date + relativedelta(months=3*i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
+        return miesiace  
 
-    return render_template('formularz.html', form=form, message=message)
+    return render_template('formularz.html', message=message)
 
 
 @dom.route("/logs", methods=['GET', 'POST'])
