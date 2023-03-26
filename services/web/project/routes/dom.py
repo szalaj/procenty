@@ -6,6 +6,7 @@ from project import db
 from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, validators
 from dateutil.relativedelta import relativedelta
 import datetime as dt
+from pandas.tseries.offsets import BDay
 
 import json
 
@@ -31,7 +32,9 @@ def kiedywibor():
         dzien = request.get_json()['dzien']
         start_date = dt.datetime.strptime(dzien, '%d/%m/%Y')
         okresy = 20
-        miesiace = [{'dzien':(start_date + relativedelta(months=3*i)).strftime('%Y-%m-%d')} for i in range(okresy+1)]
+        miesiace = [{'dzien':(start_date + relativedelta(months=3*i)-BDay(2)).strftime('%d-%m-%Y')} for i in range(okresy+1)]
+
+  
         return json.dumps(miesiace)
 
     return render_template('formularz.html', message=message)
