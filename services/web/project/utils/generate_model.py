@@ -20,9 +20,19 @@ class Wibor:
         self.df = pd.read_csv('project/static/{}'.format(file_name), usecols=[0,1], index_col=0)
         self.df.index = pd.to_datetime(self.df.index, format='%Y-%m-%d')
 
+        print(self.df.loc['2021-01-05'][0])
+        print(self.df.index.get_indexer('2021-01-05'))
+
     def getWibor(self, data: str):
         zmr_iloc_idx = self.df.index.get_indexer([data], method='nearest')
         wibor_zamr_value = self.df.iloc[zmr_iloc_idx].iloc[0][0]
+        return wibor_zamr_value
+    
+    def getWiborExact(self, data: str):
+        try:
+            wibor_zamr_value = self.df.loc[data.strftime('%Y-%m-%d')][0]
+        except:
+            wibor_zamr_value = None
         return wibor_zamr_value
     
     @property

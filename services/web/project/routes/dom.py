@@ -8,6 +8,8 @@ from dateutil.relativedelta import relativedelta
 import datetime as dt
 from pandas.tseries.offsets import BDay
 
+from ..utils.generate_model import Wibor
+
 import json
 
 dom = Blueprint('dom', __name__)
@@ -33,11 +35,13 @@ def kiedywibor():
         start_date = dt.datetime.strptime(dzien, '%d/%m/%Y')
         okresy = 10
         miesiace = []
+        wibor = Wibor('3M')
         for i in range(okresy):
             dzien = start_date + relativedelta(months=3*i)
             dzienwibor = dzien - BDay(2)
+            wibor_value = wibor.getWiborExact(dzienwibor)
 
-            miesiace.append({'dzien':dzien.strftime('%d-%m-%Y'), 'dzienwibor': dzienwibor.strftime('%d-%m-%Y')})
+            miesiace.append({'dzien':dzien.strftime('%d-%m-%Y'), 'dzienwibor': dzienwibor.strftime('%d-%m-%Y'), 'wibor': wibor_value})
 
   
         return json.dumps(miesiace)

@@ -60,6 +60,7 @@
                 <tr>
                   <th>Dzien</th>
                   <th>Dzien wibor</th>
+                  <th>Wibor</th>
                 </tr>
               </thead>
               <tbody>
@@ -158,7 +159,7 @@ rows.enter()
   .append("tr")
   .merge(rows)
   .html(function(d) {
-    return "<td>" + d.dzien + "</td><td>" + d.dzienwibor + "</td>";
+    return "<td>" + d.dzien + "</td><td>" + d.dzienwibor + "</td><td>" + d.wibor + "</td>";
   });
 
 // Exit old rows
