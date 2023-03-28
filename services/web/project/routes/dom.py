@@ -27,9 +27,7 @@ def domy():
 @login_required
 def kiedywibor():
 
-    # form = KredytForm(request.form)
-    # print(form.validate())
-    message = ""
+
     if request.method == 'POST':
         dzien = request.get_json()['dzien']
         start_date = dt.datetime.strptime(dzien, '%d/%m/%Y')
@@ -46,7 +44,7 @@ def kiedywibor():
   
         return json.dumps(miesiace)
 
-    return render_template('formularz.html', message=message)
+    return render_template('kiedy.html')
 
 
 @dom.route("/logs", methods=['GET', 'POST'])
