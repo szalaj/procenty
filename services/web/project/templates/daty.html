@@ -40,7 +40,8 @@ var tech_data = JSON.parse('{{datki|tojson|safe}}');
 
     console.log(tech_data)
 
-            
+    tech_data.forEach(element => console.log(new Date(element.Data).getDay()));
+
 
 
 
