@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="{{url_for('static', filename='d3.js')}}"></script>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <style>
+    .container {
+
+      display: grid;
+      place-items: center;
+    }
+
+    .isInvalid {
+      border-width: 2;
+      border-color: red;
+    }
+  </style>
+  <title>daty</title>
+
+</head>
+
+<body>
+
+        <svg height="400" width="200" id="rysujtu"><rect width="100%" height="100%" fill="red"/></svg>
+
+
+
+
+  <script>
+
+var tech_data = JSON.parse('{{datki|tojson|safe}}');
+
+    console.log(tech_data)
+
+            
+
+
+
+
+
+  </script>
+
+</body>
+
+</html>
