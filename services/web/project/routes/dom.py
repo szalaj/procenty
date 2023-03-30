@@ -7,6 +7,7 @@ from wtforms import Form, BooleanField, StringField, PasswordField, SelectField,
 from dateutil.relativedelta import relativedelta
 import datetime as dt
 from pandas.tseries.offsets import BDay
+import pandas as pd
 
 from ..utils.generate_model import Wibor
 
@@ -46,6 +47,17 @@ def kiedywibor():
 
     return render_template('kiedy.html')
 
+@dom.route('/daty', methods=['GET', 'POST']) 
+@login_required
+def daty():
+
+
+    df = pd.read_csv('project/static/plopln3m_d.csv', usecols=[0,1])
+    result = df.to_json(orient="records")
+
+
+
+    return render_template('daty.html', datki=json.loads(result))
 
 @dom.route("/logs", methods=['GET', 'POST'])
 @login_required
