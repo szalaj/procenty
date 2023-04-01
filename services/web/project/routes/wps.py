@@ -112,6 +112,16 @@ def main():
 
             if data_zamrozenia > max_day_wibor3m if rodzajWiboru=='3M' else data_zamrozenia > max_day_wibor6m:
                 error = "Data zamrożenia wiboru większa niż dostępne dane."
+
+            if rodzajWiboru=='3M' and data_umowa < df3.index.min():
+                error = "Brak danych wiboru dla tak dalekiej daty."
+
+            if rodzajWiboru=='6M' and data_umowa < df6.index.min():
+                error = "Brak danych wiboru dla tak dalekiej daty."
+    
+
+
+            if error:
                 flash('m')
                 return render_template('wykres.html', error=error, tech_data=tech_data)
 
@@ -128,7 +138,7 @@ def main():
         dane_kredytu =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False)
 
         wibor = project.utils.generate_model.Wibor(rodzajWiboru)
-        wibor_start = wibor.getWibor(data_umowa)
+        wibor_start = wibor.getWiborLastAvailable(data_umowa)
         stala_stopa_uruch = round(wibor_start + marza,2)
         wibor_zamrozony = dane_kredytu['wibor_zamrozony']
 

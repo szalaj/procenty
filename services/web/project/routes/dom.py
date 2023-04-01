@@ -55,6 +55,30 @@ def daty():
     df = pd.read_csv('project/static/plopln3m_d.csv', usecols=[0,1])
     result = df.to_json(orient="records")
 
+    df3 = pd.read_csv('project/static/plopln3m_d.csv', usecols=[0,1], index_col=0)
+    df3.index = pd.to_datetime(df3.index, format='%Y-%m-%d')
+
+    min_day_wibor = df3.index.min()
+    max_day_wibor = df3.index.max()
+
+    a = df3.loc[max_day_wibor.strftime('%Y-%m-%d')][0]
+
+    check_day = min_day_wibor
+    iloscbl = 0
+    while check_day <= max_day_wibor:
+        d = check_day.dayofweek
+        try:
+            df3.loc[check_day.strftime('%Y-%m-%d')][0]
+        except:
+            if d in [0,1,2,3,4]:
+                iloscbl += 1
+                print(check_day)
+        check_day = check_day + pd.DateOffset(1)
+    
+        
+    print(iloscbl)
+    print(max_day_wibor)
+    print(max_day_wibor.dayofweek)
 
 
     return render_template('daty.html', datki=json.loads(result))
