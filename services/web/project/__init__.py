@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 def init_app():
+ 
     app = Flask(__name__)
     app.config.from_object("project.config.Config")
 
@@ -24,12 +25,17 @@ def init_app():
     
     @login_manager.unauthorized_handler
     def unauthorized():
-        return redirect(url_for('bp.login'))
+        return redirect(url_for('admin_bp.login'))
     
+    from .routes.admin import admin_bp as admin_blueprint
+    app.register_blueprint(admin_blueprint)
 
-    from .routes import bp as main_blueprint
-    app.register_blueprint(main_blueprint)
+    from .routes.wps import bp as wps_blueprint
+    app.register_blueprint(wps_blueprint)
     
+    from .routes.dom import dom as dom_blueprint
+    app.register_blueprint(dom_blueprint)
+
     return app
 
 

@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="{{url_for('static', filename='d3.js')}}"></script>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <style>
+    .container {
+
+      display: grid;
+      place-items: center;
+    }
+
+    .isInvalid {
+      border-width: 2;
+      border-color: red;
+    }
+  </style>
+  <title>Kiedy płatność raty</title>
+
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm">
+        <form class="form-inline">
+          <div class="col">
+            <div id="tekstgora">Wpisz datę uruchomienia kredytu</div>
+            <input type="text" class="form-control" placeholder="DD/MM/RRRR" name="data_uruchomienia" id="dataUruchomienia">
+
+      
+        
+            <button type="submit" class="btn btn-primary" id="guzik">Zatwierdź</button>
+          </div>
+          
+        </form>
+      </div>
+      <div class="col-sm">
+        <table class="table" id="my-table">
+          <thead>
+            <tr>
+              <th>Dzien</th>
+              <th>Dzien wibor</th>
+              <th>Wibor</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-sm">tu będzie svg
+        <svg height="400" width="200" id="rysujtu"><rect width="100%" height="100%" fill="red"/></svg>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <script>
+    function isValidDate(str) {
+  // Regular expression to match dd/mm/yyyy date format
+  const regex = /^\d{2}\/\d{2}\/\d{4}$/;
+  
+  // Test the string against the regular expression
+  if (!regex.test(str)) {
+    return false;
+  }
+  
+  // Split the string into day, month, and year components
+  const [day, month, year] = str.split('/');
+  
+  // Convert the components to numbers
+  const dayNum = Number(day);
+  const monthNum = Number(month);
+  const yearNum = Number(year);
+
+  // Check if the date is valid
+  const date = new Date(yearNum, monthNum - 1, dayNum);
+  return (
+    date.getFullYear() === yearNum &&
+    date.getMonth() === monthNum - 1 &&
+    date.getDate() === dayNum
+  );
+}
+
+    document.getElementById('guzik').addEventListener('click', function (event) {
+      event.preventDefault(); // To prevent following the link (optional)
+
+    
+      
+      var input = d3.select('#dataUruchomienia')
+      console.log(input.property("value"))
+
+
+      input_value = input.property("value")
+
+      if (!isValidDate(input_value)) {
+       // input.classed('.isInvalid', true)
+       input.classed("isInvalid", true);
+        d3.select("#tekstgora").html("Nieprawidłowy format, spróbuj np. 12/03/2011")
+      }
+      else {
+        input.classed("isInvalid", false);
+        d3.select("#tekstgora").html("Wspaniały dzień!")
+
+
+
+        // Create a new XMLHttpRequest object
+        const xhr = new XMLHttpRequest();
+
+        // Set the URL of the Flask server
+        const url = "{{ url_for('dom.kiedywibor') }}";
+
+        // Set the request method to POST
+        xhr.open("POST", url);
+
+        // Set the request header to JSON
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        // Create a JSON object to send as the request body
+        const data = { dzien: input_value };
+        const json = JSON.stringify(data);
+
+        // Send the request with the JSON object as the request body
+        xhr.send(json);
+
+        xhr.onload = function () {
+        if (xhr.status === 200) {
+          // Handle the response
+          var tech_data = JSON.parse(xhr.responseText);
+
+          console.log(tech_data)
+
+          var tbody = d3.select("#my-table tbody");
+
+          var rows = tbody.selectAll("tr")
+  .data(tech_data);
+
+
+// Enter new rows
+rows.enter()
+  .append("tr")
+  .merge(rows)
+  .html(function(d) {
+    return "<td>" + d.dzien + "</td><td>" + d.dzienwibor + "</td><td>" + d.wibor + "</td>";
+  });
+
+// Exit old rows
+rows.exit().remove();
+          
+          
+        //  var ps =  divmain.selectAll("p").data(tech_data).text(function(d) { return d.dzien; });
+
+        //  ps.enter().append("p").text(function(d) { return d.dzien; });
+         
+        //  ps.exit().remove();
+
+
+
+        }
+      };
+            
+
+
+
+      }
+      //d3.select("#dataUruchomienia").attr("style", "border:3px solid #ff0000")
+
+    });
+
+  </script>
+
+</body>
+
+</html>

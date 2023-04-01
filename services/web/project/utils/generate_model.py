@@ -20,10 +20,34 @@ class Wibor:
         self.df = pd.read_csv('project/static/{}'.format(file_name), usecols=[0,1], index_col=0)
         self.df.index = pd.to_datetime(self.df.index, format='%Y-%m-%d')
 
-    def getWibor(self, data: str):
+        # print(self.df.loc['2021-01-05'][0])
+        # print(self.df.index.get_indexer('2021-01-05'))
+
+
+
+    def getNearestWibor(self, data: str):
         zmr_iloc_idx = self.df.index.get_indexer([data], method='nearest')
         wibor_zamr_value = self.df.iloc[zmr_iloc_idx].iloc[0][0]
         return wibor_zamr_value
+    
+    def getWiborExact(self, data: str):
+        try:
+            wibor_zamr_value = self.df.loc[data.strftime('%Y-%m-%d')][0]
+        except:
+            wibor_zamr_value = None
+        return wibor_zamr_value
+    
+    def getWiborLastAvailable(self, data: str) -> float:
+        try:
+            wibor_zamr_value = self.df.loc[data.strftime('%Y-%m-%d')][0]
+        except:
+            try:
+                wibor_zamr_value = self.df[self.df.index < data.strftime('%Y-%m-%d')].iloc[-1][0]
+            except:
+                raise Exception('wibor not available')
+                wibor_zamr_value = None
+        return wibor_zamr_value
+
     
     @property
     def okres(self):
@@ -40,7 +64,7 @@ def generateFromWiborFile(kapital, okresy, start_date, marza, dzien_zamrozenia, 
 
     miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
 
-    wibor_zamr_value = wibor.getWibor(dzien_zamrozenia)
+    wibor_zamr_value = wibor.getWiborLastAvailable(dzien_zamrozenia)
    
     grosze =  decimal.Decimal('.01')
 
@@ -49,7 +73,7 @@ def generateFromWiborFile(kapital, okresy, start_date, marza, dzien_zamrozenia, 
         for i in range(0, int(okresy/wibor.okres)+1):
                 wibor_day =  start_date + relativedelta(months=3*i)
                 if wibor_day < dzien_zamrozenia:
-                    wibor_value = wibor.getWibor(wibor_day)
+                    wibor_value = wibor.getWiborLastAvailable(wibor_day)
                     opr_arr.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_value).quantize(grosze))})
 
         opr_arr.append({"dzien":dzien_zamrozenia.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_zamr_value).quantize(grosze))})
@@ -63,7 +87,7 @@ def generateFromWiborFile(kapital, okresy, start_date, marza, dzien_zamrozenia, 
     if tylko_marza:
         p_start = float(decimal.Decimal(marza).quantize(grosze))
     else:
-        p_start = float(decimal.Decimal(wibor.getWibor(start_date)+marza).quantize(grosze))
+        p_start = float(decimal.Decimal(wibor.getWiborLastAvailable(start_date)+marza).quantize(grosze))
 
     data = {"K": kapital,
             "transze": transze_out,

@@ -1,7 +1,9 @@
 from flask_login import UserMixin
-from . import db
+from .. import db
 from sqlalchemy.sql import func
 import datetime
+
+
 
 class Dom(db.Model):
     __tablename__ = 'dom'
@@ -28,9 +30,11 @@ class User(UserMixin, db.Model):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
-    name = db.Column(db.String(1000))
+    name = db.Column(db.String(1000), unique=True)
     password = db.Column(db.String(100))
 
+    def __repr__(self):
+        return f"<{self.id} - {self.name}>"
 
     def to_json(self):        
         return {"nazwa": self.name}
