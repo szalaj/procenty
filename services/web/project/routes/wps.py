@@ -215,4 +215,11 @@ def wibor():
 
 
 
+@bp.route("/podsumowanie", methods=['GET', 'POST'])
+@login_required
+def podsumowanie():
 
+    if request.method == 'POST':
+        print(request.form)
+
+    return render_template('podsumowanie.html')
