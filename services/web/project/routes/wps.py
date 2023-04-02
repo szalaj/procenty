@@ -15,6 +15,8 @@ import datetime
 from ..models import User, Dom, Zapytanie
 from project import db
 
+import json
+
 bp = Blueprint('bp', __name__)
 
 
@@ -220,6 +222,7 @@ def wibor():
 def podsumowanie():
 
     if request.method == 'POST':
-        print(request.form)
+        tech_data = json.loads(request.form['tech_data'])
+
 
     return render_template('podsumowanie.html')
