@@ -225,4 +225,4 @@ def podsumowanie():
         tech_data = json.loads(request.form['tech_data'])
 
 
-    return render_template('podsumowanie.html')
+        return render_template('podsumowanie.html', tech_data=tech_data)
