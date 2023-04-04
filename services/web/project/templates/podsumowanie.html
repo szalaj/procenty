@@ -28,11 +28,21 @@
 </head>
 
 <body>
-<div id="rys">{{tech_data}}</div>
+
         
 
 
-
+<table class="table" id="my-table">
+    <thead>
+      <tr>
+        <th>Dzien</th>
+        <th>Dzien wibor</th>
+        <th>Wibor</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
 
   <script>
 
@@ -47,6 +57,20 @@
    
 
     console.log(tech_data['dane'])
+
+    var tbody = d3.select("#my-table tbody");
+
+    var rows = tbody.selectAll("tr")
+    .data(tech_data['dane']['raty']);
+
+
+    // Enter new rows
+    rows.enter()
+    .append("tr")
+    .merge(rows)
+    .html(function(d) {
+    return "<td>" + d.K + "</td><td>" + d.K_po + "</td><td>" + d.dzien + "</td>";
+    });
 
     
 
