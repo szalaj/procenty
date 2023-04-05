@@ -22,6 +22,15 @@
       border-width: 2;
       border-color: red;
     }
+    .grey {
+  background-color: rgba(128,128,128,.25);
+}
+.red {
+  background-color: rgba(255,0,0,.25);
+}
+.blue {
+  background-color: rgba(0,0,255,.25);
+}
   </style>
   <title>daty</title>
 
@@ -33,11 +42,22 @@
 
 
 <table class="table" id="my-table">
+    <colgroup>
+        <col class="white" />
+        <col class="white" />
+        <col class="red" />
+        <col class="red" />
+        <col class="blue" />
+        <col class="blue" />     
+      </colgroup>
     <thead>
       <tr>
-        <th>Dzien</th>
-        <th>Dzien wibor</th>
-        <th>Wibor</th>
+        <th>nr raty</th>
+        <th>dzień płatności</th>
+        <th>kapitał do spłaty I</th>
+        <th>wysokość raty I</th>
+        <th>kapitał do spłaty II</th>
+        <th>wysokość raty II</th>
       </tr>
     </thead>
     <tbody>
@@ -56,20 +76,21 @@
 
    
 
-    console.log(tech_data['dane'])
+    console.log(tech_data['dane2']['raty'][1])
 
     var tbody = d3.select("#my-table tbody");
 
     var rows = tbody.selectAll("tr")
     .data(tech_data['dane']['raty']);
 
+    zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
 
     // Enter new rows
     rows.enter()
     .append("tr")
     .merge(rows)
-    .html(function(d) {
-    return "<td>" + d.K + "</td><td>" + d.K_po + "</td><td>" + d.dzien + "</td>";
+    .html(function(d,i) {
+    return "<td>" + d.nr_raty + "</td><td>" + d.dzien.slice(0,10) + "</td><td>" + zloty(d.K) +"</td><td>" + zloty(d.rata) + "</td><td>" +  zloty(tech_data['dane2']['raty'][i]['K']) + "</td><td>" + zloty(tech_data['dane2']['raty'][i]['rata']) + "</td>";
     });
 
     
