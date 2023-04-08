@@ -86,6 +86,17 @@
       padding-left: 0px;
 
     }
+
+    a.metoda:link, a.metoda:visited {
+
+  color: gray;
+
+
+}
+
+a.metoda:hover, a.metoda:active {
+
+}
   </style>
 </head>
 
@@ -404,6 +415,10 @@
           <span class="navbar-text">
             2023
           </span>
+          <span class="navbar-text">
+            @
+          </span>
+          <span><a href="{{ url_for('bp.opis') }}" class="metoda">Opis metody</a></span>
         </nav>
       </div>
     </div>

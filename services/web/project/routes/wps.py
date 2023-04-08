@@ -226,3 +226,10 @@ def podsumowanie():
 
 
         return render_template('podsumowanie.html', tech_data=tech_data)
+
+
+@bp.route("/opis", methods=['GET'])
+def opis():
+
+    
+    return render_template('opis.html')
