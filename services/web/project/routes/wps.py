@@ -121,6 +121,11 @@ def main():
             if rodzajWiboru=='6M' and data_umowa < df6.index.min():
                 error = "Brak danych wiboru dla tak dalekiej daty."
     
+            if data_zamrozenia < data_start1:
+                error = "Data zamrożenia wiboru mniejsza data uruchomienia kredytu."
+
+            if data_umowa > data_start1:
+                error = "Data podpisania umowy większa niż data uruchomienia kredytu."
 
 
             if error:
