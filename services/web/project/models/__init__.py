@@ -1,7 +1,7 @@
 from flask_login import UserMixin
 from .. import db
 from sqlalchemy.sql import func
-import datetime
+
 
 
 
@@ -51,3 +51,10 @@ class User(UserMixin, db.Model):
     def get_id(self):         
         return self.id
 
+
+class InflacjaMM(db.Model):
+    __tablename__ = 'inflacjamm'
+
+    id = db.Column(db.Integer, primary_key=True) 
+    miesiac = db.Column(db.DateTime, unique=True, nullable=False)
+    wartosc = db.Column(db.Numeric(4,2), nullable=False)
