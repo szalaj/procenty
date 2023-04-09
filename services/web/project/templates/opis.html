@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="{{url_for('static', filename='d3.js')}}"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/downloadjs/1.4.8/download.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <title>Oblicz WPS</title>
+    <style>
+        .top-buffer {
+            margin-top: 20px;
+        }
+
+        span {
+
+            font-size: large;
+        }
+
+        path {
+            fill: none;
+            stroke-width: 1px;
+            stroke: black;
+        }
+
+        path.kreska {
+            fill: none;
+            stroke-width: 2px;
+            stroke: black;
+        }
+
+        path.kreska2 {
+            fill: none;
+            stroke-width: 2px;
+            stroke: rgb(57, 53, 83);
+            border-style: dotted;
+            stroke-dasharray: 5;
+        }
+
+        path.red {
+            fill: none;
+            stroke-width: 2px;
+            stroke: red;
+        }
+
+        path.red-dot {
+            fill: none;
+            stroke-width: 1px;
+            stroke: red;
+            border-style: dotted;
+            stroke-dasharray: 5;
+        }
+
+        path.black-dot {
+            fill: none;
+            stroke-width: 1px;
+            stroke: black;
+            border-style: dotted;
+            stroke-dasharray: 5;
+        }
+
+        line.gridline {
+            fill: none;
+            stroke-width: 1px;
+            stroke: black;
+            border-style: dotted;
+            stroke-dasharray: 5;
+        }
+
+        div.wykresy {
+            margin-left: 0px;
+            padding-left: 0px;
+
+        }
+
+        a.metoda:link,
+        a.metoda:visited {
+
+            color: gray;
+
+
+        }
+
+
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Image and text -->
+        <div class="row">
+            <div class="col">
+                <nav class="navbar navbar-light bg-light">
+                    <h2>Opis metody</h2>
+                </nav>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                Wzór na obliczenie raty równej: $$I = \frac{K r }{k(1-(\frac{k}{k+r})^N)}$$
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                $$I - \text{ wysokość raty } $$ 
+                $$K - \text{ kapitał do spłaty } $$ 
+                $$r - \text{ oprocentowanie w skali roku } $$ 
+                $$k - \text{ liczba rat płatnych w roku } $$ 
+                $$N - \text{ liczba wszystkich rat } $$
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

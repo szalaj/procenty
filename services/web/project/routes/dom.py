@@ -1,7 +1,7 @@
 
 from flask import Blueprint, render_template, flash, redirect, url_for, request, send_file, sessions
 from flask_login import login_user, logout_user, login_required, current_user
-from ..models import User, Dom, Zapytanie
+from ..models import User, Dom, Zapytanie, InflacjaMM
 from project import db
 from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, validators
 from dateutil.relativedelta import relativedelta
@@ -17,11 +17,16 @@ dom = Blueprint('dom', __name__)
 
 @dom.route('/domy')
 def domy():
+
     domy = Dom.query.all()
-    r = ""
-    for d in domy:
-        r += d.data_zakupu
-    return r
+    inflacja = InflacjaMM.query.all()
+
+    inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja]
+
+    # convert the list of dictionaries to JSON
+    inflacja_dumps = json.dumps(inflacja_dict)
+
+    return render_template('domy.html', inflacja=inflacja_dumps)
 
 
 @dom.route('/kiedy', methods=['GET', 'POST']) 

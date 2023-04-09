@@ -15,6 +15,8 @@ import datetime
 from ..models import User, Dom, Zapytanie
 from project import db
 
+import json
+
 bp = Blueprint('bp', __name__)
 
 
@@ -119,6 +121,11 @@ def main():
             if rodzajWiboru=='6M' and data_umowa < df6.index.min():
                 error = "Brak danych wiboru dla tak dalekiej daty."
     
+            if data_zamrozenia < data_start1:
+                error = "Data zamrożenia wiboru mniejsza data uruchomienia kredytu."
+
+            if data_umowa > data_start1:
+                error = "Data podpisania umowy większa niż data uruchomienia kredytu."
 
 
             if error:
@@ -215,4 +222,19 @@ def wibor():
 
 
 
+@bp.route("/podsumowanie", methods=['GET', 'POST'])
+@login_required
+def podsumowanie():
 
+    if request.method == 'POST':
+        tech_data = json.loads(request.form['tech_data'])
+
+
+        return render_template('podsumowanie.html', tech_data=tech_data)
+
+
+@bp.route("/opis", methods=['GET'])
+def opis():
+
+    
+    return render_template('opis.html')

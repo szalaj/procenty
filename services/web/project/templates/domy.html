@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="{{url_for('static', filename='d3.js')}}"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/downloadjs/1.4.8/download.min.js"></script>
+    <title>Oblicz WPS</title>
+    <style>
+        .top-buffer {
+            margin-top: 20px;
+        }
+
+        span {
+
+            font-size: large;
+        }
+
+        path {
+            fill: none;
+            stroke-width: 1px;
+            stroke: black;
+        }
+
+        path.kreska {
+            fill: none;
+            stroke-width: 2px;
+            stroke: rgb(255, 255, 255);
+        }
+
+        path.kreska2 {
+            fill: none;
+            stroke-width: 2px;
+            stroke: rgb(57, 53, 83);
+            border-style: dotted;
+            stroke-dasharray: 5;
+        }
+
+        path.red {
+            fill: none;
+            stroke-width: 2px;
+            stroke: red;
+        }
+
+        path.red-dot {
+            fill: none;
+            stroke-width: 1px;
+            stroke: red;
+            border-style: dotted;
+            stroke-dasharray: 5;
+        }
+
+        path.black-dot {
+            fill: none;
+            stroke-width: 1px;
+            stroke: black;
+            border-style: dotted;
+            stroke-dasharray: 5;
+        }
+
+        line.gridline {
+            fill: none;
+            stroke-width: 1px;
+            stroke: black;
+            border-style: dotted;
+            stroke-dasharray: 5;
+        }
+
+        div.wykresy {
+            margin-left: 0px;
+            padding-left: 0px;
+
+        }
+
+        a.metoda:link,
+        a.metoda:visited {
+
+            color: gray;
+
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row  top-buffer">
+            <div class="col d-flex justify-content-center">
+
+                <p>Rys. Inflacja m/m</p>
+
+            </div>
+          </div>
+        <div class="row">
+            <div class="col" id="rys">
+                
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+
+var inflacja = JSON.parse('{{inflacja|safe}}');
+
+var parseDate = d3.timeParse("%Y-%m");
+
+
+
+inflacja.forEach(function (d) {
+  d.miesiac = parseDate(d.miesiac)
+  d.wartosc = parseFloat(d.wartosc)
+
+});
+inflacja.sort(function(x, y){
+   return d3.ascending(x.miesiac, y.miesiac);
+})
+console.log(inflacja)
+
+
+var width_docs = document.getElementById('rys').clientWidth;
+
+var margin = { top: 60, right: 30, bottom: 70, left: 80 },
+  width = width_docs - margin.left - margin.right,
+  height = 450 - margin.top - margin.bottom;
+
+  var container = d3.select('#rys');
+
+
+
+
+// Position the div element above the SVG container
+
+
+
+var svg = container
+  .append("svg")
+  .attr("class", "svg-holder")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .attr("style", "border:1px solid black;")
+  .style('background', "red")
+  .append("g")
+  .attr("transform",
+    "translate(" + margin.left + "," + margin.top + ")");
+
+    var xscale = d3.scaleTime()
+  .domain(d3.extent(inflacja, d => d.miesiac))
+  .range([0, width]);
+
+
+  var xAxis = svg.append("g")
+  .attr("class", "xAxis")
+  .attr("transform", "translate(0," + height + ")")
+
+xAxis.call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m')))
+  .selectAll("text")
+  .attr("transform", "translate(-10,0)rotate(-45)")
+  .style("text-anchor", "end")
+  .style("font-size", "13px");
+
+  var grids = svg.append('g')
+  .selectAll('line')
+  .data(xscale.ticks())
+  .enter().append('line')
+  .attr('class', 'gridline')
+  .attr('x1', d => xscale(d))
+  .attr('x2', d => xscale(d))
+  .attr('y1', 0)
+  .attr('y2', height)
+
+
+
+
+  var maxYvalue = d3.max(inflacja, function (d) { return d.wartosc });
+var minYvalue = d3.min(inflacja, function (d) { return d.wartosc });
+
+
+
+var yscale = d3.scaleLinear()
+  .domain([minYvalue, maxYvalue])
+  .range([height, 0]);
+
+  var gridsH = svg.append('g')
+  .selectAll('line')
+  .data(yscale.ticks())
+  .enter().append('line')
+  .attr('class', 'gridline')
+  .attr('x1', 0)
+  .attr('x2', width)
+  .attr('y1', d=>yscale(d))
+  .attr('y2', d=>yscale(d))
+
+  svg.append("g")
+  .attr("class", "yAxis")
+  .call(d3.axisLeft(yscale))
+  .style("font-size", "13px");
+
+  d3.selectAll('.tick line').style('stroke', '#ffffff');
+  d3.selectAll('.gridline').style('stroke', '#ffffff');
+  d3.selectAll('.domain').style('stroke', '#ffffff');
+  d3.selectAll('.tick text').style('fill', '#ffffff');
+
+  var kreska_inflacja = svg.append("path")
+  .datum(inflacja)
+  .attr("class", "kreska")
+  .attr("d", d3.line()
+    .x(function (d) { return xscale(d.miesiac) })
+    .y(function (d) { return yscale(d.wartosc) })
+  )
+
+
+</script>
+</html>
