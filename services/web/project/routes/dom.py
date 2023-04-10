@@ -9,6 +9,8 @@ import datetime as dt
 from pandas.tseries.offsets import BDay
 import pandas as pd
 
+from sqlalchemy import text
+
 from ..utils.generate_model import Wibor
 
 import json
@@ -17,6 +19,15 @@ dom = Blueprint('dom', __name__)
 
 @dom.route('/domy')
 def domy():
+    '''
+    select EXP(SUM(LOG(yourColumn))) As ColumnProduct from yourTable
+
+    select t1.id, t1.SomeNumt, SUM(t2.SomeNumt) as sum
+    from @t t1
+    inner join @t t2 on t1.id >= t2.id
+    group by t1.id, t1.SomeNumt
+    order by t1.id
+    '''
 
     domy = Dom.query.all()
     inflacja = InflacjaMM.query.all()
@@ -25,6 +36,9 @@ def domy():
 
     # convert the list of dictionaries to JSON
     inflacja_dumps = json.dumps(inflacja_dict)
+
+    result = db.session.execute(text("select * from inflacjamm"))
+    print([row[1] for row in result])
 
     return render_template('domy.html', inflacja=inflacja_dumps)
 
