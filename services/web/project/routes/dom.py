@@ -36,10 +36,34 @@ def domy():
     ),
     inflacja as (
     select date(substring(miesiac,1,7) || '-01') as miesiac, wartosc from inflacjamm
-    )
-    select domek.miesiac, inflacja.miesiac, domek.wartosc, inflacja.wartosc from domek 
+    ),
+    cos as (
+    select row_number() OVER (ORDER BY inflacja.miesiac) AS id, domek.miesiac, inflacja.miesiac, domek.wartosc, inflacja.wartosc from domek 
     left outer join inflacja
     on inflacja.miesiac >= domek.miesiac
+    )
+    select * from cos
+    '''
+
+    sql2 = '''
+    with domek as (
+    select date(substring(data_zakupu,7,4) || '-' || substring(data_zakupu,4,2) || '-01') as miesiac, wartosc from dom
+    ),
+    inflacja as (
+    select date(substring(miesiac,1,7) || '-01') as miesiac, wartosc from inflacjamm
+    ),
+    cos as (
+    select domek.miesiac as domek_miesiac, inflacja.miesiac as inflacja_miesiac, domek.wartosc as domek_wartosc, inflacja.wartosc/100.0 as inflacja_wartosc from domek 
+    left outer join inflacja
+    on inflacja.miesiac >= domek.miesiac
+    )
+    select t1.inflacja_miesiac, t1.inflacja_wartosc, EXP(SUM(LN(t2.inflacja_wartosc))) as infl_kum, max(t1.domek_wartosc)
+    from cos t1
+    inner join cos t2
+    on t1.inflacja_miesiac >= t2.inflacja_miesiac
+    group by t1.inflacja_miesiac, t1.inflacja_wartosc
+    order by t1.inflacja_miesiac
+    
     '''
 
     domy = Dom.query.all()
@@ -51,9 +75,11 @@ def domy():
     inflacja_dumps = json.dumps(inflacja_dict)
 
 
-    res = db.session.execute(text(sql))
+    res = db.session.execute(text(sql2))
 
-    result_list = [{'domek_miesiac': row[0], 'inflacja_miesiac': row[1], 'domek_wartosc': row[2], 'inflacja_wartosc': row[3]} for row in res]
+    #result_list = [{'id': row[0], 'domek_miesiac': row[1], 'inflacja_miesiac': row[2], 'domek_wartosc': row[3], 'inflacja_wartosc': row[4]} for row in res]
+
+    result_list= [{'inflacja_miesiac': row[0], 'inflacja_wartosc': row[1], 'infl_kum': row[2], 'dom_wartosc': row[3]} for row in res]
 
     print(result_list)
 
