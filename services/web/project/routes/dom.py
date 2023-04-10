@@ -22,11 +22,24 @@ def domy():
     '''
     select EXP(SUM(LOG(yourColumn))) As ColumnProduct from yourTable
 
-    select t1.id, t1.SomeNumt, SUM(t2.SomeNumt) as sum
+    select date(substring(data_zakupu,7,4) || '-' || substring(data_zakupu,4,2) || '-' || substring(data_zakupu,1,2)) as miesiac from dom
+    
     from @t t1
     inner join @t t2 on t1.id >= t2.id
     group by t1.id, t1.SomeNumt
     order by t1.id
+    '''
+
+    sql = '''
+    with domek as (
+    select date(substring(data_zakupu,7,4) || '-' || substring(data_zakupu,4,2) || '-01') as miesiac, wartosc from dom
+    ),
+    inflacja as (
+    select date(substring(miesiac,1,7) || '-01') as miesiac, wartosc from inflacjamm
+    )
+    select domek.miesiac, inflacja.miesiac, domek.wartosc, inflacja.wartosc from domek 
+    left outer join inflacja
+    on inflacja.miesiac >= domek.miesiac
     '''
 
     domy = Dom.query.all()
@@ -37,10 +50,14 @@ def domy():
     # convert the list of dictionaries to JSON
     inflacja_dumps = json.dumps(inflacja_dict)
 
-    result = db.session.execute(text("select * from inflacjamm"))
-    print([row[1] for row in result])
 
-    return render_template('domy.html', inflacja=inflacja_dumps)
+    res = db.session.execute(text(sql))
+
+    result_list = [{'domek_miesiac': row[0], 'inflacja_miesiac': row[1], 'domek_wartosc': row[2], 'inflacja_wartosc': row[3]} for row in res]
+
+    print(result_list)
+
+    return render_template('domy.html', inflacja=inflacja_dumps, results=json.dumps(result_list))
 
 
 @dom.route('/kiedy', methods=['GET', 'POST']) 
