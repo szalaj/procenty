@@ -314,8 +314,12 @@
               <div style="float: right" id="roznica_A"></div>
             </li>
             <li class="list-group-item" style="background-color: #ceffa8">
-              <div style="float: left">Saldo kredytu</div>
+              <div style="float: left">Saldo kredytu (zmienny wibor)</div>
               <div style="float: right" id="idSaldoPrzed"></div>
+            </li>
+            <li class="list-group-item" style="background-color: #ffffff">
+              <div style="float: left">Saldo kredytu (stałe oprocentowanie)</div>
+              <div style="float: right" id="idSaldoPrzedStala"></div>
             </li>
           </ul>
         </div>
@@ -545,6 +549,8 @@
 
     kapital_do_splaty_po_zamr = d3.min(kredyt_dane_do_zamr, function (d) { return d.K_po; });
 
+    kapital_do_splaty_po_zamr_stala_stopa = d3.min(kredyt_dane_do_zamr2, function (d) { return d.K_po; });
+
 
     d3.select("#idZamrStopa").text(Math.round(suma_zamr * 100) / 100 + "%")
 
@@ -554,6 +560,7 @@
     d3.select("#roznica_A").text(zloty(do_zwrotu_przed))
 
     d3.select("#idSaldoPrzed").text(zloty(kapital_do_splaty_po_zamr))
+    d3.select("#idSaldoPrzedStala").text(zloty(kapital_do_splaty_po_zamr_stala_stopa))
 
 
     d3.select("#idIloscRatPo").text(ilosc_rat_po + " / " + ilosc_rat_wszystkie)

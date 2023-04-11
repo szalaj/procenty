@@ -13,6 +13,8 @@ User.__table__.drop(db.engine)
 
 InflacjaMM.__table__.drop(db.engine)
 
+Dom.__table__.drop(db.engine)
+
 - skasuj wszystko
 db.drop_all()
 
