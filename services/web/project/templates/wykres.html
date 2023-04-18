@@ -306,6 +306,10 @@
               <div style="float: right" id="suma_rat_A">aa</div>
             </li>
             <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;część kapitałowa</div>
+              <div style="float: right" id="suma_rat_A_kapital">aa</div>
+            </li>
+            <li class="list-group-item">
               <div style="float: left">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
               <div style="float: right" id="suma_rat2_A">aa</div>
             </li>
@@ -519,6 +523,9 @@
 
     suma_rat = d3.sum(kredyt_dane['raty'], d => d.rata)
     suma_rat_A = d3.sum(kredyt_dane_do_zamr, d => d.rata)
+
+    suma_kapitalow = d3.sum(kredyt_dane['raty'], d => d.kapital)
+    console.log(suma_kapitalow)
 
     var kredyt_dane2 = fin_data['dane2']
     kredyt_dane_do_zamr2 = kredyt_dane2['raty'].filter(function (d) { return parseDzien(d['dzien']) <= data_zamrozenia })

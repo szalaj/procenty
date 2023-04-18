@@ -142,7 +142,7 @@ def main():
 
         
 
-        dane_kredytu =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False)
+        dane_kredytu =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False, False)
 
         wibor = project.utils.generate_model.Wibor(rodzajWiboru)
         wibor_start = wibor.getWiborLastAvailable(data_umowa)
@@ -152,7 +152,16 @@ def main():
         
         
 
-        dane_kredytu_alt =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, stala_stopa_uruch, data_zamrozenia, rodzajWiboru, transze, True)
+        dane_kredytu_alt =  project.utils.generate_model.generateFromWiborFile(kapital1,
+                                                                               okresy,
+                                                                               data_start1,
+                                                                               marza,
+                                                                               data_zamrozenia,
+                                                                               rodzajWiboru, 
+                                                                               transze, 
+                                                                               wibor_start,
+                                                                               False
+                                                                               )
 
 
         wynik = project.utils.proc.create_kredyt(dane_kredytu, rodzajRat)
