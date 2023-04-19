@@ -6,7 +6,7 @@ import datetime as dt
 from dataclasses import dataclass
 from enum import auto, Enum
 import decimal
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 class Rodzaj(Enum):
     SPLATA = auto()
@@ -24,8 +24,9 @@ class Zdarzenie:
 
 class Kredyt:
     def __init__(self,K:Decimal, N:int, p:Decimal, marza:Decimal, start:dt.datetime, rodzajRat:str):
+        grosze =  decimal.Decimal('.01')
 
-        self.K = K
+        self.K = K.quantize(grosze, ROUND_HALF_UP)
         self.N = N
         self.p = p
         self.marza = marza
@@ -43,8 +44,6 @@ class Kredyt:
 
         self.wynik = []
 
-        self.przelicz_rate = True
-
 
     def __repr__(self) -> str:
         return "kredyt : {}".format(self.K)
@@ -54,9 +53,9 @@ class Kredyt:
         grosze =  decimal.Decimal('.01')
 
         return "dzien: {}, K: {} zł, odsetki: {} zł, rata: {} zł".format(dzien_raty, 
-                                                              self.K.quantize(grosze),  
-                                                              self.odsetki_naliczone.quantize(grosze), 
-                                                              self.I.quantize(grosze))
+                                                              self.K.quantize(grosze, ROUND_HALF_UP),  
+                                                              self.odsetki_naliczone.quantize(grosze, ROUND_HALF_UP), 
+                                                              self.I.quantize(grosze, ROUND_HALF_UP))
 
     def zapisz_stan(self, dzien_raty):
 
@@ -64,14 +63,14 @@ class Kredyt:
 
         data = {
             'dzien': str(dzien_raty.strftime('%Y-%m-%d')),
-            'K': str(self.K.quantize(grosze)),  
-            'odsetki': str(self.odsetki_naliczone.quantize(grosze)), 
-            'odsetki_marza': str(self.odsetki_naliczone_marza.quantize(grosze)), 
-            'odsetki_wibor': str(self.odsetki_naliczone.quantize(grosze)-self.odsetki_naliczone_marza.quantize(grosze)), 
-            'kapital': str(self.I.quantize(grosze)-self.odsetki_naliczone.quantize(grosze)), 
-            'rata':str(self.I.quantize(grosze)),
+            'K': str(self.K.quantize(grosze, ROUND_HALF_UP)),  
+            'odsetki': str(self.odsetki_naliczone.quantize(grosze, ROUND_HALF_UP)), 
+            'odsetki_marza': str(self.odsetki_naliczone_marza.quantize(grosze, ROUND_HALF_UP)), 
+            'odsetki_wibor': str(self.odsetki_naliczone.quantize(grosze, ROUND_HALF_UP)-self.odsetki_naliczone_marza.quantize(grosze, ROUND_HALF_UP)), 
+            'kapital': str(self.I.quantize(grosze, ROUND_HALF_UP)-self.odsetki_naliczone.quantize(grosze, ROUND_HALF_UP)), 
+            'rata':str(self.I.quantize(grosze, ROUND_HALF_UP)),
             'nr_raty': self.licznik_rat,
-            'K_po': str((self.K-(self.I-self.odsetki_naliczone)).quantize(grosze))
+            'K_po': str((self.K-(self.I-self.odsetki_naliczone)).quantize(grosze, ROUND_HALF_UP))
         }
 
         self.wynik.append(data)
@@ -118,7 +117,6 @@ class Kredyt:
 
         self.dzien_odsetki = dzien_zmiany
 
-        self.przelicz_rate = True
 
     def zrob_nadplate(self, dzien_nadplaty:dt.datetime, kwota:Decimal):
 
@@ -135,7 +133,6 @@ class Kredyt:
 
         self.dzien_odsetki = dzien_nadplaty
 
-        self.przelicz_rate = True
 
     def zrob_transze(self, dzien_transzy:dt.datetime, kwota:Decimal):
 
@@ -151,20 +148,20 @@ class Kredyt:
 
         self.dzien_odsetki = dzien_transzy
 
-        self.przelicz_rate = True
 
 
     def splata_raty(self, dzien_raty:dt.datetime):
+
+        grosze =  decimal.Decimal('.01')
 
         o_dni = (dzien_raty - self.dzien_odsetki).days
 
         opr = Decimal((o_dni/365))*self.p
         opr_marza = Decimal((o_dni/365))*self.marza
 
-        self.I = self.oblicz_rate()
-        self.przelicz_rate = False
+        self.I = self.oblicz_rate().quantize(grosze, ROUND_HALF_UP)
 
-        self.odsetki_naliczone = self.odsetki_naliczone + opr*self.K
+        self.odsetki_naliczone = (self.odsetki_naliczone + opr*self.K).quantize(grosze, ROUND_HALF_UP)
         self.odsetki_naliczone_marza = self.odsetki_naliczone_marza +  opr_marza*self.K
 
         
@@ -179,9 +176,10 @@ class Kredyt:
         self.licznik_rat += 1
         self.zapisz_stan(dzien_raty)
 
-        #print(self.wyswietl(dzien_raty))
     
         self.K = self.K - (self.I-self.odsetki_naliczone)
+
+
         self.odsetki_naliczone = 0
         self.odsetki_naliczone_marza = 0
 
