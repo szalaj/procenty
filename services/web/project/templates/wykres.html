@@ -92,6 +92,10 @@
 
     }
 
+    .bar {
+            fill: rgb(164, 202, 234);
+        }
+
     a.metoda:link, a.metoda:visited {
 
   color: gray;
@@ -480,7 +484,11 @@
         <div class="col-lg-12 wykresy" id="wykres_raty"></div>
       </div>
     </div>
-
+    <div class="row top-buffer">
+      <div class="col">
+        <div class="col-lg-12 wykresy" id="wykres_odsetki"></div>
+      </div>
+    </div>
 
     {% endif %}
 
@@ -734,6 +742,9 @@
       document.body.appendChild(form)
       form.submit();
     });
+
+
+
   </script>
 
   <script src="{{ url_for('static', filename='drawChart.js') }}" type="text/javascript"></script>

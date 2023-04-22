@@ -226,6 +226,82 @@ svg_raty.append("text")
 .text("Raty. 1) wibor zmienny (linia ciągła) 2) stały (linia przer.)")
 
 
+var dane_odsetki = [{'opis':'odsetki z tytułu wiboru zmiennego', 'value':suma_rat_wibor}, {'opis':'odsetki z tytułu wiboru stałego', 'value':suma_rat2_wibor}]
+
+
+// var margin = { top: 60, right: 30, bottom: 70, left: 120 },
+//   width = width_docs - margin.left - margin.right,
+//   height = 450 - margin.top - margin.bottom;
+var svg_odsetki = d3.select("#wykres_odsetki")
+  .append("svg")
+  .attr("class", "svg-holder")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .attr("style", "border:1px solid black;")
+  .style('background', "white")
+  .append("g")
+  .attr("transform",
+    "translate(" + margin.left + "," + margin.top + ")");
+
+var max_odsetki = d3.max(dane_odsetki, function (d) { return d.value });
+var min_odsetki = d3.min(dane_odsetki, function (d) { return d.value });
+
+
+    var xscale_odsetki = d3.scaleLinear()
+    .domain([0, max_odsetki])
+    .range([0, width]);
+  
+    var xAxis_odsetki = svg_odsetki.append("g")
+  .attr("class", "xAxis")
+  .attr("transform", "translate(0," + height + ")")
+
+  xAxis_odsetki.call(d3.axisBottom(xscale_odsetki).tickFormat(formatMoney))
+  .selectAll("text")
+  .attr("transform", "translate(-10,0)rotate(-45)")
+  .style("text-anchor", "end")
+  .style("font-size", "13px");
+
+  var yscale_odsetki = d3.scaleBand().padding(0.4)
+  .domain(dane_odsetki.map(function(d) { return d.opis; }))
+  .range([height, 0]);
+
+
+
+
+
+  svg_odsetki.selectAll(".bar")
+         .data(dane_odsetki)
+         .enter().append("rect")
+         .attr("class", "bar")
+         .attr("x", function(d) { return 0; })
+         .attr("y", function(d) { return yscale_odsetki(d.opis); })
+         .attr("height", yscale_odsetki.bandwidth())
+         .attr("width", function(d) { return xscale_odsetki(d.value); });
+  
+  // var grids_odsetki = svg_odsetki.append('g')
+  // .selectAll('line')
+  // .data(xscale_odsetki.ticks())
+  // .enter().append('line')
+  // .attr('class', 'gridline')
+  // .attr('x1', d => xscale_odsetki(d))
+  // .attr('x2', d => xscale_odsetki(d))
+  // .attr('y1', 0)
+  // .attr('y2', height)
+  // .attr('stroke', 'black')
+
+  var yAxis_odsetki = svg_odsetki.append("g")
+  .attr("class", "yAxis")
+  .call(d3.axisLeft(yscale_odsetki))
+  .style("font-size", "13px");
+
+  yAxis_odsetki.selectAll(".tick text")
+  .attr("transform", "translate(25,0)")
+  .attr("font-size","19")
+  .attr("rotate","0")
+  .style("text-anchor", "start")
+
+
+console.log(suma_rat_wibor)
 
     function resize() {
       width_docs = document.getElementById('wykres_kapital').clientWidth;
