@@ -226,7 +226,7 @@ svg_raty.append("text")
 .text("Raty. 1) wibor zmienny (linia ciągła) 2) stały (linia przer.)")
 
 
-var dane_odsetki = [{'opis':'odsetki wibor złodzieje', 'value':suma_rat_wibor}, {'opis':'odsetki wibor umowa', 'value':suma_rat2_wibor}]
+var dane_odsetki = [{'opis':'odsetki z tytułu wiboru zmiennego', 'value':suma_rat_wibor}, {'opis':'odsetki z tytułu wiboru stałego', 'value':suma_rat2_wibor}]
 
 
 // var margin = { top: 60, right: 30, bottom: 70, left: 120 },
@@ -278,16 +278,16 @@ var min_odsetki = d3.min(dane_odsetki, function (d) { return d.value });
          .attr("height", yscale_odsetki.bandwidth())
          .attr("width", function(d) { return xscale_odsetki(d.value); });
   
-  var grids_odsetki = svg_odsetki.append('g')
-  .selectAll('line')
-  .data(xscale_odsetki.ticks())
-  .enter().append('line')
-  .attr('class', 'gridline')
-  .attr('x1', d => xscale_odsetki(d))
-  .attr('x2', d => xscale_odsetki(d))
-  .attr('y1', 0)
-  .attr('y2', height)
-  .attr('stroke', 'black')
+  // var grids_odsetki = svg_odsetki.append('g')
+  // .selectAll('line')
+  // .data(xscale_odsetki.ticks())
+  // .enter().append('line')
+  // .attr('class', 'gridline')
+  // .attr('x1', d => xscale_odsetki(d))
+  // .attr('x2', d => xscale_odsetki(d))
+  // .attr('y1', 0)
+  // .attr('y2', height)
+  // .attr('stroke', 'black')
 
   var yAxis_odsetki = svg_odsetki.append("g")
   .attr("class", "yAxis")
@@ -297,8 +297,7 @@ var min_odsetki = d3.min(dane_odsetki, function (d) { return d.value });
   yAxis_odsetki.selectAll(".tick text")
   .attr("transform", "translate(25,0)")
   .attr("font-size","19")
-  .attr("rotate","15")
-  .attr("font-family","cursive")
+  .attr("rotate","0")
   .style("text-anchor", "start")
 
 
