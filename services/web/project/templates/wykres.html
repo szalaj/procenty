@@ -46,7 +46,7 @@
     path.kreska2 {
       fill: none;
       stroke-width: 2px;
-      stroke: rgb(57, 53, 83);
+      stroke: rgb(61, 83, 53);
       border-style: dotted;
       stroke-dasharray: 5;
     }
@@ -713,7 +713,8 @@
           'tech_data': tech_data,
           'fin_data': fin_data,
           'do_zwrotu_przed': zloty(do_zwrotu_przed),
-          'kapital_do_splaty_po_zamr': zloty(kapital_do_splaty_po_zamr)
+          'kapital_do_splaty_po_zamr': zloty(kapital_do_splaty_po_zamr),
+          'svg_dane1': new XMLSerializer().serializeToString(d3.select("#svgodsetki").node())
         }),
       }).then(res => {
         return res.blob();

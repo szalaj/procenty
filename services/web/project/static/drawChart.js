@@ -235,6 +235,7 @@ var dane_odsetki = [{'opis':'odsetki z tytułu wiboru zmiennego', 'value':suma_r
 var svg_odsetki = d3.select("#wykres_odsetki")
   .append("svg")
   .attr("class", "svg-holder")
+  .attr("id", "svgodsetki")
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
   .attr("style", "border:1px solid black;")
@@ -278,7 +279,7 @@ var min_odsetki = d3.min(dane_odsetki, function (d) { return d.value });
          .attr("y", function(d) { return yscale_odsetki(d.opis); })
          .attr("height", yscale_odsetki.bandwidth())
          .attr("width", function(d) { return xscale_odsetki(d.value); })
-         .style('fill', 'red')
+         .style('fill', 'rgb(202, 232, 191)')
   
   // var grids_odsetki = svg_odsetki.append('g')
   // .selectAll('line')

@@ -201,6 +201,9 @@ def get_doc():
         dane = request.get_json()
         document = project.utils.create_document.create_document(dane)
         
+
+        print(dane.keys())
+
         f = BytesIO()
         # do staff with document
         document.save(f)
