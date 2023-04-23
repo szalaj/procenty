@@ -46,7 +46,7 @@
     path.kreska2 {
       fill: none;
       stroke-width: 2px;
-      stroke: rgb(57, 53, 83);
+      stroke: rgb(61, 83, 53);
       border-style: dotted;
       stroke-dasharray: 5;
     }
@@ -92,9 +92,7 @@
 
     }
 
-    .bar {
-            fill: rgb(164, 202, 234);
-        }
+
 
     a.metoda:link, a.metoda:visited {
 
@@ -486,7 +484,13 @@
     </div>
     <div class="row top-buffer">
       <div class="col">
-        <div class="col-lg-12 wykresy" id="wykres_odsetki"></div>
+        <div class="col-lg-12 wykresy" >
+          <figure>
+            <figcaption>Rys. Porównanie całkowitej kwoty zapłaconych odsetek z tytułu wiboru w przypadkach gdy a) gdy wibor jest w wysokości z dnia podpisania umowy oraz b) gdy wibor jest zmienny</figcaption>
+            <div id="wykres_odsetki"></div>
+            
+        </figure>
+        </div>
       </div>
     </div>
 
@@ -715,7 +719,8 @@
           'tech_data': tech_data,
           'fin_data': fin_data,
           'do_zwrotu_przed': zloty(do_zwrotu_przed),
-          'kapital_do_splaty_po_zamr': zloty(kapital_do_splaty_po_zamr)
+          'kapital_do_splaty_po_zamr': zloty(kapital_do_splaty_po_zamr),
+          'svg_dane1': new XMLSerializer().serializeToString(d3.select("#svgodsetki").node())
         }),
       }).then(res => {
         return res.blob();

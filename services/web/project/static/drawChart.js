@@ -229,12 +229,13 @@ svg_raty.append("text")
 var dane_odsetki = [{'opis':'odsetki z tytułu wiboru zmiennego', 'value':suma_rat_wibor}, {'opis':'odsetki z tytułu wiboru stałego', 'value':suma_rat2_wibor}]
 
 
-// var margin = { top: 60, right: 30, bottom: 70, left: 120 },
-//   width = width_docs - margin.left - margin.right,
-//   height = 450 - margin.top - margin.bottom;
+var margin = { top: 30, right: 30, bottom: 70, left: 50 },
+  width = width_docs - margin.left - margin.right,
+  height = 450 - margin.top - margin.bottom;
 var svg_odsetki = d3.select("#wykres_odsetki")
   .append("svg")
   .attr("class", "svg-holder")
+  .attr("id", "svgodsetki")
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
   .attr("style", "border:1px solid black;")
@@ -258,6 +259,7 @@ var min_odsetki = d3.min(dane_odsetki, function (d) { return d.value });
   xAxis_odsetki.call(d3.axisBottom(xscale_odsetki).tickFormat(formatMoney))
   .selectAll("text")
   .attr("transform", "translate(-10,0)rotate(-45)")
+  .style("font-family", "Arial")
   .style("text-anchor", "end")
   .style("font-size", "13px");
 
@@ -276,7 +278,8 @@ var min_odsetki = d3.min(dane_odsetki, function (d) { return d.value });
          .attr("x", function(d) { return 0; })
          .attr("y", function(d) { return yscale_odsetki(d.opis); })
          .attr("height", yscale_odsetki.bandwidth())
-         .attr("width", function(d) { return xscale_odsetki(d.value); });
+         .attr("width", function(d) { return xscale_odsetki(d.value); })
+         .style('fill', 'rgb(202, 232, 191)')
   
   // var grids_odsetki = svg_odsetki.append('g')
   // .selectAll('line')
@@ -296,6 +299,7 @@ var min_odsetki = d3.min(dane_odsetki, function (d) { return d.value });
 
   yAxis_odsetki.selectAll(".tick text")
   .attr("transform", "translate(25,0)")
+  .style("font-family", "Arial")
   .attr("font-size","19")
   .attr("rotate","0")
   .style("text-anchor", "start")

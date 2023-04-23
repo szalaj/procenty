@@ -12,6 +12,8 @@ WORKDIR /usr/src/app
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+
+
 # install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc
@@ -50,6 +52,18 @@ COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache /wheels/*
+
+# Install required packages to install Arial font
+RUN apt-get update && \
+    apt-get install -y fontconfig fontconfig-config fonts-dejavu-core && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy Arial font files into image
+COPY ./arial.ttf /usr/share/fonts/truetype/msttcorefonts/
+
+# Refresh font cache
+RUN fc-cache -f -v
 
 EXPOSE 5000
 
