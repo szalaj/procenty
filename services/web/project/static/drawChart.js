@@ -258,6 +258,7 @@ var min_odsetki = d3.min(dane_odsetki, function (d) { return d.value });
   xAxis_odsetki.call(d3.axisBottom(xscale_odsetki).tickFormat(formatMoney))
   .selectAll("text")
   .attr("transform", "translate(-10,0)rotate(-45)")
+  .style("font-family", "Arial")
   .style("text-anchor", "end")
   .style("font-size", "13px");
 
@@ -276,7 +277,8 @@ var min_odsetki = d3.min(dane_odsetki, function (d) { return d.value });
          .attr("x", function(d) { return 0; })
          .attr("y", function(d) { return yscale_odsetki(d.opis); })
          .attr("height", yscale_odsetki.bandwidth())
-         .attr("width", function(d) { return xscale_odsetki(d.value); });
+         .attr("width", function(d) { return xscale_odsetki(d.value); })
+         .style('fill', 'red')
   
   // var grids_odsetki = svg_odsetki.append('g')
   // .selectAll('line')
@@ -296,6 +298,7 @@ var min_odsetki = d3.min(dane_odsetki, function (d) { return d.value });
 
   yAxis_odsetki.selectAll(".tick text")
   .attr("transform", "translate(25,0)")
+  .style("font-family", "Arial")
   .attr("font-size","19")
   .attr("rotate","0")
   .style("text-anchor", "start")
