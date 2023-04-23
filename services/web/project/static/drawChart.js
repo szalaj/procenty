@@ -229,9 +229,9 @@ svg_raty.append("text")
 var dane_odsetki = [{'opis':'odsetki z tytułu wiboru zmiennego', 'value':suma_rat_wibor}, {'opis':'odsetki z tytułu wiboru stałego', 'value':suma_rat2_wibor}]
 
 
-// var margin = { top: 60, right: 30, bottom: 70, left: 120 },
-//   width = width_docs - margin.left - margin.right,
-//   height = 450 - margin.top - margin.bottom;
+var margin = { top: 30, right: 30, bottom: 70, left: 50 },
+  width = width_docs - margin.left - margin.right,
+  height = 450 - margin.top - margin.bottom;
 var svg_odsetki = d3.select("#wykres_odsetki")
   .append("svg")
   .attr("class", "svg-holder")
