@@ -1,4 +1,6 @@
 argcomplete==2.0.0
+cairocffi==1.5.1
+CairoSVG==2.7.0
 certifi==2022.12.7
 cffi==1.15.1
 charset-normalizer==3.0.1

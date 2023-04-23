@@ -15,24 +15,13 @@ def create_document(dane):
 
     document = Document()
 
-    # convert the SVG string to a byte stream
-
-    
-    # convert the SVG byte stream to PNG byte stream
-    #drawing = svg2rlg(text_base64)
+  
     drawing = svg2rlg(StringIO(dane_svg))
     png_byte_stream = BytesIO()
     renderPM.drawToFile(drawing, png_byte_stream, fmt="PNG")
-    # png_data = renderPM.drawToString(drawing, fmt="PNG")
-
-    # with open('output.png', 'wb') as f:
-    #     f.write(png_data)
 
     # add the image to the document
     document.add_picture(png_byte_stream, width=Inches(7))
-
-    # png_base64 = base64.b64encode(ss)    
-    # shape = document.add_picture(png_base64)
 
     document.add_heading('Dane o kredycie', level=3)
 
