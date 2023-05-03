@@ -9,14 +9,14 @@ var parseDate = d3.timeParse("%Y-%m-%d");
 dane_wykres.forEach(function (d) {
   d.dzien = parseDate(d.dzien)
   d.K_po = parseFloat(d.K_po)
-
+  d.rata = parseFloat(d.rata)
 });
 
 
 dane_wykres2.forEach(function (d) {
   d.dzien = parseDate(d.dzien)
   d.K_po = parseFloat(d.K_po)
-
+  d.rata = parseFloat(d.rata)
 });
 
 var width_docs = document.getElementById('wykres_kapital').clientWidth;
@@ -162,11 +162,13 @@ var kreska_kapital_real = svg_kapital.append("path")
   .attr('stroke', 'black')
   
 
-    var maxYvalue_raty = d3.max(dane_wykres, function (d) { return d.rata });
+    var maxYvalue_raty = d3.max([d3.max(dane_wykres, function (d) { return d.rata }), d3.max(dane_wykres2, function (d) { return d.rata })])
     
     
     
     
+    console.log(maxYvalue_raty)
+
     var yscale_raty = d3.scaleLinear()
       .domain([0, maxYvalue_raty])
       .range([height, 0]);
