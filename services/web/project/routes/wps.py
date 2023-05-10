@@ -17,6 +17,7 @@ from project import db
 
 import json
 
+
 bp = Blueprint('bp', __name__)
 
 
