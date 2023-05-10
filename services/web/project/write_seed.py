@@ -47,4 +47,4 @@ def load_inflacja():
 
 if __name__ == "__main__":
     print('ehlo')
-    load_inflacja()
+    load_user()

@@ -147,7 +147,7 @@
           <div id="wibor6mnav"></div>
         </nav>
       </div>
-      {% if current_user.is_authenticated and current_user.name=='admin' %}
+      {% if current_user.is_authenticated and (current_user.name=='admin' or current_user.name=='kancelaria_admin') %}
       <div class="col-lg-4">
 
         <nav class="navbar" style="background-color: #e3f2fd; display: flex; justify-content: flex-end">
@@ -489,6 +489,16 @@
             <figcaption>Rys. Porównanie całkowitej kwoty zapłaconych odsetek z tytułu wiboru w przypadkach gdy a) gdy wibor jest w wysokości z dnia podpisania umowy oraz b) gdy wibor jest zmienny</figcaption>
             <div id="wykres_odsetki"></div>
             
+        </figure>
+        </div>
+      </div>
+    </div>
+    <div class="row top-buffer">
+      <div class="col">
+        <div class="col-lg-12 wykresy" >
+          <figure>
+            <figcaption>Rys.2</figcaption>
+            <div id="wykres_bars"></div>
         </figure>
         </div>
       </div>
