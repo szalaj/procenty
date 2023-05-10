@@ -147,7 +147,7 @@
           <div id="wibor6mnav"></div>
         </nav>
       </div>
-      {% if current_user.is_authenticated and current_user.name=='admin' %}
+      {% if current_user.is_authenticated and (current_user.name=='admin' or current_user.name=='kancelaria_admin') %}
       <div class="col-lg-4">
 
         <nav class="navbar" style="background-color: #e3f2fd; display: flex; justify-content: flex-end">

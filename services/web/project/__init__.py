@@ -34,7 +34,7 @@ def init_app():
         return redirect(url_for('admin_bp.login'))
     
 
-    @scheduler.task('cron', id='updatewibor', hour='*', minute='0')
+    @scheduler.task('cron', id='updatewibor', hour=5, minute=0)
     def wibor_scheduler():
 
         print('------------scheduler----------------')
@@ -52,7 +52,7 @@ def init_app():
         except:
             print('update wibor failed')
         
-
+    wibor_scheduler()
     
     from .routes.admin import admin_bp as admin_blueprint
     app.register_blueprint(admin_blueprint)
