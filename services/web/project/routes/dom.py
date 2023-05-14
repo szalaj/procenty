@@ -56,17 +56,22 @@ def domy():
     select domek.miesiac as domek_miesiac, inflacja.miesiac as inflacja_miesiac, domek.wartosc as domek_wartosc, inflacja.wartosc/100.0 as inflacja_wartosc from domek 
     left outer join inflacja
     on inflacja.miesiac >= domek.miesiac
-    )
-    select t1.inflacja_miesiac, t1.inflacja_wartosc, EXP(SUM(LN(t2.inflacja_wartosc))) as infl_kum, max(t1.domek_wartosc)
+    ),
+    wartosci as (
+    select t1.inflacja_miesiac, t1.inflacja_wartosc, EXP(SUM(LN(t2.inflacja_wartosc))) as infl_kum, max(t1.domek_wartosc) as domek_wartosc
     from cos t1
     inner join cos t2
     on t1.inflacja_miesiac >= t2.inflacja_miesiac
     group by t1.inflacja_miesiac, t1.inflacja_wartosc
     order by t1.inflacja_miesiac
+    )
+    select inflacja_miesiac, inflacja_wartosc, infl_kum, domek_wartosc, domek_wartosc/infl_kum as dom_real_wartosc
+    from wartosci
     
     '''
 
     domy = Dom.query.all()
+    
     inflacja = InflacjaMM.query.all()
 
     inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja]
@@ -79,7 +84,7 @@ def domy():
 
     #result_list = [{'id': row[0], 'domek_miesiac': row[1], 'inflacja_miesiac': row[2], 'domek_wartosc': row[3], 'inflacja_wartosc': row[4]} for row in res]
 
-    result_list= [{'inflacja_miesiac': row[0], 'inflacja_wartosc': row[1], 'infl_kum': row[2], 'dom_wartosc': row[3]} for row in res]
+    result_list= [{'inflacja_miesiac': row[0], 'inflacja_wartosc': row[1], 'infl_kum': row[2], 'dom_wartosc': row[3], 'dom_real_wartosc': row[4]} for row in res]
 
     print(result_list)
 
@@ -89,7 +94,6 @@ def domy():
 @dom.route('/kiedy', methods=['GET', 'POST']) 
 @login_required
 def kiedywibor():
-
 
     if request.method == 'POST':
         dzien = request.get_json()['dzien']
