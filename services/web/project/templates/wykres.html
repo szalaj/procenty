@@ -46,7 +46,7 @@
     path.kreska2 {
       fill: none;
       stroke-width: 2px;
-      stroke: rgb(57, 53, 83);
+      stroke: rgb(61, 83, 53);
       border-style: dotted;
       stroke-dasharray: 5;
     }
@@ -86,6 +86,13 @@
       padding-left: 0px;
 
     }
+    
+    .sumy {
+
+
+    }
+
+
 
     a.metoda:link, a.metoda:visited {
 
@@ -140,7 +147,7 @@
           <div id="wibor6mnav"></div>
         </nav>
       </div>
-      {% if current_user.is_authenticated and current_user.name=='admin' %}
+      {% if current_user.is_authenticated and (current_user.name=='admin' or current_user.name=='kancelaria_admin') %}
       <div class="col-lg-4">
 
         <nav class="navbar" style="background-color: #e3f2fd; display: flex; justify-content: flex-end">
@@ -301,25 +308,69 @@
               <div style="float: left">Liczba rat</div>
               <div style="float: right" id="idIloscRatPrzed">aa</div>
             </li>
-            <li class="list-group-item">
-              <div style="float: left">(A). Suma rat - marża + zmienny wibor</div>
-              <div style="float: right" id="suma_rat_A">aa</div>
-            </li>
-            <li class="list-group-item">
-              <div style="float: left">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
-              <div style="float: right" id="suma_rat2_A">aa</div>
-            </li>
             <li class="list-group-item" style="background-color: #ceffa8">
-              <div style="float: left">(A - B). Do zwrotu</div>
-              <div style="float: right" id="roznica_A"></div>
+              <div style="float: left" class="sumy">(A). Suma rat - marża + zmienny wibor</div>
+              <div style="float: right" id="suma_rat_A" class="sumy"></div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
+              <div style="float: right" id="suma_rat_A_kapital">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
+              <div style="float: right" id="suma_rat_A_marza">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat_A_wibor">aa</div>
             </li>
             <li class="list-group-item" style="background-color: #ceffa8">
               <div style="float: left">Saldo kredytu (zmienny wibor)</div>
               <div style="float: right" id="idSaldoPrzed"></div>
             </li>
-            <li class="list-group-item" style="background-color: #ffffff">
-              <div style="float: left">Saldo kredytu (stałe oprocentowanie)</div>
-              <div style="float: right" id="idSaldoPrzedStala"></div>
+            <li class="list-group-item" style="background-color: #ceffa8">
+              <div style="float: left" class="sumy">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
+              <div style="float: right" id="suma_rat2_A" class="sumy">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
+              <div style="float: right" id="suma_rat2_A_kapital">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
+              <div style="float: right" id="suma_rat2_A_marza">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat2_A_wibor">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat_A_wibor">aa</div>
+            </li>
+            <li class="list-group-item" style="background-color: #ceffa8">
+              <div style="float: left">Saldo kredytu</div>
+              <div style="float: right" id="idSaldoPrzed"></div>
+            </li>
+            <li class="list-group-item" style="background-color: #ceffa8">
+              <div style="float: left" class="sumy">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
+              <div style="float: right" id="suma_rat2_A" class="sumy">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
+              <div style="float: right" id="suma_rat2_A_kapital">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
+              <div style="float: right" id="suma_rat2_A_marza">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat2_A_wibor">aa</div>
+            </li>
+            <li class="list-group-item" style="background-color: #ceffa8">
+              <div style="float: left">(A - B). Do zwrotu</div>
+              <div style="float: right" id="roznica_A"></div>
             </li>
           </ul>
         </div>
@@ -339,13 +390,37 @@
               <div style="float: left">Liczba rat</div>
               <div style="float: right" id="idIloscRatPo">aa</div>
             </li>
-            <li class="list-group-item">
-              <div style="float: left">(A). Suma rat - marża + zamrożony wibor</div>
-              <div style="float: right" id="suma_rat_B">aa</div>
+            <li class="list-group-item" style="background-color: #ffe4ad">
+              <div style="float: left" class="sumy">(A). Suma rat - marża + zamrożony wibor</div>
+              <div style="float: right" id="suma_rat_B" class="sumy">aa</div>
             </li>
             <li class="list-group-item">
-              <div style="float: left">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
-              <div style="float: right" id="suma_rat2_B">aa</div>
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
+              <div style="float: right" id="suma_rat_B_kapital">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
+              <div style="float: right" id="suma_rat_B_marza">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat_B_wibor">aa</div>
+            </li>
+            <li class="list-group-item" style="background-color: #ffe4ad">
+              <div style="float: left" class="sumy">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
+              <div style="float: right" id="suma_rat2_B" class="sumy">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
+              <div style="float: right" id="suma_rat2_B_kapital">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
+              <div style="float: right" id="suma_rat2_B_marza">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat2_B_wibor">aa</div>
             </li>
             <li class="list-group-item" style="background-color: #ffe4ad">
               <div style="float: left">(A - B). Do zwrotu</div>
@@ -368,13 +443,37 @@
               <div style="float: left">Liczba rat</div>
               <div style="float: right" id="idIloscRatWszystkie">aa</div>
             </li>
-            <li class="list-group-item">
-              <div style="float: left">(A). Suma rat - marża + wibor (zmienny i zamrożony)</div>
-              <div style="float: right" id="suma_rat">aa</div>
+            <li class="list-group-item" style="background-color: #badfff">
+              <div style="float: left" class="sumy">(A). Suma rat - marża + wibor (zmienny i zamrożony)</div>
+              <div style="float: right" id="suma_rat" class="sumy">aa</div>
             </li>
             <li class="list-group-item">
-              <div style="float: left">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
-              <div style="float: right" id="suma_rat2">aa</div>
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
+              <div style="float: right" id="suma_rat_kapital">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
+              <div style="float: right" id="suma_rat_marza">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat_wibor">aa</div>
+            </li>
+            <li class="list-group-item" style="background-color: #badfff">
+              <div style="float: left" class="sumy">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
+              <div style="float: right" id="suma_rat2" class="sumy">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
+              <div style="float: right" id="suma_rat2_kapital">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
+              <div style="float: right" id="suma_rat2_marza">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat2_wibor">aa</div>
             </li>
             <li class="list-group-item" style="background-color: #badfff">
               <div style="float: left">(A - B). Do zwrotu</div>
@@ -407,7 +506,27 @@
         <div class="col-lg-12 wykresy" id="wykres_raty"></div>
       </div>
     </div>
-
+    <div class="row top-buffer">
+      <div class="col">
+        <div class="col-lg-12 wykresy" >
+          <figure>
+            <figcaption>Rys. Porównanie całkowitej kwoty zapłaconych odsetek z tytułu wiboru w przypadkach gdy a) gdy wibor jest w wysokości z dnia podpisania umowy oraz b) gdy wibor jest zmienny</figcaption>
+            <div id="wykres_odsetki"></div>
+            
+        </figure>
+        </div>
+      </div>
+    </div>
+    <div class="row top-buffer">
+      <div class="col">
+        <div class="col-lg-12 wykresy" >
+          <figure>
+            <figcaption>Rys.2</figcaption>
+            <div id="wykres_bars"></div>
+        </figure>
+        </div>
+      </div>
+    </div>
 
     {% endif %}
 
@@ -522,17 +641,47 @@
     ilosc_rat_po = ilosc_rat_wszystkie - ilosc_rat_przed
 
     suma_rat = d3.sum(kredyt_dane['raty'], d => d.rata)
+
+    suma_rat_kapital = d3.sum(kredyt_dane['raty'], d => d.kapital)
+    suma_rat_marza = d3.sum(kredyt_dane['raty'], d => d.odsetki_marza)
+    suma_rat_wibor = d3.sum(kredyt_dane['raty'], d => d.odsetki_wibor)
+
+
+
+
     suma_rat_A = d3.sum(kredyt_dane_do_zamr, d => d.rata)
+
+    suma_rat_A_kapital = d3.sum(kredyt_dane_do_zamr, d => d.kapital)
+    suma_rat_A_marza = d3.sum(kredyt_dane_do_zamr, d => d.odsetki_marza)
+    suma_rat_A_wibor = d3.sum(kredyt_dane_do_zamr, d => d.odsetki_wibor)
 
     var kredyt_dane2 = fin_data['dane2']
     kredyt_dane_do_zamr2 = kredyt_dane2['raty'].filter(function (d) { return parseDzien(d['dzien']) <= data_zamrozenia })
 
+    suma_rat2_kapital = d3.sum(kredyt_dane2['raty'], d => d.kapital)
+    suma_rat2_marza = d3.sum(kredyt_dane2['raty'], d => d.odsetki_marza)
+    suma_rat2_wibor = d3.sum(kredyt_dane2['raty'], d => d.odsetki_wibor)
+
     suma_rat2 = d3.sum(kredyt_dane2['raty'], d => d.rata)
     suma_rat2_A = d3.sum(kredyt_dane_do_zamr2, d => d.rata)
+
+    suma_rat2_A_kapital = d3.sum(kredyt_dane_do_zamr2, d => d.kapital)
+    suma_rat2_A_marza = d3.sum(kredyt_dane_do_zamr2, d => d.odsetki_marza)
+    suma_rat2_A_wibor = d3.sum(kredyt_dane_do_zamr2, d => d.odsetki_wibor)
 
     var do_zwrotu_przed = suma_rat_A - suma_rat2_A
 
     suma_rat_B = suma_rat - suma_rat_A
+
+    
+    suma_rat_B_kapital = suma_rat_kapital - suma_rat_A_kapital
+    suma_rat_B_marza = suma_rat_marza - suma_rat_A_marza
+    suma_rat_B_wibor = suma_rat_wibor - suma_rat_A_wibor
+
+    suma_rat2_B_kapital = suma_rat2_kapital - suma_rat2_A_kapital
+    suma_rat2_B_marza = suma_rat2_marza - suma_rat2_A_marza
+    suma_rat2_B_wibor = suma_rat2_wibor - suma_rat2_A_wibor
+
     suma_rat2_B = suma_rat2 - suma_rat2_A
 
     zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
@@ -557,6 +706,12 @@
     d3.select("#idIloscRatPrzed").text(ilosc_rat_przed + " / " + ilosc_rat_wszystkie)
     d3.select("#suma_rat_A").text(zloty(suma_rat_A))
     d3.select("#suma_rat2_A").text(zloty(suma_rat2_A))
+    d3.select("#suma_rat_A_kapital").text(zloty(suma_rat_A_kapital))
+    d3.select("#suma_rat_A_marza").text(zloty(suma_rat_A_marza))
+    d3.select("#suma_rat_A_wibor").text(zloty(suma_rat_A_wibor))
+    d3.select("#suma_rat2_A_kapital").text(zloty(suma_rat2_A_kapital))
+    d3.select("#suma_rat2_A_marza").text(zloty(suma_rat2_A_marza))
+    d3.select("#suma_rat2_A_wibor").text(zloty(suma_rat2_A_wibor))
     d3.select("#roznica_A").text(zloty(do_zwrotu_przed))
 
     d3.select("#idSaldoPrzed").text(zloty(kapital_do_splaty_po_zamr))
@@ -565,12 +720,24 @@
 
     d3.select("#idIloscRatPo").text(ilosc_rat_po + " / " + ilosc_rat_wszystkie)
     d3.select("#suma_rat_B").text(zloty(suma_rat_B))
+    d3.select("#suma_rat_B_kapital").text(zloty(suma_rat_B_kapital))
+    d3.select("#suma_rat_B_marza").text(zloty(suma_rat_B_marza))
+    d3.select("#suma_rat_B_wibor").text(zloty(suma_rat_B_wibor))
     d3.select("#suma_rat2_B").text(zloty(suma_rat2_B))
+    d3.select("#suma_rat2_B_kapital").text(zloty(suma_rat2_B_kapital))
+    d3.select("#suma_rat2_B_marza").text(zloty(suma_rat2_B_marza))
+    d3.select("#suma_rat2_B_wibor").text(zloty(suma_rat2_B_wibor))
     d3.select("#roznica_B").text(zloty(suma_rat_B - suma_rat2_B))
 
     d3.select("#idIloscRatWszystkie").text(ilosc_rat_wszystkie)
     d3.select("#suma_rat").text(zloty(suma_rat))
+    d3.select("#suma_rat_kapital").text(zloty(suma_rat_kapital))
+    d3.select("#suma_rat_marza").text(zloty(suma_rat_marza))
+    d3.select("#suma_rat_wibor").text(zloty(suma_rat_wibor))
     d3.select("#suma_rat2").text(zloty(suma_rat2))
+    d3.select("#suma_rat2_kapital").text(zloty(suma_rat2_kapital))
+    d3.select("#suma_rat2_marza").text(zloty(suma_rat2_marza))
+    d3.select("#suma_rat2_wibor").text(zloty(suma_rat2_wibor))
     d3.select("#roznica").text(zloty(suma_rat - suma_rat2))
 
 
@@ -589,7 +756,8 @@
           'tech_data': tech_data,
           'fin_data': fin_data,
           'do_zwrotu_przed': zloty(do_zwrotu_przed),
-          'kapital_do_splaty_po_zamr': zloty(kapital_do_splaty_po_zamr)
+          'kapital_do_splaty_po_zamr': zloty(kapital_do_splaty_po_zamr),
+          'svg_dane1': new XMLSerializer().serializeToString(d3.select("#svgodsetki").node())
         }),
       }).then(res => {
         return res.blob();
@@ -616,6 +784,9 @@
       document.body.appendChild(form)
       form.submit();
     });
+
+
+
   </script>
 
   <script src="{{ url_for('static', filename='drawChart.js') }}" type="text/javascript"></script>

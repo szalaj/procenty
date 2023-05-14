@@ -17,6 +17,7 @@ from project import db
 
 import json
 
+
 bp = Blueprint('bp', __name__)
 
 
@@ -142,7 +143,7 @@ def main():
 
         
 
-        dane_kredytu =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False)
+        dane_kredytu =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False, False)
 
         wibor = project.utils.generate_model.Wibor(rodzajWiboru)
         wibor_start = wibor.getWiborLastAvailable(data_umowa)
@@ -152,7 +153,16 @@ def main():
         
         
 
-        dane_kredytu_alt =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, stala_stopa_uruch, data_zamrozenia, rodzajWiboru, transze, True)
+        dane_kredytu_alt =  project.utils.generate_model.generateFromWiborFile(kapital1,
+                                                                               okresy,
+                                                                               data_start1,
+                                                                               marza,
+                                                                               data_zamrozenia,
+                                                                               rodzajWiboru, 
+                                                                               transze, 
+                                                                               wibor_start,
+                                                                               False
+                                                                               )
 
 
         wynik = project.utils.proc.create_kredyt(dane_kredytu, rodzajRat)
@@ -192,6 +202,9 @@ def get_doc():
         dane = request.get_json()
         document = project.utils.create_document.create_document(dane)
         
+
+        print(dane.keys())
+
         f = BytesIO()
         # do staff with document
         document.save(f)

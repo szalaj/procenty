@@ -1,12 +1,27 @@
 from docx import Document
-
+from docx.shared import Inches
+import base64
+from io import BytesIO, StringIO
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPM
+import xml.etree.ElementTree as ET
 def create_document(dane):
 
     
     dane_kredyt = dane['tech_data']['form_data']
 
+    dane_svg = dane['svg_dane1']
+
+
     document = Document()
 
+  
+    drawing = svg2rlg(StringIO(dane_svg))
+    png_byte_stream = BytesIO()
+    renderPM.drawToFile(drawing, png_byte_stream, fmt="PNG")
+
+    # add the image to the document
+    document.add_picture(png_byte_stream, width=Inches(7))
 
     document.add_heading('Dane o kredycie', level=3)
 
