@@ -53,7 +53,12 @@ def domy():
     select date(substring(miesiac,1,7) || '-01') as miesiac, wartosc from inflacjamm
     ),
     cos as (
-    select domek.miesiac as domek_miesiac, inflacja.miesiac as inflacja_miesiac, domek.wartosc as domek_wartosc, inflacja.wartosc/100.0 as inflacja_wartosc from domek 
+    select 
+        domek.miesiac as domek_miesiac, 
+        inflacja.miesiac as inflacja_miesiac, 
+        domek.wartosc as domek_wartosc, 
+        CASE WHEN domek.miesiac=inflacja.miesiac THEN 1 ELSE inflacja.wartosc/100.0 END as inflacja_wartosc
+    from domek 
     left outer join inflacja
     on inflacja.miesiac >= domek.miesiac
     ),
@@ -86,7 +91,7 @@ def domy():
 
     result_list= [{'inflacja_miesiac': row[0], 'inflacja_wartosc': row[1], 'infl_kum': row[2], 'dom_wartosc': row[3], 'dom_real_wartosc': row[4]} for row in res]
 
-    print(result_list)
+
 
     return render_template('domy.html', inflacja=inflacja_dumps, results=json.dumps(result_list))
 
