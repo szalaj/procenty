@@ -9,6 +9,8 @@ import datetime as dt
 from pandas.tseries.offsets import BDay
 import pandas as pd
 
+from sqlalchemy import text
+
 from ..utils.generate_model import Wibor
 
 import json
@@ -17,8 +19,64 @@ dom = Blueprint('dom', __name__)
 
 @dom.route('/domy')
 def domy():
+    '''
+    select EXP(SUM(LOG(yourColumn))) As ColumnProduct from yourTable
+
+    select date(substring(data_zakupu,7,4) || '-' || substring(data_zakupu,4,2) || '-' || substring(data_zakupu,1,2)) as miesiac from dom
+    
+    from @t t1
+    inner join @t t2 on t1.id >= t2.id
+    group by t1.id, t1.SomeNumt
+    order by t1.id
+    '''
+
+    sql = '''
+    with domek as (
+    select date(substring(data_zakupu,7,4) || '-' || substring(data_zakupu,4,2) || '-01') as miesiac, wartosc from dom
+    ),
+    inflacja as (
+    select date(substring(miesiac,1,7) || '-01') as miesiac, wartosc from inflacjamm
+    ),
+    cos as (
+    select row_number() OVER (ORDER BY inflacja.miesiac) AS id, domek.miesiac, inflacja.miesiac, domek.wartosc, inflacja.wartosc from domek 
+    left outer join inflacja
+    on inflacja.miesiac >= domek.miesiac
+    )
+    select * from cos
+    '''
+
+    sql2 = '''
+    with domek as (
+    select date(substring(data_zakupu,7,4) || '-' || substring(data_zakupu,4,2) || '-01') as miesiac, wartosc from dom
+    ),
+    inflacja as (
+    select date(substring(miesiac,1,7) || '-01') as miesiac, wartosc from inflacjamm
+    ),
+    cos as (
+    select 
+        domek.miesiac as domek_miesiac, 
+        inflacja.miesiac as inflacja_miesiac, 
+        domek.wartosc as domek_wartosc, 
+        CASE WHEN domek.miesiac=inflacja.miesiac THEN 1 ELSE inflacja.wartosc/100.0 END as inflacja_wartosc
+    from domek 
+    left outer join inflacja
+    on inflacja.miesiac >= domek.miesiac
+    ),
+    wartosci as (
+    select t1.inflacja_miesiac, t1.inflacja_wartosc, EXP(SUM(LN(t2.inflacja_wartosc))) as infl_kum, max(t1.domek_wartosc) as domek_wartosc
+    from cos t1
+    inner join cos t2
+    on t1.inflacja_miesiac >= t2.inflacja_miesiac
+    group by t1.inflacja_miesiac, t1.inflacja_wartosc
+    order by t1.inflacja_miesiac
+    )
+    select inflacja_miesiac, inflacja_wartosc, infl_kum, domek_wartosc, domek_wartosc/infl_kum as dom_real_wartosc
+    from wartosci
+    
+    '''
 
     domy = Dom.query.all()
+    
     inflacja = InflacjaMM.query.all()
 
     inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja]
@@ -26,13 +84,21 @@ def domy():
     # convert the list of dictionaries to JSON
     inflacja_dumps = json.dumps(inflacja_dict)
 
-    return render_template('domy.html', inflacja=inflacja_dumps)
+
+    res = db.session.execute(text(sql2))
+
+    #result_list = [{'id': row[0], 'domek_miesiac': row[1], 'inflacja_miesiac': row[2], 'domek_wartosc': row[3], 'inflacja_wartosc': row[4]} for row in res]
+
+    result_list= [{'inflacja_miesiac': row[0], 'inflacja_wartosc': row[1], 'infl_kum': row[2], 'dom_wartosc': row[3], 'dom_real_wartosc': row[4]} for row in res]
+
+
+
+    return render_template('domy.html', inflacja=inflacja_dumps, results=json.dumps(result_list))
 
 
 @dom.route('/kiedy', methods=['GET', 'POST']) 
 @login_required
 def kiedywibor():
-
 
     if request.method == 'POST':
         dzien = request.get_json()['dzien']

@@ -325,6 +325,30 @@
               <div style="float: right" id="suma_rat_A_wibor">aa</div>
             </li>
             <li class="list-group-item" style="background-color: #ceffa8">
+              <div style="float: left">Saldo kredytu (zmienny wibor)</div>
+              <div style="float: right" id="idSaldoPrzed"></div>
+            </li>
+            <li class="list-group-item" style="background-color: #ceffa8">
+              <div style="float: left" class="sumy">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
+              <div style="float: right" id="suma_rat2_A" class="sumy">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
+              <div style="float: right" id="suma_rat2_A_kapital">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
+              <div style="float: right" id="suma_rat2_A_marza">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat2_A_wibor">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat_A_wibor">aa</div>
+            </li>
+            <li class="list-group-item" style="background-color: #ceffa8">
               <div style="float: left">Saldo kredytu</div>
               <div style="float: right" id="idSaldoPrzed"></div>
             </li>
@@ -674,6 +698,8 @@
 
     kapital_do_splaty_po_zamr = d3.min(kredyt_dane_do_zamr, function (d) { return d.K_po; });
 
+    kapital_do_splaty_po_zamr_stala_stopa = d3.min(kredyt_dane_do_zamr2, function (d) { return d.K_po; });
+
 
     d3.select("#idZamrStopa").text(Math.round(suma_zamr * 100) / 100 + "%")
 
@@ -689,6 +715,7 @@
     d3.select("#roznica_A").text(zloty(do_zwrotu_przed))
 
     d3.select("#idSaldoPrzed").text(zloty(kapital_do_splaty_po_zamr))
+    d3.select("#idSaldoPrzedStala").text(zloty(kapital_do_splaty_po_zamr_stala_stopa))
 
 
     d3.select("#idIloscRatPo").text(ilosc_rat_po + " / " + ilosc_rat_wszystkie)

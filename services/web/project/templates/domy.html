@@ -111,21 +111,24 @@
                 
             </div>
         </div>
+        <div class="row">
+            <table border="1"></table>
+        </div>
     </div>
+
 </body>
 
 <script>
 
 var inflacja = JSON.parse('{{inflacja|safe}}');
-
+var results = JSON.parse('{{results|safe}}');
 var parseDate = d3.timeParse("%Y-%m");
 
-
+console.log(results)
 
 inflacja.forEach(function (d) {
   d.miesiac = parseDate(d.miesiac)
   d.wartosc = parseFloat(d.wartosc)
-
 });
 inflacja.sort(function(x, y){
    return d3.ascending(x.miesiac, y.miesiac);
@@ -139,15 +142,10 @@ var margin = { top: 60, right: 30, bottom: 70, left: 80 },
   width = width_docs - margin.left - margin.right,
   height = 450 - margin.top - margin.bottom;
 
-  var container = d3.select('#rys');
-
-
+var container = d3.select('#rys');
 
 
 // Position the div element above the SVG container
-
-
-
 var svg = container
   .append("svg")
   .attr("class", "svg-holder")
@@ -159,14 +157,14 @@ var svg = container
   .attr("transform",
     "translate(" + margin.left + "," + margin.top + ")");
 
-    var xscale = d3.scaleTime()
-  .domain(d3.extent(inflacja, d => d.miesiac))
-  .range([0, width]);
+var xscale = d3.scaleTime()
+    .domain(d3.extent(inflacja, d => d.miesiac))
+    .range([0, width]);
 
 
-  var xAxis = svg.append("g")
-  .attr("class", "xAxis")
-  .attr("transform", "translate(0," + height + ")")
+var xAxis = svg.append("g")
+    .attr("class", "xAxis")
+    .attr("transform", "translate(0," + height + ")")
 
 xAxis.call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m')))
   .selectAll("text")
@@ -174,23 +172,19 @@ xAxis.call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m')))
   .style("text-anchor", "end")
   .style("font-size", "13px");
 
-  var grids = svg.append('g')
-  .selectAll('line')
-  .data(xscale.ticks())
-  .enter().append('line')
-  .attr('class', 'gridline')
-  .attr('x1', d => xscale(d))
-  .attr('x2', d => xscale(d))
-  .attr('y1', 0)
-  .attr('y2', height)
+var grids = svg.append('g')
+    .selectAll('line')
+    .data(xscale.ticks())
+    .enter().append('line')
+    .attr('class', 'gridline')
+    .attr('x1', d => xscale(d))
+    .attr('x2', d => xscale(d))
+    .attr('y1', 0)
+    .attr('y2', height)
 
 
-
-
-  var maxYvalue = d3.max(inflacja, function (d) { return d.wartosc });
+var maxYvalue = d3.max(inflacja, function (d) { return d.wartosc });
 var minYvalue = d3.min(inflacja, function (d) { return d.wartosc });
-
-
 
 var yscale = d3.scaleLinear()
   .domain([minYvalue, maxYvalue])
@@ -223,6 +217,40 @@ var yscale = d3.scaleLinear()
     .x(function (d) { return xscale(d.miesiac) })
     .y(function (d) { return yscale(d.wartosc) })
   )
+
+
+// Define the table headers
+var headers = ['inflacja_miesiac', 'dom_wartosc', 'infl_kum', 'inflacja_wartosc', 'dom_real_wartosc'];
+
+// Load the JSON data
+
+  // Select the table element
+  var table = d3.select('table');
+
+  // Create the table header row
+  table.append('thead')
+    .append('tr')
+    .selectAll('th')
+    .data(headers)
+    .enter()
+    .append('th')
+    .text(function(d) { return d; });
+
+  // Create the table body rows
+  table.append('tbody')
+    .selectAll('tr')
+    .data(results)
+    .enter()
+    .append('tr')
+    .selectAll('td')
+    .data(function(row) {
+      return headers.map(function(header) {
+        return { column: header, value: row[header] };
+      });
+    })
+    .enter()
+    .append('td')
+    .text(function(d) { return d.value; });
 
 
 </script>
