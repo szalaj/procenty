@@ -7,8 +7,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <script src="{{url_for('static', filename='d3.js')}}"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/4.1.0/mustache.min.js"></script>
-
 
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -209,7 +207,7 @@
           <a class="btn btn-large btn-success" id="idGuzikDodajTransze" href="">Dodaj transze</a>
         </div>
         <div class="col-lg-10">
-          <a class="btn btn-large btn-success" id="idGuzikUsunTransze" href="">Usuń ostatnią transze</a>
+          <a class="btn btn-large btn-warning" id="idGuzikUsunTransze" href="">Usuń ostatnią transze</a>
         </div>
       </div>
       <div id="hehe"></div>
@@ -224,7 +222,6 @@
 
 
     </form>
-
 
 
     {% if fin_data %}
@@ -261,256 +258,233 @@
         </div>
 
       </div>
+    </div>
 
-      <div class="row top-buffer">
-        <div class="col">
+    <div class="row top-buffer">
+      <div class="col">
 
-          <div class="card text-bg-primary bg-success">
-            <div class="card-header">
-              Raty przed zamrożeniem wiboru
-            </div>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item">
-                <div style="float: left">Liczba rat</div>
-                <div style="float: right" id="idIloscRatPrzed">aa</div>
-              </li>
-              <li class="list-group-item" style="background-color: #ceffa8">
-                <div style="float: left" class="sumy">(A). Suma rat - marża + zmienny wibor</div>
-                <div style="float: right" id="suma_rat_A" class="sumy"></div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
-                <div style="float: right" id="suma_rat_A_kapital">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
-                <div style="float: right" id="suma_rat_A_marza">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
-                <div style="float: right" id="suma_rat_A_wibor">aa</div>
-              </li>
-              <li class="list-group-item" style="background-color: #ceffa8">
-                <div style="float: left">Saldo kredytu (zmienny wibor)</div>
-                <div style="float: right" id="idSaldoPrzed"></div>
-              </li>
-              <li class="list-group-item" style="background-color: #ceffa8">
-                <div style="float: left" class="sumy">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
-                <div style="float: right" id="suma_rat2_A" class="sumy">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
-                <div style="float: right" id="suma_rat2_A_kapital">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
-                <div style="float: right" id="suma_rat2_A_marza">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
-                <div style="float: right" id="suma_rat2_A_wibor">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
-                <div style="float: right" id="suma_rat_A_wibor">aa</div>
-              </li>
-              <li class="list-group-item" style="background-color: #ceffa8">
-                <div style="float: left">Saldo kredytu</div>
-                <div style="float: right" id="idSaldoPrzed"></div>
-              </li>
-              <li class="list-group-item" style="background-color: #ceffa8">
-                <div style="float: left" class="sumy">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
-                <div style="float: right" id="suma_rat2_A" class="sumy">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
-                <div style="float: right" id="suma_rat2_A_kapital">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
-                <div style="float: right" id="suma_rat2_A_marza">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
-                <div style="float: right" id="suma_rat2_A_wibor">aa</div>
-              </li>
-              <li class="list-group-item" style="background-color: #ceffa8">
-                <div style="float: left">(A - B). Do zwrotu</div>
-                <div style="float: right" id="roznica_A"></div>
-              </li>
-            </ul>
+        <div class="card text-bg-primary bg-success">
+          <div class="card-header">
+            Raty przed zamrożeniem wiboru
           </div>
-
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <div style="float: left">Liczba rat</div>
+              <div style="float: right" id="idIloscRatPrzed">aa</div>
+            </li>
+            <li class="list-group-item" style="background-color: #ceffa8">
+              <div style="float: left" class="sumy">(A). Suma rat - marża + zmienny wibor</div>
+              <div style="float: right" id="suma_rat_A" class="sumy"></div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
+              <div style="float: right" id="suma_rat_A_kapital">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
+              <div style="float: right" id="suma_rat_A_marza">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat_A_wibor">aa</div>
+            </li>
+            <li class="list-group-item" style="background-color: #ceffa8">
+              <div style="float: left">Saldo kredytu (zmienny wibor)</div>
+              <div style="float: right" id="idSaldoPrzed"></div>
+            </li>
+            <li class="list-group-item" style="background-color: #ceffa8">
+              <div style="float: left" class="sumy">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
+              <div style="float: right" id="suma_rat2_A" class="sumy">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
+              <div style="float: right" id="suma_rat2_A_kapital">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
+              <div style="float: right" id="suma_rat2_A_marza">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat2_A_wibor">aa</div>
+            </li>
+            <li class="list-group-item" style="background-color: #ceffa8">
+              <div style="float: left">(A - B). Do zwrotu</div>
+              <div style="float: right" id="roznica_A"></div>
+            </li>
+          </ul>
         </div>
+
       </div>
+    </div>
 
-      <div class="row top-buffer">
-        <div class="col">
+    <div class="row top-buffer">
+      <div class="col">
 
-          <div class="card text-bg-primary bg-warning">
-            <div class="card-header">
-              Raty po zamrożeniu wiboru
-            </div>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item">
-                <div style="float: left">Liczba rat</div>
-                <div style="float: right" id="idIloscRatPo">aa</div>
-              </li>
-              <li class="list-group-item" style="background-color: #ffe4ad">
-                <div style="float: left" class="sumy">(A). Suma rat - marża + zamrożony wibor</div>
-                <div style="float: right" id="suma_rat_B" class="sumy">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
-                <div style="float: right" id="suma_rat_B_kapital">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
-                <div style="float: right" id="suma_rat_B_marza">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
-                <div style="float: right" id="suma_rat_B_wibor">aa</div>
-              </li>
-              <li class="list-group-item" style="background-color: #ffe4ad">
-                <div style="float: left" class="sumy">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
-                <div style="float: right" id="suma_rat2_B" class="sumy">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
-                <div style="float: right" id="suma_rat2_B_kapital">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
-                <div style="float: right" id="suma_rat2_B_marza">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
-                <div style="float: right" id="suma_rat2_B_wibor">aa</div>
-              </li>
-              <li class="list-group-item" style="background-color: #ffe4ad">
-                <div style="float: left">(A - B). Do zwrotu</div>
-                <div style="float: right" id="roznica_B"></div>
-              </li>
-            </ul>
+        <div class="card text-bg-primary bg-warning">
+          <div class="card-header">
+            Raty po zamrożeniu wiboru
           </div>
-
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <div style="float: left">Liczba rat</div>
+              <div style="float: right" id="idIloscRatPo">aa</div>
+            </li>
+            <li class="list-group-item" style="background-color: #ffe4ad">
+              <div style="float: left" class="sumy">(A). Suma rat - marża + zamrożony wibor</div>
+              <div style="float: right" id="suma_rat_B" class="sumy">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
+              <div style="float: right" id="suma_rat_B_kapital">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
+              <div style="float: right" id="suma_rat_B_marza">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat_B_wibor">aa</div>
+            </li>
+            <li class="list-group-item" style="background-color: #ffe4ad">
+              <div style="float: left" class="sumy">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
+              <div style="float: right" id="suma_rat2_B" class="sumy">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
+              <div style="float: right" id="suma_rat2_B_kapital">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
+              <div style="float: right" id="suma_rat2_B_marza">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat2_B_wibor">aa</div>
+            </li>
+            <li class="list-group-item" style="background-color: #ffe4ad">
+              <div style="float: left">(A - B). Do zwrotu</div>
+              <div style="float: right" id="roznica_B"></div>
+            </li>
+          </ul>
         </div>
-      </div>
 
-      <div class="row top-buffer">
-        <div class="col">
-          <div class="card text-bg-primary bg-primary">
-            <div class="card-header">
-              Raty wszystkie
-            </div>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item">
-                <div style="float: left">Liczba rat</div>
-                <div style="float: right" id="idIloscRatWszystkie">aa</div>
-              </li>
-              <li class="list-group-item" style="background-color: #badfff">
-                <div style="float: left" class="sumy">(A). Suma rat - marża + wibor (zmienny i zamrożony)</div>
-                <div style="float: right" id="suma_rat" class="sumy">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
-                <div style="float: right" id="suma_rat_kapital">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
-                <div style="float: right" id="suma_rat_marza">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
-                <div style="float: right" id="suma_rat_wibor">aa</div>
-              </li>
-              <li class="list-group-item" style="background-color: #badfff">
-                <div style="float: left" class="sumy">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
-                <div style="float: right" id="suma_rat2" class="sumy">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
-                <div style="float: right" id="suma_rat2_kapital">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
-                <div style="float: right" id="suma_rat2_marza">aa</div>
-              </li>
-              <li class="list-group-item">
-                <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
-                <div style="float: right" id="suma_rat2_wibor">aa</div>
-              </li>
-              <li class="list-group-item" style="background-color: #badfff">
-                <div style="float: left">(A - B). Do zwrotu</div>
-                <div style="float: right" id="roznica"></div>
-              </li>
-            </ul>
+      </div>
+    </div>
+
+    <div class="row top-buffer">
+      <div class="col">
+        <div class="card text-bg-primary bg-primary">
+          <div class="card-header">
+            Raty wszystkie
           </div>
-        </div>
-      </div>
-      <div class="row top-buffer">
-        <div class="col-lg-10">
-          <a class="btn btn-large btn-success" id="idGuzikPlik" href="">Pobierz plik .word</a>
-        </div>
-        <div class="col-lg-10">
-          <div id="idPlikGenerowany"></div>
-        </div>
-      </div>
-      <div class="row top-buffer">
-        <div class="col-lg-4">
-          <a class="btn btn-large btn-success" id="idGuzikPodsumowanie" href="">Zobacz podsumowanie</a>
-        </div>
-      </div>
-      <div class="row top-buffer">
-        <div class="col">
-          <div class="col-lg-12 wykresy" id="wykres_kapital"></div>
-        </div>
-      </div>
-      <div class="row top-buffer">
-        <div class="col">
-          <div class="col-lg-12 wykresy" id="wykres_raty"></div>
-        </div>
-      </div>
-      <div class="row top-buffer">
-        <div class="col">
-          <div class="col-lg-12 wykresy">
-            <figure>
-              <figcaption>Rys. Porównanie całkowitej kwoty zapłaconych odsetek z tytułu wiboru w przypadkach gdy a) gdy
-                wibor jest w wysokości z dnia podpisania umowy oraz b) gdy wibor jest zmienny</figcaption>
-              <div id="wykres_odsetki"></div>
-
-            </figure>
-          </div>
-        </div>
-      </div>
-      <div class="row top-buffer">
-        <div class="col">
-          <div class="col-lg-12 wykresy">
-            <figure>
-              <figcaption>Rys.2</figcaption>
-              <div id="wykres_bars"></div>
-            </figure>
-          </div>
-        </div>
-      </div>
-
-      {% endif %}
-
-      <div class="row top-buffer">
-        <div class="col">
-          <nav class="navbar navbar-light bg-light">
-            <span class="navbar-text">
-              2023
-            </span>
-            <span class="navbar-text">
-              @
-            </span>
-            <span><a href="{{ url_for('bp.opis') }}" class="metoda">Opis metody</a></span>
-          </nav>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <div style="float: left">Liczba rat</div>
+              <div style="float: right" id="idIloscRatWszystkie">aa</div>
+            </li>
+            <li class="list-group-item" style="background-color: #badfff">
+              <div style="float: left" class="sumy">(A). Suma rat - marża + wibor (zmienny i zamrożony)</div>
+              <div style="float: right" id="suma_rat" class="sumy">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
+              <div style="float: right" id="suma_rat_kapital">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
+              <div style="float: right" id="suma_rat_marza">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat_wibor">aa</div>
+            </li>
+            <li class="list-group-item" style="background-color: #badfff">
+              <div style="float: left" class="sumy">(B). Suma rat - oprocentowanie z dnia podpisania umowy</div>
+              <div style="float: right" id="suma_rat2" class="sumy">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;kapitał</div>
+              <div style="float: right" id="suma_rat2_kapital">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki marża</div>
+              <div style="float: right" id="suma_rat2_marza">aa</div>
+            </li>
+            <li class="list-group-item">
+              <div style="float: left"> &emsp;&emsp;&emsp;&#x2022;&ensp;odsetki wibor</div>
+              <div style="float: right" id="suma_rat2_wibor">aa</div>
+            </li>
+            <li class="list-group-item" style="background-color: #badfff">
+              <div style="float: left">(A - B). Do zwrotu</div>
+              <div style="float: right" id="roznica"></div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
+    <div class="row top-buffer">
+      <div class="col-lg-10">
+        <a class="btn btn-large btn-success" id="idGuzikPlik" href="">Pobierz plik .word</a>
+      </div>
+      <div class="col-lg-10">
+        <div id="idPlikGenerowany"></div>
+      </div>
+    </div>
+    <div class="row top-buffer">
+      <div class="col-lg-4">
+        <a class="btn btn-large btn-success" id="idGuzikPodsumowanie" href="">Zobacz podsumowanie</a>
+      </div>
+    </div>
+    <div class="row top-buffer">
+      <div class="col">
+        <div class="col-lg-12 wykresy" id="wykres_kapital"></div>
+      </div>
+    </div>
+    <div class="row top-buffer">
+      <div class="col">
+        <div class="col-lg-12 wykresy" id="wykres_raty"></div>
+      </div>
+    </div>
+    <div class="row top-buffer">
+      <div class="col">
+        <div class="col-lg-12 wykresy" >
+          <figure>
+            <figcaption>Rys. Porównanie całkowitej kwoty zapłaconych odsetek z tytułu wiboru w przypadkach gdy a) gdy wibor jest w wysokości z dnia podpisania umowy oraz b) gdy wibor jest zmienny</figcaption>
+            <div id="wykres_odsetki"></div>
+            
+        </figure>
+        </div>
+      </div>
+    </div>
+    <div class="row top-buffer">
+      <div class="col">
+        <div class="col-lg-12 wykresy" >
+          <figure>
+            <figcaption>Rys.2</figcaption>
+            <div id="wykres_bars"></div>
+        </figure>
+        </div>
+      </div>
+    </div>
+
+    {% endif %}
+
+    <div class="row top-buffer">
+      <div class="col">
+        <nav class="navbar navbar-light bg-light">
+          <span class="navbar-text">
+            2023
+          </span>
+          <span class="navbar-text">
+            @
+          </span>
+          <span><a href="{{ url_for('bp.opis') }}" class="metoda">Opis metody</a></span>
+        </nav>
+      </div>
+    </div>
+  </div>
+
 
     <script type="text/javascript">
 
@@ -522,7 +496,7 @@
       document.getElementById('wibor3mnav').innerHTML = "Wibor 3M do: " + String(tech_data["max_day_wibor3m"]);
       document.getElementById('wibor6mnav').innerHTML = "Wibor 6M do: " + String(tech_data["max_day_wibor6m"]);
 
-
+      document.getElementById('idGuzikUsunTransze').style.display = 'none';
 
 
       if (tech_data['form_data']) {
@@ -535,68 +509,82 @@
         document.getElementById("idDataZamrozenia").value = String(dane_formularza["dataZamrozenia"]);
         document.getElementById("idRodzajRat").value = String(dane_formularza["rodzajRat"]);
         document.getElementById("idRodzajWiboru").value = String(dane_formularza["rodzajWiboru"]);
-        if (dane_formularza["checkTr2"]) {
 
-          document.getElementById('idKapital2').readOnly = false;
-          document.getElementById('idData2').readOnly = false;
-          document.getElementById('idKapital2').value = String(dane_formularza["kapital2"]);
-          document.getElementById('idData2').value = String(dane_formularza["dataStart2"]);
-        } else {
-          document.getElementById('idCheckTransza2').checked = false;
-        }
-        if (dane_formularza["checkTr3"]) {
 
-          document.getElementById('idKapital3').readOnly = false;
-          document.getElementById('idData3').readOnly = false;
-          document.getElementById('idKapital3').value = String(dane_formularza["kapital3"]);
-          document.getElementById('idData3').value = String(dane_formularza["dataStart3"]);
-        } else {
-          document.getElementById('idCheckTransza3').checked = false;
+        var licznik = 2;
+        while ('kapital'+String(licznik) in dane_formularza) {
+
+  
+          dodajTransze(licznik);
+          document.getElementById("idKapital"+String(licznik)).value = String(dane_formularza["kapital"+String(licznik)]);
+          document.getElementById("idData"+String(licznik)).value = String(dane_formularza["dataStart"+String(licznik)]);
+
+          document.getElementById('idGuzikUsunTransze').style.display = 'inline-block';
+
+          licznik = licznik + 1;
         }
+
+      }
+
+      function dodajTransze(nrTransza) {
+
+
+
+        var container = document.getElementById('hehe');
+
+        const nrTranszy = nrTransza;
+
+
+
+        const node2 = `<div class="row top-buffer transza">
+          <div class="col-lg-3">
+            <label for="idKapital${nrTranszy}">Wartość - Transza ${nrTranszy}.</label>
+            <input type="text" class="form-control" placeholder="Ile?" name="kapital${nrTranszy}" id="idKapital${nrTranszy}">
+          </div>
+          <div class="col-lg-3">
+            <label for="idData${nrTranszy}">Data uruchomienia ${nrTranszy}.</label>
+            <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataStart${nrTranszy}" id="idData${nrTranszy}">
+          </div>
+        </div>`;
+
+
+      const tempd2 = document.createElement('div');
+        tempd2.innerHTML = node2;
+
+      // Get the actual element from the container
+      const element2 = tempd2.firstChild;
+      
+        
+        container.appendChild(element2);
+
+        
       }
 
 
       document.getElementById('idGuzikDodajTransze').addEventListener('click', function (event) {
         event.preventDefault();
 
-        var container = document.getElementById('hehe');
 
         const elements = document.querySelectorAll('.transza');
         const count = elements.length;
+
+        const nrTransza = count+2;
 
 
         
         if (count < 9) {
 
-        const nrTransza = count+2;
-
+        
    
-
-          const message = `
-          <div class="row top-buffer transza">
-            <div class="col-sm-10">
-              <div class="form-check" id="idTranszaLabel${nrTransza}">
-                <label class="form-check-label" for="idCheckTransza${nrTransza}">
-                  Transza ${nrTransza}.
-                </label>
-              </div>
-            </div>
-          </div>
-
-        <div class="row top-buffer">
-          <div class="col-lg-3">
-            <label for="idKapital${nrTransza}">Wartość - Transza ${nrTransza}.</label>
-            <input type="text" class="form-control" placeholder="Ile?" name="kapital${nrTransza}" id="idKapital${nrTransza}">
-          </div>
-          <div class="col-lg-3">
-            <label for="idData${nrTransza}">Data uruchomienia ${nrTransza}.</label>
-            <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataStart${nrTransza}" id="idData${nrTransza}">
-          </div>
-        </div>`;
-      
-        container.innerHTML += message
+        dodajTransze(nrTransza);
+          
 
       }
+
+      
+
+      // Make the element visible again
+      document.getElementById('idGuzikUsunTransze').style.display = 'inline-block';
 
 
       });
@@ -619,13 +607,7 @@
 
         
 
-        const idnrs = 'idTranszaLabel'+String(nrTransza);
 
-        const divToRemoveLabel = document.getElementById(idnrs);
-
-        const parentElementLabel = divToRemoveLabel.parentNode.parentNode;
-
-        container.removeChild(parentElementLabel); 
 
 
         const idnr = 'idKapital'+String(nrTransza);
@@ -639,6 +621,9 @@
 
         }
 
+        if (nrTransza<=2) {
+        this.style.display = 'none';
+        }
         
 
       });
