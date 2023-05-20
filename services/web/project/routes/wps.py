@@ -37,8 +37,8 @@ def main():
     max_day_wibor3m = df3.index.max()
     max_day_wibor6m = df6.index.max()
 
-    tech_data = {'max_day_wibor3m': max_day_wibor3m.strftime('%d-%m-%Y'),
-            'max_day_wibor6m': max_day_wibor6m.strftime('%d-%m-%Y')}
+    tech_data = {'max_day_wibor3m': max_day_wibor3m.strftime('%d/%m/%Y'),
+            'max_day_wibor6m': max_day_wibor6m.strftime('%d/%m/%Y')}
 
     
 
@@ -54,11 +54,7 @@ def main():
         
 
         form_data = {"kapital1":request.form['kapital1'],
-                    "kapital2":request.form['kapital2'],
-                    "kapital3":request.form['kapital3'],
                     "dataStart1":request.form['dataStart1'],
-                    "dataStart2":request.form['dataStart2'],
-                    "dataStart3":request.form['dataStart3'],
                     "dataUmowa":request.form['dataUmowa'],
                     "okresy":request.form['okresy'],
                     "marza":marza_temp,
@@ -66,12 +62,15 @@ def main():
                     "rodzajWiboru":request.form['rodzajWiboru'],
                     "rodzajRat":request.form['rodzajRat']}
 
-        if 'checkTransza2' in request.form:
-            form_data['checkTr2'] = True
+
+        kap = 2
+        while f'kapital{kap}' in request.form:
+            form_data[f'kapital{kap}'] = request.form[f'kapital{kap}']
+            form_data[f'dataStart{kap}'] = request.form[f'dataStart{kap}']
+            print(f'barzo duzye kapitaly {kap}')
+            kap += 1
 
 
-        if 'checkTransza3' in request.form:
-            form_data['checkTr3'] = True
 
         tech_data['form_data'] = form_data
 
@@ -81,8 +80,6 @@ def main():
             dataUmowa = str(form_data['dataUmowa'])
             okresy = int(form_data['okresy'])
             
-            
-        
             marza = float(marza_temp)
 
             rodzajWiboru = str(form_data['rodzajWiboru'])
@@ -96,22 +93,16 @@ def main():
 
             transze = []
 
-            if 'checkTransza2' in request.form:
-                kapital2 = float(form_data['kapital2'])
-                dataStart2 = str(form_data['dataStart2'])
-                data_start2 = dt.datetime.strptime(dataStart2, '%d/%m/%Y')
+            kap = 2
+            while f'kapital{kap}' in request.form:
+                kapital = float(form_data[f'kapital{kap}'])
+                dataStart = str(form_data[f'dataStart{kap}'])
+                data_start = dt.datetime.strptime(dataStart, '%d/%m/%Y')
 
-                transze.append({'dzien': data_start2, 'wartosc':kapital2 })
+                transze.append({'dzien': data_start, 'wartosc': kapital})
+                kap += 1
 
-            if 'checkTransza3' in request.form:
-                kapital3 = float(form_data['kapital3'])
-                dataStart3 = str(form_data['dataStart3'])
-                data_start3 = dt.datetime.strptime(dataStart3, '%d/%m/%Y')
-
-                transze.append({'dzien': data_start3, 'wartosc':kapital3 })
-
-
-            
+                        
 
             if data_zamrozenia > max_day_wibor3m if rodzajWiboru=='3M' else data_zamrozenia > max_day_wibor6m:
                 error = "Data zamrożenia wiboru większa niż dostępne dane."
