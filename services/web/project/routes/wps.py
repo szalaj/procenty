@@ -37,8 +37,8 @@ def main():
     max_day_wibor3m = df3.index.max()
     max_day_wibor6m = df6.index.max()
 
-    tech_data = {'max_day_wibor3m': max_day_wibor3m.strftime('%d-%m-%Y'),
-            'max_day_wibor6m': max_day_wibor6m.strftime('%d-%m-%Y')}
+    tech_data = {'max_day_wibor3m': max_day_wibor3m.strftime('%d/%m/%Y'),
+            'max_day_wibor6m': max_day_wibor6m.strftime('%d/%m/%Y')}
 
     
 
