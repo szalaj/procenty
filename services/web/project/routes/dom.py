@@ -89,7 +89,7 @@ def domy():
     
     inflacja = InflacjaMM.query.all()
 
-    inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja]
+    inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja if row.miesiac >= dt.datetime.strptime('2021-11', '%Y-%m')]
 
     # convert the list of dictionaries to JSON
     inflacja_dumps = json.dumps(inflacja_dict)
