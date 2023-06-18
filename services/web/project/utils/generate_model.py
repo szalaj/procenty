@@ -2,7 +2,52 @@ import datetime as dt
 from dateutil.relativedelta import relativedelta
 import pandas as pd
 import decimal
+from dataclasses import dataclass
 
+@dataclass
+class WiborInter:
+    """interpolowanie wibour dla wartosci, ktorych jeszce nie znamy."""
+
+    wibor_typ: str
+    data_start: dt.datetime
+    okresy: int
+    liczba_wakacji: int
+
+    points: list
+
+    def __post_init__(self):
+        if self.wibor_typ=='3M':
+            file_name = 'plopln3m_d.csv'
+            self._okres = 3
+        elif self.wibor_typ=='6M':
+            file_name = 'plopln6m_d.csv'
+            self._okres = 6
+
+        self.df = pd.read_csv('project/static/{}'.format(file_name), usecols=[0,1], index_col=0)
+        self.df.index = pd.to_datetime(self.df.index, format='%Y-%m-%d')
+
+        self.df = self.df[self.df.index >= self.data_start-relativedelta(days=5)] 
+
+        self.data_koniec = self.data_start + relativedelta(months=(self.okresy+self.liczba_wakacji))
+
+        print(f"index min: {self.df.index.min()} , index max: {self.df.index.max()}, data koniec: {self.data_koniec}")
+
+        if self.points:
+            self.points = [(dt.datetime.strptime(p[0], '%d/%m/%Y'), p[1]) for p in self.points if dt.datetime.strptime(p[0], '%d/%m/%Y') > self.df.index.max()]
+   
+        self.points.append((self.df.index.max(), self.df.loc[self.df.index.max(), 'Otwarcie']))
+
+        new_df = pd.DataFrame(self.points, columns=['Data', 'Otwarcie'])
+        #new_df['Date'] = pd.to_datetime(new_df['Date'])
+        new_df.set_index('Data', inplace=True)
+
+        # Concatenate the original DataFrame and the new DataFrame
+        dff = pd.concat([self.df, new_df])
+        dff = dff.sort_index()
+        self.json_data = [{'date': dt.datetime.strftime(index, '%d-%m-%Y'), 'value': value} for index, value in dff['Otwarcie'].items()]
+
+
+    
 
 
 class Wibor:

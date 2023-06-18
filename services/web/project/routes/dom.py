@@ -8,12 +8,22 @@ from dateutil.relativedelta import relativedelta
 import datetime as dt
 from pandas.tseries.offsets import BDay
 import pandas as pd
+from dataclasses import dataclass
+import project.utils.generate_model as ut
 
 from sqlalchemy import text
 
 from ..utils.generate_model import Wibor
 
 import json
+
+@dataclass
+class Interpolator:
+
+    data_startowa: str
+    okres: str
+    punkty: list
+
 
 dom = Blueprint('dom', __name__)
 
@@ -91,9 +101,10 @@ def domy():
 
     result_list= [{'inflacja_miesiac': row[0], 'inflacja_wartosc': row[1], 'infl_kum': row[2], 'dom_wartosc': row[3], 'dom_real_wartosc': row[4]} for row in res]
 
+    p = [('01/10/2029', 2.0), ('01/10/2044', 8.0), ('01/10/2060', 1.0)]
+    w = ut.WiborInter('3M', dt.datetime.strptime("04/11/2019", '%d/%m/%Y'), 360, 10, p)
 
-
-    return render_template('domy.html', inflacja=inflacja_dumps, results=json.dumps(result_list))
+    return render_template('domy.html', inflacja=inflacja_dumps, results=json.dumps(result_list), wibor=w.json_data)
 
 
 @dom.route('/kiedy', methods=['GET', 'POST']) 
