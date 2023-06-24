@@ -30,6 +30,8 @@ class WiborInter:
 
         self.data_koniec = self.data_start + relativedelta(months=(self.okresy+self.liczba_wakacji))
 
+        self.max_wibor_real = self.df.index.max()
+
         print(f"index min: {self.df.index.min()} , index max: {self.df.index.max()}, data koniec: {self.data_koniec}")
 
         if self.points:
@@ -47,7 +49,30 @@ class WiborInter:
         self.json_data = [{'date': dt.datetime.strftime(index, '%d-%m-%Y'), 'value': value} for index, value in dff['Otwarcie'].items()]
 
 
+    def getWibor(self, data) -> float:
+        if data > self.max_wibor_real:
+            wibor_value = 14
+        else:
+            wibor_value = self._getWiborLastAvailable(data)
+        
+        return wibor_value
+
+        
+
+    def _getWiborLastAvailable(self, data: str) -> float:
+        try:
+            wibor_value = self.df.loc[data.strftime('%Y-%m-%d')][0]
+        except:
+            try:
+                wibor_value = self.df[self.df.index < data.strftime('%Y-%m-%d')].iloc[-1][0]
+            except:
+                raise Exception('wibor not available')
+                wibor_value = None
+        return wibor_value
     
+    @property
+    def okres(self):
+        return self._okres
 
 
 class Wibor:
@@ -68,7 +93,8 @@ class Wibor:
         # print(self.df.loc['2021-01-05'][0])
         # print(self.df.index.get_indexer('2021-01-05'))
 
-
+    def getWibor(self, data: str) -> float:
+        return self._getWiborLastAvailable(data)
 
     def getNearestWibor(self, data: str):
         zmr_iloc_idx = self.df.index.get_indexer([data], method='nearest')
@@ -82,16 +108,16 @@ class Wibor:
             wibor_zamr_value = None
         return wibor_zamr_value
     
-    def getWiborLastAvailable(self, data: str) -> float:
+    def _getWiborLastAvailable(self, data: str) -> float:
         try:
-            wibor_zamr_value = self.df.loc[data.strftime('%Y-%m-%d')][0]
+            wibor_value = self.df.loc[data.strftime('%Y-%m-%d')][0]
         except:
             try:
-                wibor_zamr_value = self.df[self.df.index < data.strftime('%Y-%m-%d')].iloc[-1][0]
+                wibor_value = self.df[self.df.index < data.strftime('%Y-%m-%d')].iloc[-1][0]
             except:
                 raise Exception('wibor not available')
-                wibor_zamr_value = None
-        return wibor_zamr_value
+                wibor_value = None
+        return wibor_value
 
     
     @property
@@ -106,10 +132,11 @@ def generateFromWiborFile(kapital, okresy, start_date, marza, dzien_zamrozenia, 
 
 
     wibor = Wibor(rodzajWiboru)
+    
 
     miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
 
-    wibor_zamr_value = wibor.getWiborLastAvailable(dzien_zamrozenia)
+    wibor_zamr_value = wibor.getWibor(dzien_zamrozenia)
    
     grosze =  decimal.Decimal('.01')
 
@@ -119,7 +146,7 @@ def generateFromWiborFile(kapital, okresy, start_date, marza, dzien_zamrozenia, 
                 wibor_day =  start_date + relativedelta(months=3*i)
                 if wibor_day < dzien_zamrozenia:
                     if not wibor_start:
-                        wibor_value = wibor.getWiborLastAvailable(wibor_day)
+                        wibor_value = wibor.getWibor(wibor_day)
                     else:
                         wibor_value = wibor_start
                     opr_arr.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_value).quantize(grosze))})
@@ -137,7 +164,7 @@ def generateFromWiborFile(kapital, okresy, start_date, marza, dzien_zamrozenia, 
     if tylko_marza:
         p_start = float(decimal.Decimal(marza).quantize(grosze))
     else:
-        p_start = float(decimal.Decimal(wibor.getWiborLastAvailable(start_date)+marza).quantize(grosze))
+        p_start = float(decimal.Decimal(wibor.getWibor(start_date)+marza).quantize(grosze))
 
     data = {"K": kapital,
             "transze": transze_out,

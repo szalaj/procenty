@@ -10,7 +10,7 @@ from pandas.tseries.offsets import BDay
 import pandas as pd
 from dataclasses import dataclass
 import project.utils.generate_model as ut
-
+import project.utils.proc as proc
 from sqlalchemy import text
 
 from ..utils.generate_model import Wibor
@@ -103,6 +103,9 @@ def domy():
 
     p = [('01/10/2029', 2.0), ('01/10/2044', 8.0), ('01/10/2060', 1.0)]
     w = ut.WiborInter('3M', dt.datetime.strptime("04/11/2019", '%d/%m/%Y'), 360, 10, p)
+
+    dane_kredytu =  ut.generateFromWiborFile(400000, 200, dt.datetime.strptime("04/11/2019", '%d/%m/%Y'), 1, dt.datetime.strptime("04/11/2049", '%d/%m/%Y'), '3M', [], False, False)
+    wynik = proc.create_kredyt(dane_kredytu, 'malejace')
 
     return render_template('domy.html', inflacja=inflacja_dumps, results=json.dumps(result_list), wibor=w.json_data)
 
