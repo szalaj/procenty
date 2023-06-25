@@ -107,7 +107,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col" id="rys">
+            <div class="col" id="dane">
                 
             </div>
         </div>
@@ -141,7 +141,7 @@ wibor.forEach(function (d) {
 });
 console.log(wibor)
 
-var width_docs = document.getElementById('rys').clientWidth;
+var width_docs = document.getElementById('ryswibor').clientWidth;
 
 var margin = { top: 60, right: 30, bottom: 70, left: 80 },
   width = width_docs - margin.left - margin.right,
@@ -224,39 +224,11 @@ var yscalewibor = d3.scaleLinear()
   )
 
 
-// Define the table headers
-var headers = ['inflacja_miesiac', 'dom_wartosc', 'infl_kum', 'inflacja_wartosc', 'dom_real_wartosc'];
 
-// Load the JSON data
+  zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
 
-  // Select the table element
-  var table = d3.select('table');
 
-  // Create the table header row
-  table.append('thead')
-    .append('tr')
-    .selectAll('th')
-    .data(headers)
-    .enter()
-    .append('th')
-    .text(function(d) { return d; });
-
-  // Create the table body rows
-  table.append('tbody')
-    .selectAll('tr')
-    .data(results)
-    .enter()
-    .append('tr')
-    .selectAll('td')
-    .data(function(row) {
-      return headers.map(function(header) {
-        return { column: header, value: row[header] };
-      });
-    })
-    .enter()
-    .append('td')
-    .text(function(d) { return d.value; });
-
+    d3.select("#dane").text(zloty(suma_rat))
 
 </script>
 </html>
