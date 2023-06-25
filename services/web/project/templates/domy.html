@@ -129,13 +129,18 @@ tu bedzie kredyt
 var inflacja = JSON.parse('{{inflacja|safe}}');
 var results = JSON.parse('{{results|safe}}');
 
+var dane1 = JSON.parse('{{wynik|safe}}');
+console.log(dane1);
+
+
 var wibor = {{wibor|tojson}};
 
 var parseDate = d3.timeParse("%Y-%m");
 
 var parseDateWibor = d3.timeParse("%d-%m-%Y");
 
-
+suma_rat = d3.sum(dane1['raty'], d => d.rata)
+console.log(suma_rat);
 
 console.log(wibor)
 

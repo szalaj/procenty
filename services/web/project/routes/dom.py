@@ -101,13 +101,13 @@ def domy():
 
     result_list= [{'inflacja_miesiac': row[0], 'inflacja_wartosc': row[1], 'infl_kum': row[2], 'dom_wartosc': row[3], 'dom_real_wartosc': row[4]} for row in res]
 
-    p = [('01/10/2029', 2.0), ('01/10/2044', 8.0), ('01/10/2060', 1.0)]
+    p = [('01/10/2029', 10.0), ('01/10/2044', 3.0), ('01/10/2052', 2.0) ,('01/10/2060', 10.0)]
     w = ut.WiborInter('3M', dt.datetime.strptime("04/11/2019", '%d/%m/%Y'), 360, 10, p)
 
-    dane_kredytu =  ut.generateFromWiborFile(400000, 200, dt.datetime.strptime("04/11/2019", '%d/%m/%Y'), 1, dt.datetime.strptime("04/11/2049", '%d/%m/%Y'), '3M', [], False, False)
+    dane_kredytu =  ut.generateFromWiborFileInter(w, 400000, 200, dt.datetime.strptime("04/11/2019", '%d/%m/%Y'), 1, dt.datetime.strptime("04/11/2049", '%d/%m/%Y'), '3M', [], False, False)
     wynik = proc.create_kredyt(dane_kredytu, 'malejace')
 
-    return render_template('domy.html', inflacja=inflacja_dumps, results=json.dumps(result_list), wibor=w.json_data)
+    return render_template('domy.html', inflacja=inflacja_dumps, results=json.dumps(result_list), wibor=w.json_data, wynik=json.dumps(wynik))
 
 
 @dom.route('/kiedy', methods=['GET', 'POST']) 
