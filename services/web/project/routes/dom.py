@@ -27,33 +27,27 @@ class Interpolator:
 
 dom = Blueprint('dom', __name__)
 
+@dom.route('/kredyt')
+def kredyt():
+
+    kapital = 460000
+    data_start = '04/11/2021'
+
+    p = [('01/10/2029', 10.0), ('01/10/2044', 3.0), ('01/10/2052', 2.0) ,('01/10/2060', 10.0)]
+    w = ut.WiborInter('3M', dt.datetime.strptime("04/11/2019", '%d/%m/%Y'), 360, 10, p)
+
+    dane_kredytu =  ut.generateFromWiborFileInter(w, 400000, 200, dt.datetime.strptime("04/11/2019", '%d/%m/%Y'), 1, dt.datetime.strptime("04/11/2049", '%d/%m/%Y'), '3M', [], False, False)
+    wynik = proc.create_kredyt(dane_kredytu, 'malejace')
+
+    return render_template('kredyt.html', wibor=w.json_data, wynik=json.dumps(wynik))
+
+
 @dom.route('/domy')
 def domy():
-    '''
-    select EXP(SUM(LOG(yourColumn))) As ColumnProduct from yourTable
 
-    select date(substring(data_zakupu,7,4) || '-' || substring(data_zakupu,4,2) || '-' || substring(data_zakupu,1,2)) as miesiac from dom
-    
-    from @t t1
-    inner join @t t2 on t1.id >= t2.id
-    group by t1.id, t1.SomeNumt
-    order by t1.id
-    '''
 
-    sql = '''
-    with domek as (
-    select date(substring(data_zakupu,7,4) || '-' || substring(data_zakupu,4,2) || '-01') as miesiac, wartosc from dom
-    ),
-    inflacja as (
-    select date(substring(miesiac,1,7) || '-01') as miesiac, wartosc from inflacjamm
-    ),
-    cos as (
-    select row_number() OVER (ORDER BY inflacja.miesiac) AS id, domek.miesiac, inflacja.miesiac, domek.wartosc, inflacja.wartosc from domek 
-    left outer join inflacja
-    on inflacja.miesiac >= domek.miesiac
-    )
-    select * from cos
-    '''
+
+
 
     sql2 = '''
     with domek as (
