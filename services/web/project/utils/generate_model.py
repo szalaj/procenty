@@ -32,6 +32,8 @@ class WiborInter:
 
         self.data_koniec = self.data_start + relativedelta(months=(self.okresy+self.liczba_wakacji))
 
+        print(type(self.data_koniec))
+
         self.max_wibor_real = self.df.index.max()
 
         #print(f"index min: {self.df.index.min()} , index max: {self.df.index.max()}, data koniec: {self.data_koniec}")
@@ -50,7 +52,17 @@ class WiborInter:
         # Create an interpolation function using scipy.interpolate.interp1d
         self.interpolation_function = interp1d(timestamps, values)
 
+        # Convert the new date to a numerical value
+        end_timestamp = (self.data_koniec - self.max_wibor_real).total_seconds()
 
+        # Use the interpolation function to estimate the value at the new date
+        wibor_value_koniec= self.interpolation_function(end_timestamp).item()
+
+        self.points = [p for p in self.points if p[0] < self.data_koniec]
+
+        self.points.append((self.data_koniec, wibor_value_koniec))
+
+ 
         new_df = pd.DataFrame(self.points, columns=['Data', 'Otwarcie'])
         #new_df['Date'] = pd.to_datetime(new_df['Date'])
         new_df.set_index('Data', inplace=True)
@@ -71,7 +83,7 @@ class WiborInter:
             # Use the interpolation function to estimate the value at the new date
             wibor_value = self.interpolation_function(new_timestamp)
             
-            print(wibor_value)  
+              
             
             
         else:
@@ -149,31 +161,20 @@ class Wibor:
 
 
 
-def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, dzien_zamrozenia, rodzajWiboru, transze, wibor_start, tylko_marza=False):
+def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transze, tylko_marza=False):
 
-
-        
 
     miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
-
-    wibor_zamr_value = wibor.getWibor(dzien_zamrozenia)
-   
+  
     grosze =  decimal.Decimal('.01')
 
     opr_arr = []
     if not tylko_marza:
         for i in range(0, int(okresy/wibor.okres)+1):
                 wibor_day =  start_date + relativedelta(months=3*i)
-                if wibor_day < dzien_zamrozenia:
-                    if not wibor_start:
-                        wibor_value = wibor.getWibor(wibor_day)
-                    else:
-                        wibor_value = wibor_start
-                    opr_arr.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_value).quantize(grosze))})
-        if not wibor_start:
-            opr_arr.append({"dzien":dzien_zamrozenia.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_zamr_value).quantize(grosze))})
-        else:
-            opr_arr.append({"dzien":dzien_zamrozenia.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_start).quantize(grosze))})
+                wibor_value = wibor.getWibor(wibor_day)
+                opr_arr.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_value).quantize(grosze))})
+
 
     transze_out = []
     if transze:
@@ -192,9 +193,7 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, dzien_
             "marza": marza,
             "start": miesiace[0],
             "daty_splaty": miesiace[1:],
-            "oprocentowanie": opr_arr,
-            "dzien_zamrozenia": dzien_zamrozenia.strftime('%Y-%m-%d'),
-            "wibor_zamrozony": wibor_zamr_value }
+            "oprocentowanie": opr_arr }
 
     return data
 

@@ -40,7 +40,7 @@
         path.kreska {
             fill: none;
             stroke-width: 2px;
-            stroke: rgb(255, 255, 255);
+            stroke: rgb(0, 0, 0);
         }
 
         path.kreska2 {
@@ -120,36 +120,34 @@
 
 
 var dane1 = JSON.parse('{{wynik|safe}}');
-console.log(dane1);
-
 
 var wibor = {{wibor|tojson}};
 
-var parseDate = d3.timeParse("%Y-%m");
+console.log(dane1);
+console.log(wibor);
 
+
+
+var parseDate = d3.timeParse("%Y-%m");
 var parseDateWibor = d3.timeParse("%d-%m-%Y");
+
+var zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
 
 suma_rat = d3.sum(dane1['raty'], d => d.rata)
 console.log(suma_rat);
-
-console.log(wibor)
 
 
 wibor.forEach(function (d) {
   d.dzien = parseDateWibor(d.date)
   d.wartosc = parseFloat(d.value)
 });
-console.log(wibor)
+
 
 var width_docs = document.getElementById('ryswibor').clientWidth;
 
 var margin = { top: 60, right: 30, bottom: 70, left: 80 },
   width = width_docs - margin.left - margin.right,
   height = 450 - margin.top - margin.bottom;
-
-
-
-
 
   var containerwibor= d3.select('#ryswibor');
 
@@ -161,7 +159,7 @@ var svgwibor = containerwibor
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
   .attr("style", "border:1px solid black;")
-  .style('background', "red")
+  .style('background', "white")
   .append("g")
   .attr("transform",
     "translate(" + margin.left + "," + margin.top + ")");
@@ -225,7 +223,7 @@ var yscalewibor = d3.scaleLinear()
 
 
 
-  zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
+  
 
 
     d3.select("#dane").text(zloty(suma_rat))
