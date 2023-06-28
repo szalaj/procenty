@@ -99,15 +99,24 @@
 
 <body>
     <div class="container">
-        <div class="row  top-buffer">
-          </div>
-          <div class="row">
-            <div class="col" id="ryswibor">
-                
-            </div>
-        </div>
-        <div class="row">
+
+          <div class="row top-buffer">
             <div class="col" id="dane">
+                <ul class="list-group list-group-flush">
+                    <li>Kapitał pożyczony: <div style="float: right" id="kapital"></div></li>
+                    <li>Marża:<div style="float: right" id="marza"></div></li>
+                    <li>Okresy:<div style="float: right" id="okresy"></div></li>
+                    <li>Data uruchomienia:<div style="float: right" id="data_start"></div></li>
+                    <li>Suma rat:<div style="float: right" id="suma_rat"></div></li>
+                </ul>
+            </div>
+
+            
+                
+        </div>
+        <div class="row top-buffer">
+            
+            <div class="col" id="ryswibor">
                 
             </div>
         </div>
@@ -119,13 +128,17 @@
 <script>
 
 
+
+
 var dane1 = JSON.parse('{{wynik|safe}}');
 
 var wibor = {{wibor|tojson}};
 
+var fin_data = {{fin_data|tojson}};
+
 console.log(dane1);
 console.log(wibor);
-
+console.log(fin_data);
 
 
 var parseDate = d3.timeParse("%Y-%m");
@@ -224,9 +237,13 @@ var yscalewibor = d3.scaleLinear()
 
 
   
+  d3.select("#kapital").text(zloty(fin_data['kapital']))
+  d3.select("#okresy").text(fin_data['okresy'])
+  d3.select("#marza").text(fin_data['marza'])
+  d3.select("#data_start").text(fin_data['data_start'])
 
-
-    d3.select("#dane").text(zloty(suma_rat))
+    d3.select("#suma_rat").text(zloty(suma_rat))
+    
 
 </script>
 </html>

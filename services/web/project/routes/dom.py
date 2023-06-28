@@ -37,6 +37,12 @@ def kredyt():
     okresy = 360
     liczba_wakacji = 0
 
+    fin_data = {}
+    fin_data['kapital'] = kapital
+    fin_data['marza'] = marza
+    fin_data['okresy'] = okresy
+    fin_data['data_start'] = data_start
+
     prognoza = [('01/10/2029', 2.0), ('01/10/2044', 3.0), ('01/10/2160', 2.0)]
 
     w = ut.WiborInter(rodzaj_wiboru, dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy, liczba_wakacji, prognoza)
@@ -50,7 +56,7 @@ def kredyt():
     
     wynik = proc.create_kredyt(dane_kredytu, 'malejace')
 
-    return render_template('kredyt.html', wibor=w.json_data, wynik=json.dumps(wynik))
+    return render_template('kredyt.html', wibor=w.json_data, wynik=json.dumps(wynik), fin_data = fin_data)
 
 
 @dom.route('/domy')
