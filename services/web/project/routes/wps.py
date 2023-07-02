@@ -137,7 +137,7 @@ def main():
         dane_kredytu =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False, False)
 
         wibor = project.utils.generate_model.Wibor(rodzajWiboru)
-        wibor_start = wibor.getWiborLastAvailable(data_umowa)
+        wibor_start = wibor.getWibor(data_umowa)
         stala_stopa_uruch = round(wibor_start + marza,2)
         wibor_zamrozony = dane_kredytu['wibor_zamrozony']
 

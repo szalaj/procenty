@@ -40,7 +40,7 @@
         path.kreska {
             fill: none;
             stroke-width: 2px;
-            stroke: rgb(255, 255, 255);
+            stroke: rgb(0, 0, 0);
         }
 
         path.kreska2 {
@@ -99,150 +99,74 @@
 
 <body>
     <div class="container">
-        <div class="row  top-buffer">
-            <div class="col d-flex justify-content-center">
 
-                <p>Rys. Inflacja m/m</p>
-
+          <div class="row top-buffer">
+            <div class="col" id="dane">
+                <ul class="list-group list-group-flush">
+                    <li>Kapitał pożyczony: <div style="float: right" id="kapital"></div></li>
+                    <li>Marża:<div style="float: right" id="marza"></div></li>
+                    <li>Okresy:<div style="float: right" id="okresy"></div></li>
+                    <li>Data uruchomienia:<div style="float: right" id="data_start"></div></li>
+                    <li>Suma rat:<div style="float: right" id="suma_rat"></div></li>
+                </ul>
             </div>
-          </div>
-          <div class="row">
+
+            
+                
+        </div>
+        <div class="row top-buffer">
+            
             <div class="col" id="ryswibor">
                 
             </div>
         </div>
-        <div class="row">
-            <div class="col" id="rys">
-                
-            </div>
-        </div>
-        <div class="row">
-            <table border="1"></table>
-        </div>
+
+        <div class="row top-buffer">
+            
+              <div class="col" id="wykres_kapital"></div>
+            
+          </div>
+
     </div>
-<hr>
-tu bedzie kredyt
+
 </body>
 
 <script>
 
-var inflacja = JSON.parse('{{inflacja|safe}}');
-var results = JSON.parse('{{results|safe}}');
+
+
 
 var dane1 = JSON.parse('{{wynik|safe}}');
-console.log(dane1);
-
 
 var wibor = {{wibor|tojson}};
 
-var parseDate = d3.timeParse("%Y-%m");
+var fin_data = {{fin_data|tojson}};
 
+console.log(dane1);
+console.log(wibor);
+console.log(fin_data);
+
+
+var parseDate = d3.timeParse("%Y-%m");
 var parseDateWibor = d3.timeParse("%d-%m-%Y");
+
+var zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
 
 suma_rat = d3.sum(dane1['raty'], d => d.rata)
 console.log(suma_rat);
 
-console.log(wibor)
-
-inflacja.forEach(function (d) {
-  d.miesiac = parseDate(d.miesiac)
-  d.wartosc = parseFloat(d.wartosc)
-});
-inflacja.sort(function(x, y){
-   return d3.ascending(x.miesiac, y.miesiac);
-})
-console.log(inflacja)
 
 wibor.forEach(function (d) {
   d.dzien = parseDateWibor(d.date)
   d.wartosc = parseFloat(d.value)
 });
-console.log(wibor)
 
-var width_docs = document.getElementById('rys').clientWidth;
+
+var width_docs = document.getElementById('ryswibor').clientWidth;
 
 var margin = { top: 60, right: 30, bottom: 70, left: 80 },
   width = width_docs - margin.left - margin.right,
   height = 450 - margin.top - margin.bottom;
-
-var container = d3.select('#rys');
-
-
-// Position the div element above the SVG container
-var svg = container
-  .append("svg")
-  .attr("class", "svg-holder")
-  .attr("width", width + margin.left + margin.right)
-  .attr("height", height + margin.top + margin.bottom)
-  .attr("style", "border:1px solid black;")
-  .style('background', "red")
-  .append("g")
-  .attr("transform",
-    "translate(" + margin.left + "," + margin.top + ")");
-
-var xscale = d3.scaleTime()
-    .domain(d3.extent(inflacja, d => d.miesiac))
-    .range([0, width]);
-
-
-var xAxis = svg.append("g")
-    .attr("class", "xAxis")
-    .attr("transform", "translate(0," + height + ")")
-
-xAxis.call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m')))
-  .selectAll("text")
-  .attr("transform", "translate(-10,0)rotate(-45)")
-  .style("text-anchor", "end")
-  .style("font-size", "13px");
-
-var grids = svg.append('g')
-    .selectAll('line')
-    .data(xscale.ticks())
-    .enter().append('line')
-    .attr('class', 'gridline')
-    .attr('x1', d => xscale(d))
-    .attr('x2', d => xscale(d))
-    .attr('y1', 0)
-    .attr('y2', height)
-
-
-var maxYvalue = d3.max(inflacja, function (d) { return d.wartosc });
-var minYvalue = d3.min(inflacja, function (d) { return d.wartosc });
-
-var yscale = d3.scaleLinear()
-  .domain([minYvalue, maxYvalue])
-  .range([height, 0]);
-
-  var gridsH = svg.append('g')
-  .selectAll('line')
-  .data(yscale.ticks())
-  .enter().append('line')
-  .attr('class', 'gridline')
-  .attr('x1', 0)
-  .attr('x2', width)
-  .attr('y1', d=>yscale(d))
-  .attr('y2', d=>yscale(d))
-
-  svg.append("g")
-  .attr("class", "yAxis")
-  .call(d3.axisLeft(yscale))
-  .style("font-size", "13px");
-
-  d3.selectAll('.tick line').style('stroke', '#ffffff');
-  d3.selectAll('.gridline').style('stroke', '#ffffff');
-  d3.selectAll('.domain').style('stroke', '#ffffff');
-  d3.selectAll('.tick text').style('fill', '#ffffff');
-
-  var kreska_inflacja = svg.append("path")
-  .datum(inflacja)
-  .attr("class", "kreska")
-  .attr("d", d3.line()
-    .x(function (d) { return xscale(d.miesiac) })
-    .y(function (d) { return yscale(d.wartosc) })
-  )
-
-
-
 
   var containerwibor= d3.select('#ryswibor');
 
@@ -254,7 +178,7 @@ var svgwibor = containerwibor
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
   .attr("style", "border:1px solid black;")
-  .style('background', "red")
+  .style('background', "white")
   .append("g")
   .attr("transform",
     "translate(" + margin.left + "," + margin.top + ")");
@@ -317,38 +241,101 @@ var yscalewibor = d3.scaleLinear()
   )
 
 
-// Define the table headers
-var headers = ['inflacja_miesiac', 'dom_wartosc', 'infl_kum', 'inflacja_wartosc', 'dom_real_wartosc'];
 
-// Load the JSON data
+  
+  d3.select("#kapital").text(zloty(fin_data['kapital']))
+  d3.select("#okresy").text(fin_data['okresy'])
+  d3.select("#marza").text(fin_data['marza'])
+  d3.select("#data_start").text(fin_data['data_start'])
 
-  // Select the table element
-  var table = d3.select('table');
+    d3.select("#suma_rat").text(zloty(suma_rat))
+    
 
-  // Create the table header row
-  table.append('thead')
-    .append('tr')
-    .selectAll('th')
-    .data(headers)
-    .enter()
-    .append('th')
-    .text(function(d) { return d; });
 
-  // Create the table body rows
-  table.append('tbody')
-    .selectAll('tr')
-    .data(results)
-    .enter()
-    .append('tr')
-    .selectAll('td')
-    .data(function(row) {
-      return headers.map(function(header) {
-        return { column: header, value: row[header] };
-      });
-    })
-    .enter()
-    .append('td')
-    .text(function(d) { return d.value; });
+    var parseDateWykres = d3.timeParse("%Y-%m-%d");
+
+
+dane_wykres = dane1['raty']
+dane_wykres.forEach(function (d) {
+  d.dzien = parseDateWykres(d.dzien)
+  d.K_po = parseFloat(d.K_po)
+  d.rata = parseFloat(d.rata)
+});
+
+
+var svg_kapital = d3.select("#wykres_kapital")
+  .append("svg")
+  .attr("class", "svg-holder")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .attr("style", "border:1px solid black;")
+  .style('background', "white")
+  .append("g")
+  .attr("transform",
+    "translate(" + margin.left + "," + margin.top + ")");
+
+
+var xscale = d3.scaleTime()
+  .domain(d3.extent(dane_wykres, d => d.dzien))
+  .range([0, width]);
+
+
+
+
+var xAxis = svg_kapital.append("g")
+  .attr("class", "xAxis")
+  .attr("transform", "translate(0," + height + ")")
+
+xAxis.call(d3.axisBottom(xscale).tickFormat(d3.timeFormat('%Y-%m-%d')))
+  .selectAll("text")
+  .attr("transform", "translate(-10,0)rotate(-45)")
+  .style("text-anchor", "end")
+  .style("font-size", "13px");
+
+
+
+var grids_kapital = svg_kapital.append('g')
+  .selectAll('line')
+  .data(xscale.ticks())
+  .enter().append('line')
+  .attr('class', 'gridline')
+  .attr('x1', d => xscale(d))
+  .attr('x2', d => xscale(d))
+  .attr('y1', 0)
+  .attr('y2', height)
+  .attr('stroke', 'black')
+
+
+
+var maxYvalue = d3.max(dane_wykres, function (d) { return d.K_po });
+var minYvalue = d3.min(dane_wykres, function (d) { return d.K_po });
+
+
+
+var yscale_kapital = d3.scaleLinear()
+  .domain([minYvalue, maxYvalue])
+  .range([height, 0]);
+
+
+
+
+formatMoney = function (d) { return d3.format(".0f")(d) + " zł"; }
+
+
+svg_kapital.append("g")
+  .attr("class", "yAxis")
+  .call(d3.axisLeft(yscale_kapital).tickFormat(formatMoney))
+  .style("font-size", "13px");
+
+
+
+  var kreska_kapital_real = svg_kapital.append("path")
+  .datum(dane_wykres)
+  .attr("class", "kreska")
+  .attr("d", d3.line()
+    .x(function (d) { return xscale(d.dzien) })
+    .y(function (d) { return yscale_kapital(d.K_po) })
+  )
 
 
 </script>

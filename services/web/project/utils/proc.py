@@ -162,7 +162,7 @@ class Kredyt:
         self.I = self.oblicz_rate().quantize(grosze, ROUND_HALF_UP)
 
         self.odsetki_naliczone = (self.odsetki_naliczone + opr*self.K).quantize(grosze, ROUND_HALF_UP)
-        self.odsetki_naliczone_marza = self.odsetki_naliczone_marza +  opr_marza*self.K
+        self.odsetki_naliczone_marza = self.odsetki_naliczone_marza + opr_marza*self.K
 
         
         if self.odsetki_naliczone > self.I:

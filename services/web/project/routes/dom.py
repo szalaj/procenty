@@ -8,42 +8,70 @@ from dateutil.relativedelta import relativedelta
 import datetime as dt
 from pandas.tseries.offsets import BDay
 import pandas as pd
-
+from dataclasses import dataclass
+import project.utils.generate_model as ut
+import project.utils.proc as proc
 from sqlalchemy import text
 
 from ..utils.generate_model import Wibor
 
 import json
 
+@dataclass
+class Interpolator:
+
+    data_startowa: str
+    okres: str
+    punkty: list
+
+
 dom = Blueprint('dom', __name__)
+
+@dom.route('/kredyt')
+def kredyt():
+
+    kapital = 460000
+    marza = 2.99
+    rodzaj_wiboru = '3M'
+    data_start = '04/11/2021'
+    okresy = 360
+    liczba_wakacji = 0
+
+    fin_data = {}
+    fin_data['kapital'] = kapital
+    fin_data['marza'] = marza
+    fin_data['okresy'] = okresy
+    fin_data['data_start'] = data_start
+
+    prognoza = [('01/10/2029', 2.0), ('01/10/2044', 3.0), ('01/10/2160', 2.0)]
+
+    w = ut.WiborInter(rodzaj_wiboru, dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy, liczba_wakacji, prognoza)
+
+    start_date = dt.datetime.strptime(data_start, '%d/%m/%Y')
+    nadplaty = []
+    for o in range(okresy):
+        dzien = (start_date + relativedelta(months=o)).strftime('%Y-%m-%d')
+        nadplaty.append({'dzien': dzien, 'kwota':1000})
+
+    dane_kredytu =  ut.generateFromWiborFileInter(w, kapital,
+                                                   okresy,
+                                                   dt.datetime.strptime(data_start, '%d/%m/%Y'), 
+                                                   marza,
+                                                   [],
+                                                   nadplaty, 
+                                                   False)
+    
+    wynik = proc.create_kredyt(dane_kredytu, 'stale')
+
+    return render_template('kredyt.html', wibor=w.json_data, wynik=json.dumps(wynik), fin_data = fin_data)
+
 
 @dom.route('/domy')
 def domy():
-    '''
-    select EXP(SUM(LOG(yourColumn))) As ColumnProduct from yourTable
 
-    select date(substring(data_zakupu,7,4) || '-' || substring(data_zakupu,4,2) || '-' || substring(data_zakupu,1,2)) as miesiac from dom
-    
-    from @t t1
-    inner join @t t2 on t1.id >= t2.id
-    group by t1.id, t1.SomeNumt
-    order by t1.id
-    '''
 
-    sql = '''
-    with domek as (
-    select date(substring(data_zakupu,7,4) || '-' || substring(data_zakupu,4,2) || '-01') as miesiac, wartosc from dom
-    ),
-    inflacja as (
-    select date(substring(miesiac,1,7) || '-01') as miesiac, wartosc from inflacjamm
-    ),
-    cos as (
-    select row_number() OVER (ORDER BY inflacja.miesiac) AS id, domek.miesiac, inflacja.miesiac, domek.wartosc, inflacja.wartosc from domek 
-    left outer join inflacja
-    on inflacja.miesiac >= domek.miesiac
-    )
-    select * from cos
-    '''
+
+
 
     sql2 = '''
     with domek as (
@@ -79,7 +107,7 @@ def domy():
     
     inflacja = InflacjaMM.query.all()
 
-    inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja]
+    inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja if row.miesiac >= dt.datetime.strptime('2021-11', '%Y-%m')]
 
     # convert the list of dictionaries to JSON
     inflacja_dumps = json.dumps(inflacja_dict)
@@ -91,9 +119,13 @@ def domy():
 
     result_list= [{'inflacja_miesiac': row[0], 'inflacja_wartosc': row[1], 'infl_kum': row[2], 'dom_wartosc': row[3], 'dom_real_wartosc': row[4]} for row in res]
 
+    p = [('01/10/2029', 10.0), ('01/10/2044', 3.0), ('01/10/2052', 2.0) ,('01/10/2060', 10.0)]
+    w = ut.WiborInter('3M', dt.datetime.strptime("04/11/2019", '%d/%m/%Y'), 360, 10, p)
 
+    dane_kredytu =  ut.generateFromWiborFileInter(w, 400000, 200, dt.datetime.strptime("04/11/2019", '%d/%m/%Y'), 1, dt.datetime.strptime("04/11/2049", '%d/%m/%Y'), '3M', [], False, False)
+    wynik = proc.create_kredyt(dane_kredytu, 'malejace')
 
-    return render_template('domy.html', inflacja=inflacja_dumps, results=json.dumps(result_list))
+    return render_template('domy.html', inflacja=inflacja_dumps, results=json.dumps(result_list), wibor=w.json_data, wynik=json.dumps(wynik))
 
 
 @dom.route('/kiedy', methods=['GET', 'POST']) 
