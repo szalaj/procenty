@@ -161,7 +161,7 @@ class Wibor:
 
 
 
-def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transze, tylko_marza=False):
+def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transze, nadplaty, tylko_marza=False):
 
 
     miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
@@ -182,6 +182,7 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
             transze_out.append({"dzien":tr['dzien'].strftime('%Y-%m-%d'), "kapital": tr['wartosc']})
 
 
+
     if tylko_marza:
         p_start = float(decimal.Decimal(marza).quantize(grosze))
     else:
@@ -189,6 +190,7 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
 
     data = {"K": kapital,
             "transze": transze_out,
+            "nadplaty": nadplaty,
             "p": p_start,
             "marza": marza,
             "start": miesiace[0],

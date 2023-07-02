@@ -47,14 +47,21 @@ def kredyt():
 
     w = ut.WiborInter(rodzaj_wiboru, dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy, liczba_wakacji, prognoza)
 
+    start_date = dt.datetime.strptime(data_start, '%d/%m/%Y')
+    nadplaty = []
+    for o in range(okresy):
+        dzien = (start_date + relativedelta(months=o)).strftime('%Y-%m-%d')
+        nadplaty.append({'dzien': dzien, 'kwota':1000})
+
     dane_kredytu =  ut.generateFromWiborFileInter(w, kapital,
                                                    okresy,
                                                    dt.datetime.strptime(data_start, '%d/%m/%Y'), 
                                                    marza,
-                                                   [], 
+                                                   [],
+                                                   nadplaty, 
                                                    False)
     
-    wynik = proc.create_kredyt(dane_kredytu, 'malejace')
+    wynik = proc.create_kredyt(dane_kredytu, 'stale')
 
     return render_template('kredyt.html', wibor=w.json_data, wynik=json.dumps(wynik), fin_data = fin_data)
 
