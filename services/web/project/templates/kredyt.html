@@ -108,6 +108,8 @@
                     <li>Okresy:<div style="float: right" id="okresy"></div></li>
                     <li>Data uruchomienia:<div style="float: right" id="data_start"></div></li>
                     <li>Suma rat:<div style="float: right" id="suma_rat"></div></li>
+                    <li>Suma nadpłat:<div style="float: right" id="suma_nadplat"></div></li>
+                    <li>Zapłacono do banku:<div style="float: right" id="suma_cala"></div></li>
                 </ul>
             </div>
 
@@ -154,6 +156,13 @@ var zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
 
 suma_rat = d3.sum(dane1['raty'], d => d.rata)
 console.log(suma_rat);
+
+suma_nadplat = d3.sum(dane1['nadplaty'], d => d.kwota)
+
+
+suma_kapitalow   = d3.sum(dane1['raty'], d => d.kapital)
+console.log(suma_kapitalow);
+
 
 
 wibor.forEach(function (d) {
@@ -249,7 +258,9 @@ var yscalewibor = d3.scaleLinear()
   d3.select("#data_start").text(fin_data['data_start'])
 
     d3.select("#suma_rat").text(zloty(suma_rat))
-    
+    d3.select("#suma_nadplat").text(zloty(suma_nadplat))
+    d3.select("#suma_cala").text(zloty(suma_rat+suma_nadplat))
+
 
 
     var parseDateWykres = d3.timeParse("%Y-%m-%d");

@@ -43,6 +43,7 @@ class Kredyt:
         self.licznik_rat = 0
 
         self.wynik = []
+        self.wynik_nadplaty = []
 
 
     def __repr__(self) -> str:
@@ -129,9 +130,17 @@ class Kredyt:
 
         self.odsetki_naliczone_marza = self.odsetki_naliczone_marza +  opr_marza*self.K
 
-        self.K = self.K - kwota
+        if kwota > self.K:
+            kwota = self.K
+            self.K = Decimal(0)
+        else:
+            self.K = self.K - kwota
 
         self.dzien_odsetki = dzien_nadplaty
+        grosze =  decimal.Decimal('.01')
+        self.wynik_nadplaty.append({'dzien': str(dzien_nadplaty.strftime('%Y-%m-%d')),
+                                    'kwota': str(kwota.quantize(grosze, ROUND_HALF_UP)),
+                                    })
 
 
     def zrob_transze(self, dzien_transzy:dt.datetime, kwota:Decimal):
@@ -159,7 +168,10 @@ class Kredyt:
         opr = Decimal((o_dni/365))*self.p
         opr_marza = Decimal((o_dni/365))*self.marza
 
-        self.I = self.oblicz_rate().quantize(grosze, ROUND_HALF_UP)
+        if self.K > 0:
+            self.I = self.oblicz_rate().quantize(grosze, ROUND_HALF_UP)
+        else:
+            self.I = Decimal(0).quantize(grosze, ROUND_HALF_UP)
 
         self.odsetki_naliczone = (self.odsetki_naliczone + opr*self.K).quantize(grosze, ROUND_HALF_UP)
         self.odsetki_naliczone_marza = self.odsetki_naliczone_marza + opr_marza*self.K
@@ -198,8 +210,11 @@ class Kredyt:
                 self.zrob_nadplate(zdarzenie.data, zdarzenie.wartosc)
             elif zdarzenie.rodzaj == Rodzaj.TRANSZA:
                 self.zrob_transze(zdarzenie.data, zdarzenie.wartosc)
+            
+            if self.K == Decimal(0):
+                break
 
-        return {"raty": self.wynik, "kapital_na_koniec": str(self.K.quantize(decimal.Decimal('0.01')))}
+        return {"raty": self.wynik, "nadplaty": self.wynik_nadplaty, "kapital_na_koniec": str(self.K.quantize(decimal.Decimal('0.01')))}
 
     def zapisz_do_pliku(self, nazwa_pliku):
 
