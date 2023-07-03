@@ -43,7 +43,7 @@ def kredyt():
     fin_data['okresy'] = okresy
     fin_data['data_start'] = data_start
 
-    prognoza = [('01/10/2029', 2.0), ('01/10/2044', 3.0), ('01/10/2160', 2.0)]
+    prognoza = [('01/10/2029', 3.0), ('01/10/2044', 3.0), ('01/10/2160', 5.0)]
 
     w = ut.WiborInter(rodzaj_wiboru, dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy, liczba_wakacji, prognoza)
 
@@ -51,7 +51,7 @@ def kredyt():
     nadplaty = []
     for o in range(okresy):
         dzien = (start_date + relativedelta(months=o)).strftime('%Y-%m-%d')
-        nadplaty.append({'dzien': dzien, 'kwota':1000})
+        nadplaty.append({'dzien': dzien, 'kwota': 3000})
 
     dane_kredytu =  ut.generateFromWiborFileInter(w, kapital,
                                                    okresy,
@@ -68,9 +68,6 @@ def kredyt():
 
 @dom.route('/domy')
 def domy():
-
-
-
 
 
     sql2 = '''
@@ -119,7 +116,7 @@ def domy():
 
     result_list= [{'inflacja_miesiac': row[0], 'inflacja_wartosc': row[1], 'infl_kum': row[2], 'dom_wartosc': row[3], 'dom_real_wartosc': row[4]} for row in res]
 
-    p = [('01/10/2029', 10.0), ('01/10/2044', 3.0), ('01/10/2052', 2.0) ,('01/10/2060', 10.0)]
+    p = [ ('01/10/2044', 6.0), ('01/10/2052', 2.0) ,('01/10/2060', 10.0)]
     w = ut.WiborInter('3M', dt.datetime.strptime("04/11/2019", '%d/%m/%Y'), 360, 10, p)
 
     dane_kredytu =  ut.generateFromWiborFileInter(w, 400000, 200, dt.datetime.strptime("04/11/2019", '%d/%m/%Y'), 1, dt.datetime.strptime("04/11/2049", '%d/%m/%Y'), '3M', [], False, False)
