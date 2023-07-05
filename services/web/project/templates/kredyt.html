@@ -139,6 +139,7 @@
 
 
 var dane1 = JSON.parse('{{wynik|safe}}');
+var inflacja = JSON.parse('{{inflacja|safe}}');
 
 var wibor = {{wibor|tojson}};
 
@@ -147,6 +148,7 @@ var fin_data = {{fin_data|tojson}};
 console.log(dane1);
 console.log(wibor);
 console.log(fin_data);
+console.log(inflacja);
 
 
 var parseDate = d3.timeParse("%Y-%m");

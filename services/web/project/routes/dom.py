@@ -14,6 +14,7 @@ import project.utils.proc as proc
 from sqlalchemy import text
 
 from ..utils.generate_model import Wibor
+from project.utils.inflacja import InflacjaMiesiac 
 
 import json
 
@@ -61,9 +62,16 @@ def kredyt():
                                                    nadplaty, 
                                                    False)
     
+    inflacja = InflacjaMM.query.all()
+
+    inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja if row.miesiac >= dt.datetime.strptime('2021-11', '%Y-%m')]
+
+    inf = InflacjaMiesiac(dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy, inflacja_dict, [])
+
+
     wynik = proc.create_kredyt(dane_kredytu, 'stale')
 
-    return render_template('kredyt.html', wibor=w.json_data, wynik=json.dumps(wynik), fin_data = fin_data)
+    return render_template('kredyt.html', wibor=w.json_data, wynik=json.dumps(wynik), fin_data = fin_data, inflacja=json.dumps(inflacja_dict))
 
 
 @dom.route('/domy')
