@@ -44,7 +44,7 @@ def kredyt():
     fin_data['okresy'] = okresy
     fin_data['data_start'] = data_start
 
-    prognoza = [('01/10/2029', 3.0), ('01/10/2044', 3.0), ('01/10/2160', 5.0)]
+    prognoza = [('01/10/2029', 3.0), ('01/10/2044', 7.0), ('01/10/2160', 5.0)]
 
     w = ut.WiborInter(rodzaj_wiboru, dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy, liczba_wakacji, prognoza)
 
@@ -52,7 +52,7 @@ def kredyt():
     nadplaty = []
     for o in range(okresy):
         dzien = (start_date + relativedelta(months=o)).strftime('%Y-%m-%d')
-        nadplaty.append({'dzien': dzien, 'kwota': 0})
+        nadplaty.append({'dzien': dzien, 'kwota': 000})
 
     dane_kredytu =  ut.generateFromWiborFileInter(w, kapital,
                                                    okresy,
@@ -66,15 +66,26 @@ def kredyt():
 
     inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja if row.miesiac >= dt.datetime.strptime('2021-11', '%Y-%m')]
 
-    prognoza_inflacja = [('01/10/2029', 100.0), ('01/10/2044', 101.0), ('01/10/2160', 101.0)]
+    prognoza_inflacja = [('01/10/2029', 100.2), ('01/10/2044', 100.2), ('01/10/2160', 100.2)]
 
     wynik = proc.create_kredyt(dane_kredytu, 'stale')
 
     inf = InflacjaMiesiac(dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy,  liczba_wakacji, inflacja_dict, prognoza_inflacja)
 
-    raty = [{'dzien':  dt.datetime.strptime(r['dzien'], '%Y-%m-%d'), 'wartosc': r['rata']} for r in wynik['raty']]
+    
 
-    real_wartosci = inf.urealnij(raty)
+    #raty = [{'dzien':  dt.datetime.strptime(r['dzien'], '%Y-%m-%d'), 'wartosc': r['rata']} for r in wynik['raty']]
+    raty = {f"{n['dzien']}": n['rata'] for n in wynik["raty"]}
+    nadplaty = {f"{n['dzien']}": n['kwota'] for n in wynik["nadplaty"]}
+
+    koszty = {x: float(raty.get(x, 0)) + float(nadplaty.get(x, 0)) for x in set(raty).union(nadplaty)}
+
+    koszty_list = []
+    for k in koszty.keys():
+        koszty_list.append({'dzien':dt.datetime.strptime(k, '%Y-%m-%d'), 'wartosc': koszty[k]})
+
+
+    real_wartosci = inf.urealnij(koszty_list)
 
     print(f" real wartosc: {real_wartosci}")
     
