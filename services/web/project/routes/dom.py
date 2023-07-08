@@ -14,6 +14,7 @@ import project.utils.proc as proc
 from sqlalchemy import text
 
 from ..utils.generate_model import Wibor
+from project.utils.inflacja import InflacjaMiesiac 
 
 import json
 
@@ -51,7 +52,7 @@ def kredyt():
     nadplaty = []
     for o in range(okresy):
         dzien = (start_date + relativedelta(months=o)).strftime('%Y-%m-%d')
-        nadplaty.append({'dzien': dzien, 'kwota': 3000})
+        nadplaty.append({'dzien': dzien, 'kwota': 0})
 
     dane_kredytu =  ut.generateFromWiborFileInter(w, kapital,
                                                    okresy,
@@ -61,9 +62,29 @@ def kredyt():
                                                    nadplaty, 
                                                    False)
     
+    inflacja = InflacjaMM.query.all()
+
+    inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja if row.miesiac >= dt.datetime.strptime('2021-11', '%Y-%m')]
+
+    prognoza_inflacja = [('01/10/2029', 100.0), ('01/10/2044', 101.0), ('01/10/2160', 101.0)]
+
     wynik = proc.create_kredyt(dane_kredytu, 'stale')
 
-    return render_template('kredyt.html', wibor=w.json_data, wynik=json.dumps(wynik), fin_data = fin_data)
+    inf = InflacjaMiesiac(dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy,  liczba_wakacji, inflacja_dict, prognoza_inflacja)
+
+    raty = [{'dzien':  dt.datetime.strptime(r['dzien'], '%Y-%m-%d'), 'wartosc': r['rata']} for r in wynik['raty']]
+
+    real_wartosci = inf.urealnij(raty)
+
+    print(f" real wartosc: {real_wartosci}")
+    
+
+    return render_template('kredyt.html', 
+                           wibor=w.json_data,
+                           wynik=json.dumps(wynik), 
+                           fin_data = fin_data,
+                           inflacja=json.dumps(inf.json_data),
+                           real_wartosci=json.dumps(real_wartosci))
 
 
 @dom.route('/domy')
