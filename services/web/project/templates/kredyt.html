@@ -160,7 +160,7 @@ console.log(dane1);
 console.log(wibor);
 console.log(fin_data);
 console.log(inflacja);
-
+console.log(real_wartosci);
 
 var parseDate = d3.timeParse("%Y-%m");
 var parseDateWibor = d3.timeParse("%Y-%m-%d");
@@ -445,13 +445,21 @@ svg_kapital.append("g")
 
 
 
+  real_wartosci.sort(function(x, y){
+   return d3.ascending(x.miesiac, y.miesiac);
+})
 
+var cumsum = 0;
   
   real_wartosci.forEach(function (d) {
   d.miesiac = parseDate(d.miesiac)
   d.wartosc = parseFloat(d.wartosc)
+  cumsum = cumsum + d.wartosc;
+  d.cumsum = cumsum;
   
 });
+console.log(real_wartosci);
+
 
 
   var svg_real = d3.select("#wykres_real")
@@ -526,6 +534,43 @@ svg_real.append("g")
   .attr("d", d3.line()
     .x(function (d) { return xscale(d.miesiac) })
     .y(function (d) { return yscale_real(d.wartosc) })
+  )
+
+
+
+
+
+  var maxYvalue = d3.max(real_wartosci, function (d) { return d.cumsum });
+var minYvalue = d3.min(real_wartosci, function (d) { return d.cumsum });
+
+
+
+var yscale_real_cumsum = d3.scaleLinear()
+  .domain([minYvalue, maxYvalue])
+  .range([height, 0]);
+
+
+
+
+formatMoney = function (d) { return d3.format(".0f")(d) + " zł"; }
+
+
+svg_real.append("g")
+  .attr("class", "yAxis")
+  .call(d3.axisLeft(yscale_real_cumsum).tickFormat(formatMoney))
+  .style("font-size", "13px")
+  .attr("transform", "translate(" + width + ", 0)")
+
+
+
+
+
+  var kreska_real_cumsum = svg_real.append("path")
+  .datum(real_wartosci)
+  .attr("class", "kreska")
+  .attr("d", d3.line()
+    .x(function (d) { return xscale(d.miesiac) })
+    .y(function (d) { return yscale_real_cumsum(d.cumsum) })
   )
 
 </script>
