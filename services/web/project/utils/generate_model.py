@@ -70,7 +70,7 @@ class WiborInter:
         # Concatenate the original DataFrame and the new DataFrame
         dff = pd.concat([self.df, new_df])
         dff = dff.sort_index()
-        self.json_data = [{'date': dt.datetime.strftime(index, '%d-%m-%Y'), 'value': value} for index, value in dff['Otwarcie'].items()]
+        self.json_data = [{'date': dt.datetime.strftime(index, '%Y-%m-%d'), 'value': value} for index, value in dff['Otwarcie'].items()]
 
 
     def getWibor(self, data) -> float:

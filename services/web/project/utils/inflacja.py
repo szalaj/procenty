@@ -54,12 +54,64 @@ class InflacjaMiesiac:
 
         self.prognoza.append((self.data_koniec, inflacja_value_koniec))
 
- 
         new_df = pd.DataFrame(self.prognoza, columns=['miesiac', 'wartosc'])
         #new_df['Date'] = pd.to_datetime(new_df['Date'])
         new_df.set_index('miesiac', inplace=True)
 
         # Concatenate the original DataFrame and the new DataFrame
-        dff = pd.concat([self.df, new_df])
-        dff = dff.sort_index()
-        self.json_data = [{'date': dt.datetime.strftime(index, '%d-%m-%Y'), 'value': round(value,2)} for index, value in dff['wartosc'].items()]
+        self.dff = pd.concat([self.df, new_df])
+        self.dff = self.dff.sort_index()
+
+        print(self.dff)
+
+        self.json_data = [{'date': dt.datetime.strftime(index, '%Y-%m-%d'), 'value': round(value,2)} for index, value in self.dff['wartosc'].items()]
+
+    def _getInflacja(self, dzien):
+        if dzien > self.max_inflacja_real:
+            # Generate a new date for interpolation
+            
+            # Convert the new date to a numerical value
+            new_timestamp = (dzien - self.max_inflacja_real).total_seconds()
+
+            # Use the interpolation function to estimate the value at the new date
+            inflacja_value = float(self.interpolation_function(new_timestamp))
+            
+            
+            
+            
+        else:
+            inflacja_value = self._getInflacjaReal(dzien)
+        
+        
+        return inflacja_value
+
+    def _getInflacjaReal(self,dzien):
+        inflacja_value = self.dff.loc[(self.dff.index.year == dzien.year) & (self.dff.index.month == dzien.month),'wartosc']
+        return inflacja_value[0]
+
+    def urealnij(self, dates_values_list) -> list:
+
+        start_date = self.data_start
+
+        end_date = max([dv['dzien'] for dv in dates_values_list])
+
+        inflator = {f"{dt.datetime.strftime(start_date, '%Y-%m')}":1}
+        current_date = start_date
+
+        rolling_mult = 1
+        while current_date < end_date:
+            current_date = current_date + relativedelta(months=1)
+            wartosc = self._getInflacja(current_date)/100.0
+            rolling_mult = rolling_mult*wartosc
+            inflator[f"{dt.datetime.strftime(current_date, '%Y-%m')}"]= rolling_mult
+
+        print(inflator)
+        print('-------------------------------')
+
+        new_values= []
+        for dv in dates_values_list:
+            miesiac = dt.datetime.strftime(dv['dzien'], '%Y-%m')
+            wsk_infl = inflator[miesiac]
+            new_values.append({'miesiac': miesiac, 'wartosc': float(dv['wartosc'])/wsk_infl})
+        
+        return new_values
