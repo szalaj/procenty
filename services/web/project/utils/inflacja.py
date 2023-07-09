@@ -23,7 +23,7 @@ class InflacjaMiesiac:
         self.df.set_index('miesiac', inplace=True)
         self.df["wartosc"] = pd.to_numeric(self.df["wartosc"])
         self.df.index = pd.to_datetime(self.df.index, format='%Y-%m')
-        print(self.df)
+       
 
         self.data_koniec = self.data_start + relativedelta(months=(self.okresy+self.liczba_wakacji))
 
@@ -50,19 +50,19 @@ class InflacjaMiesiac:
         # Use the interpolation function to estimate the value at the new date
         inflacja_value_koniec= self.interpolation_function(end_timestamp).item()
 
-        self.prognoza = [p for p in self.prognoza if p[0] < self.data_koniec]
+        self.prognoza = [p for p in self.prognoza if p[0] < self.data_koniec and p[0]> self.df.index.max()]
 
         self.prognoza.append((self.data_koniec, inflacja_value_koniec))
 
         new_df = pd.DataFrame(self.prognoza, columns=['miesiac', 'wartosc'])
         #new_df['Date'] = pd.to_datetime(new_df['Date'])
         new_df.set_index('miesiac', inplace=True)
-
+   
         # Concatenate the original DataFrame and the new DataFrame
         self.dff = pd.concat([self.df, new_df])
         self.dff = self.dff.sort_index()
 
-        print(self.dff)
+      
 
         self.json_data = [{'date': dt.datetime.strftime(index, '%Y-%m-%d'), 'value': round(value,2)} for index, value in self.dff['wartosc'].items()]
 
@@ -105,8 +105,7 @@ class InflacjaMiesiac:
             rolling_mult = rolling_mult*wartosc
             inflator[f"{dt.datetime.strftime(current_date, '%Y-%m')}"]= rolling_mult
 
-        print(inflator)
-        print('-------------------------------')
+
 
         new_values= []
         for dv in dates_values_list:
@@ -115,3 +114,48 @@ class InflacjaMiesiac:
             new_values.append({'miesiac': miesiac, 'wartosc': float(dv['wartosc'])/wsk_infl})
         
         return new_values
+    
+
+@dataclass
+class Nieruchomosc:
+
+    data_start: dt.datetime
+    okresy: int
+    liczba_wakacji: int
+    points: list
+
+    def __post_init__(self):
+
+        self.points = [(p['dzien'], p['wartosc']) for p in self.points]
+
+        dates, values = zip(*self.points)
+
+        timestamps = np.array([(date - dates[0]).total_seconds() for date in dates])
+
+        # Create an interpolation function using scipy.interpolate.interp1d
+        self.interpolation_function = interp1d(timestamps, values)
+
+        self.data_koniec = self.data_start + relativedelta(months=(self.okresy+self.liczba_wakacji))
+
+        start_date = self.data_start
+
+        end_date = max([dv[0] for dv in self.points])
+        current_date = dates[0]
+
+        wartosci = []
+
+        while current_date + relativedelta(months=1)< self.data_koniec:
+            current_date = current_date + relativedelta(months=1)
+            new_timestamp = (current_date - dates[0]).total_seconds()
+           
+
+        
+            wartosc_value = float(self.interpolation_function(new_timestamp))
+            wartosci.append({'dzien': current_date, 'wartosc': wartosc_value})
+
+
+
+        # wartosci.append({'miesiac': dt.datetime.strftime(self.data_koniec, '%Y-%m'), 'wartosc': wartosc_value_koniec})
+
+
+        self.json_data = wartosci

@@ -14,7 +14,7 @@ import project.utils.proc as proc
 from sqlalchemy import text
 
 from ..utils.generate_model import Wibor
-from project.utils.inflacja import InflacjaMiesiac 
+from project.utils.inflacja import InflacjaMiesiac, Nieruchomosc
 
 import json
 
@@ -44,7 +44,7 @@ def kredyt():
     fin_data['okresy'] = okresy
     fin_data['data_start'] = data_start
 
-    prognoza = [('01/10/2029', 3.0), ('01/10/2044', 7.0), ('01/10/2160', 5.0)]
+    prognoza = [('01/10/2029', 3.0), ('01/10/2044', 3.0), ('01/10/2160', 3.0)]
 
     w = ut.WiborInter(rodzaj_wiboru, dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy, liczba_wakacji, prognoza)
 
@@ -52,7 +52,7 @@ def kredyt():
     nadplaty = []
     for o in range(okresy):
         dzien = (start_date + relativedelta(months=o)).strftime('%Y-%m-%d')
-        nadplaty.append({'dzien': dzien, 'kwota': 000})
+        nadplaty.append({'dzien': dzien, 'kwota': 6800})
 
     dane_kredytu =  ut.generateFromWiborFileInter(w, kapital,
                                                    okresy,
@@ -66,13 +66,15 @@ def kredyt():
 
     inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja if row.miesiac >= dt.datetime.strptime('2021-11', '%Y-%m')]
 
+    print(f"inflacja : {inflacja_dict}")
+
     prognoza_inflacja = [('01/10/2029', 100.2), ('01/10/2044', 100.2), ('01/10/2160', 100.2)]
 
     wynik = proc.create_kredyt(dane_kredytu, 'stale')
 
     inf = InflacjaMiesiac(dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy,  liczba_wakacji, inflacja_dict, prognoza_inflacja)
 
-    
+    print(f"inflacja przetrawiona {inf.json_data}")
 
     #raty = [{'dzien':  dt.datetime.strptime(r['dzien'], '%Y-%m-%d'), 'wartosc': r['rata']} for r in wynik['raty']]
     raty = {f"{n['dzien']}": n['rata'] for n in wynik["raty"]}
@@ -87,15 +89,20 @@ def kredyt():
 
     real_wartosci = inf.urealnij(koszty_list)
 
-    print(f" real wartosc: {real_wartosci}")
+    nier_points = [{'dzien':start_date, 'wartosc': 500000}, {'dzien':dt.datetime.strptime('2056-01-01', '%Y-%m-%d'), 'wartosc': 1800000}]
+    nier = Nieruchomosc(dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy,  liczba_wakacji, nier_points) 
     
+    real_wartosc_nieruchomosc = inf.urealnij(nier.json_data)
+
+   
 
     return render_template('kredyt.html', 
                            wibor=w.json_data,
                            wynik=json.dumps(wynik), 
                            fin_data = fin_data,
                            inflacja=json.dumps(inf.json_data),
-                           real_wartosci=json.dumps(real_wartosci))
+                           real_wartosci=json.dumps(real_wartosci),
+                           real_wartosc_nieruchomosc=json.dumps(real_wartosc_nieruchomosc))
 
 
 @dom.route('/domy')
