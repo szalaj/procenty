@@ -30,21 +30,21 @@ def load_dom():
 
 def load_inflacja():
     with app.app_context():
-        inflacja_df = pd.read_csv('project/seeds/miesieczne_wskazniki_cen_towarow_i_uslug_konsumpcyjnych_od_1982_roku.csv', sep=';', encoding='mbcs')
+        inflacja_df = pd.read_csv('project/seeds/miesieczne_wskazniki_cen_towarow_i_uslug_konsumpcyjnych_od_1982_roku.csv', sep=';', encoding='cp1252')
 
+        #inflacja_df = pd.read_csv('project/seeds/miesieczne_wskazniki_cen_towarow_i_uslug_konsumpcyjnych_od_1982_roku.csv', sep=';')
         
-        
-        inflacja_mm = inflacja_df[(inflacja_df['Sposób prezentacji']=='Poprzedni miesiąc = 100') & (~inflacja_df['Wartość'].isnull())]
-        inflacja_mm['Wartość'] = inflacja_mm['Wartość'].astype("string")
+        inflacja_mm = inflacja_df[(inflacja_df['Sposob prezentacji']=='Poprzedni miesiac = 100') & (~inflacja_df['Wartosc'].isnull())]
+        inflacja_mm['Wartosc'] = inflacja_mm['Wartosc'].astype("string")
 
         #print(inflacja_mm)
         for index, row in inflacja_mm.iterrows():
-            data = f"{row['Rok']}-{row['Miesiąc']:02d}"
-            wartosc = float(row['Wartość'].replace(',','.'))
+            data = f"{row['Rok']}-{row['Miesiac']:02d}"
+            wartosc = float(row['Wartosc'].replace(',','.'))
             d = InflacjaMM(miesiac=datetime.datetime.strptime(data, '%Y-%m'), wartosc=wartosc)
             db.session.add(d)
             db.session.commit()
 
 if __name__ == "__main__":
     print('ehlo')
-    load_user()
+    load_inflacja()
