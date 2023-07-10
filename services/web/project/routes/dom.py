@@ -49,10 +49,28 @@ def kredyt():
     w = ut.WiborInter(rodzaj_wiboru, dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy, liczba_wakacji, prognoza)
 
     start_date = dt.datetime.strptime(data_start, '%d/%m/%Y')
-    nadplaty = []
-    for o in range(okresy):
-        dzien = (start_date + relativedelta(months=o)).strftime('%Y-%m-%d')
-        nadplaty.append({'dzien': dzien, 'kwota': 6800})
+    nadplaty = [{'dzien':'06-07-2023', 'kwota':4500.00},
+    {'dzien':'27-06-2023', 'kwota':1000.00},
+    {'dzien':'16-06-2023', 'kwota':100.00},
+    {'dzien':'22-05-2023', 'kwota':600.00},
+    {'dzien':'13-04-2023', 'kwota':1500.00},
+    {'dzien':'20-03-2023', 'kwota':1700.00},
+    {'dzien':'20-02-2023', 'kwota':1000.00},
+    {'dzien':'26-01-2023', 'kwota':1000.00},
+    {'dzien':'16-12-2022', 'kwota':1000.00},
+    {'dzien':'17-11-2022', 'kwota':1990.45},
+    {'dzien':'14-10-2022', 'kwota':600.00},
+    {'dzien':'05-05-2022', 'kwota':608.00},
+    {'dzien':'02-05-2022', 'kwota':200.00},
+    {'dzien':'25-04-2022', 'kwota':3000.00}]
+
+    # for o in range(okresy):
+    #     dzien = (start_date + relativedelta(months=o)).strftime('%Y-%m-%d')
+    #     nadplaty.append({'dzien': dzien, 'kwota': 2000})
+    for n in nadplaty:
+        n['dzien'] = dt.datetime.strptime(n['dzien'], '%d-%m-%Y').strftime('%Y-%m-%d')
+
+
 
     dane_kredytu =  ut.generateFromWiborFileInter(w, kapital,
                                                    okresy,
