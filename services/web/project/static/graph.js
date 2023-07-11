@@ -1,4 +1,4 @@
-function create_graph(margin, width, height, values, real_wartosc_nieruchomosc, parseDate)
+function create_graph(margin, width, height, values, real_raty, real_wartosc_nieruchomosc, parseDate)
 {
     console.log('aha')
 
@@ -46,8 +46,7 @@ function create_graph(margin, width, height, values, real_wartosc_nieruchomosc, 
   
   
   
-  var maxYvalue = d3.max(values, function (d) { return d.wartosc });
-  var minYvalue = d3.min(values, function (d) { return d.wartosc });
+  var maxYvalue = d3.max(real_raty, function (d) { return d.wartosc });
   
   
 
@@ -69,15 +68,14 @@ function create_graph(margin, width, height, values, real_wartosc_nieruchomosc, 
   
   
   
-    var kreska_real = svg_real.append("path")
-    .datum(values)
-    .attr("class", "kreska")
-    .attr("d", d3.line()
-      .x(function (d) { return xscale(d.miesiac) })
-      .y(function (d) { return yscale_real(d.wartosc) })
-    )
-  
-  
+var kreska_real = svg_real.selectAll("circle")
+    .data(real_raty)
+    .enter()
+    .append("circle")
+    .attr("cx", d => xscale(d.miesiac))
+    .attr("cy", d => yscale_real(d.wartosc))
+    .attr("r", "2");
+
   
   var maxYvalue = d3.max(values.map(a => a.cumsum).concat(real_wartosc_nieruchomosc.map(a=>a.wartosc)))*1.1;
  
@@ -105,7 +103,7 @@ function create_graph(margin, width, height, values, real_wartosc_nieruchomosc, 
   
     var kreska_real_cumsum = svg_real.append("path")
     .datum(values)
-    .attr("class", "kreska")
+    .attr("class", "blue")
     .attr("d", d3.line()
       .x(function (d) { return xscale(d.miesiac) })
       .y(function (d) { return yscale_real_cumsum(d.cumsum) })

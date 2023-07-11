@@ -56,13 +56,21 @@
             stroke-width: 2px;
             stroke: red;
         }
-
+        path.blue {
+            fill: none;
+            stroke-width: 2px;
+            stroke: rgb(0, 119, 255);
+        }
         path.red-dot {
             fill: none;
             stroke-width: 1px;
             stroke: red;
             border-style: dotted;
             stroke-dasharray: 5;
+        }
+        circle {
+
+            fill: rgb(91, 182, 5);
         }
 
         path.black-dot {
@@ -135,6 +143,7 @@
           </div>
         </div>
         <div class="row top-buffer">
+            Rys. Wartości realne rat, kosztów skumulowanych, i wartości nieruchomości.
             <div class="col" id="wykres_real">
               
             </div>
@@ -154,6 +163,7 @@ var dane1 = JSON.parse('{{wynik|safe}}');
 var inflacja = JSON.parse('{{inflacja|safe}}');
 
 var real_wartosci = JSON.parse('{{real_wartosci|safe}}');
+var real_raty = JSON.parse('{{real_raty|safe}}');
 
 var real_wartosc_nieruchomosc = JSON.parse('{{real_wartosc_nieruchomosc|safe}}');
 
@@ -464,11 +474,18 @@ var cumsum = 0;
   d.cumsum = cumsum;
   
 });
+
+real_raty.forEach(function (d) {
+  d.miesiac = parseDate(d.miesiac)
+  d.wartosc = parseFloat(d.wartosc)
+
+  
+});
 console.log(real_wartosci);
 
 
 
-create_graph(margin, width, height, real_wartosci, real_wartosc_nieruchomosc, parseDate);
+create_graph(margin, width, height, real_wartosci, real_raty,real_wartosc_nieruchomosc, parseDate);
 
 </script>
 

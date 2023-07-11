@@ -98,15 +98,22 @@ def kredyt():
     #raty = [{'dzien':  dt.datetime.strptime(r['dzien'], '%Y-%m-%d'), 'wartosc': r['rata']} for r in wynik['raty']]
     raty = {f"{n['dzien']}": n['rata'] for n in wynik["raty"]}
     nadplaty = {f"{n['dzien']}": n['kwota'] for n in wynik["nadplaty"]}
+    inne = {'2021-11-04': 50000}
 
-    koszty = {x: float(raty.get(x, 0)) + float(nadplaty.get(x, 0)) for x in set(raty).union(nadplaty)}
+    koszty = {x: float(raty.get(x, 0)) + float(nadplaty.get(x, 0)) + float(inne.get(x, 0))  for x in set(raty).union(nadplaty).union(inne)}
+    raty = {x: float(raty.get(x, 0)) for x in set(raty)}
 
     koszty_list = []
     for k in koszty.keys():
         koszty_list.append({'dzien':dt.datetime.strptime(k, '%Y-%m-%d'), 'wartosc': koszty[k]})
 
+    raty_list = []
+    for k in raty.keys():
+        raty_list.append({'dzien':dt.datetime.strptime(k, '%Y-%m-%d'), 'wartosc': raty[k]})
+
 
     real_wartosci = inf.urealnij(koszty_list)
+    real_raty = inf.urealnij(raty_list)
 
     nier_points = [{'dzien':start_date, 'wartosc': 500000}, {'dzien':dt.datetime.strptime('2056-01-01', '%Y-%m-%d'), 'wartosc': 1800000}]
     nier = Nieruchomosc(dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy,  liczba_wakacji, nier_points) 
@@ -121,6 +128,7 @@ def kredyt():
                            fin_data = fin_data,
                            inflacja=json.dumps(inf.json_data),
                            real_wartosci=json.dumps(real_wartosci),
+                           real_raty=json.dumps(real_raty),
                            real_wartosc_nieruchomosc=json.dumps(real_wartosc_nieruchomosc))
 
 
