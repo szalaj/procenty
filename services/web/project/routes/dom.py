@@ -49,7 +49,8 @@ def kredyt():
     w = ut.WiborInter(rodzaj_wiboru, dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy, liczba_wakacji, prognoza)
 
     start_date = dt.datetime.strptime(data_start, '%d/%m/%Y')
-    nadplaty = [{'dzien':'06-07-2023', 'kwota':4500.00},
+    nadplaty = [{'dzien': '10-07-2023', 'kwota': 150.00},
+    {'dzien':'06-07-2023', 'kwota':4500.00},
     {'dzien':'27-06-2023', 'kwota':1000.00},
     {'dzien':'16-06-2023', 'kwota':100.00},
     {'dzien':'22-05-2023', 'kwota':600.00},
