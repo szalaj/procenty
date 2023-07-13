@@ -63,6 +63,15 @@
       stroke: rgb(0, 119, 255);
     }
 
+    path.blue-dot{
+      fill: none;
+      stroke-width: 2px;
+      stroke: rgb(0, 119, 255);
+      border-style: dotted;
+      stroke-dasharray: 5;
+    }
+
+
     path.red-dot {
       fill: none;
       stroke-width: 1px;
@@ -75,7 +84,12 @@
 
       fill: rgb(91, 182, 5);
     }
+    circle.nom {
 
+      fill: none;
+      stroke-width: 1px;
+      stroke: black;
+    }
     path.black-dot {
       fill: none;
       stroke-width: 1px;
@@ -140,7 +154,7 @@
       <div class="col" id="wykres_kapital">Rys. Kapitał do spłaty (dług).</div>
     </div>
     <div class="row top-buffer">
-      <div class="col" id="wykres_real">Rys. Wartości realne rat, kosztów skumulowanych, i wartości nieruchomości.</div>
+      <div class="col" id="wykres_real">Rys. Wartości nominalne i realne rat, kosztów skumulowanych, i wartości nieruchomości.</div>
     </div>
     <div class="row top-buffer">
     </div>
@@ -150,7 +164,7 @@
 </body>
 
 <script type="module">
-  import { create_graph } from "{{url_for('static', filename='graph.js')}}";
+  import { create_chart_koszty } from "{{url_for('static', filename='chart_koszty.js')}}";
   import { create_chart_kapital } from "{{url_for('static', filename='chart_kapital.js')}}";
   import { create_chart_wibor } from "{{url_for('static', filename='chart_wibor.js')}}";
   import { create_chart_inflacja } from "{{url_for('static', filename='chart_inflacja.js')}}";
@@ -158,58 +172,47 @@
 
   var dane1 = JSON.parse('{{wynik|safe}}');
   var inflacja = JSON.parse('{{inflacja|safe}}');
-  var real_wartosci = JSON.parse('{{real_wartosci|safe}}');
+  var real_koszty = JSON.parse('{{real_koszty|safe}}');
+  var nom_koszty = JSON.parse('{{nom_koszty|safe}}');
   var real_raty = JSON.parse('{{real_raty|safe}}');
-
+  var nom_raty = JSON.parse('{{nom_raty|safe}}');
+  var real_kpo = JSON.parse('{{real_kpo|safe}}');
   var real_wartosc_nieruchomosc = JSON.parse('{{real_wartosc_nieruchomosc|safe}}');
-  var wibor = {{ wibor| tojson}};
-  var fin_data = {{ fin_data| tojson}};
+  var nom_wartosc_nieruchomosc = JSON.parse('{{nom_wartosc_nieruchomosc|safe}}');
+  var wibor = JSON.parse('{{wibor|safe}}');
+  var fin_data = JSON.parse('{{fin_data|safe}}');
 
   console.log(dane1);
   console.log(wibor);
   console.log(fin_data);
   console.log(inflacja);
-  console.log(real_wartosci);
+  console.log(real_koszty);
   console.log(real_wartosc_nieruchomosc);
+  
+  console.log(real_kpo);
+  console.log('nom')
+  console.log(nom_koszty)
 
-  var parseDate = d3.timeParse("%Y-%m");
 
 
   var zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
 
-  suma_rat = d3.sum(dane1['raty'], d => d.rata)
-
-
-  suma_nadplat = d3.sum(dane1['nadplaty'], d => d.kwota)
-
-
+  var suma_rat = d3.sum(dane1['raty'], d => d.rata)
+  var suma_nadplat = d3.sum(dane1['nadplaty'], d => d.kwota)
   var suma_kapitalow = d3.sum(dane1['raty'], d => d.kapital)
-
-
-
 
 
   d3.select("#kapital").text(zloty(fin_data['kapital']))
   d3.select("#okresy").text(fin_data['okresy'])
   d3.select("#marza").text(fin_data['marza'])
   d3.select("#data_start").text(fin_data['data_start'])
-
   d3.select("#suma_rat").text(zloty(suma_rat))
   d3.select("#suma_nadplat").text(zloty(suma_nadplat))
   d3.select("#suma_cala").text(zloty(suma_rat + suma_nadplat))
 
 
 
-  var parseDateWibor = d3.timeParse("%Y-%m-%d");
-  wibor.forEach(function (d) {
-    d.dzien = parseDateWibor(d.date)
-    d.wartosc = parseFloat(d.value)
-  });
 
-  inflacja.forEach(function (d) {
-    d.miesiac = parseDateWibor(d.date)
-    d.wartosc = parseFloat(d.value)
-  });
 
   var width_docs = document.getElementById('ryswibor').clientWidth;
 
@@ -220,31 +223,8 @@
 
   create_chart_wibor(margin, width, height, wibor);
   create_chart_inflacja(margin, width, height, inflacja);
-  create_chart_kapital(margin, width, height, dane1['raty'], parseDate);
-
-  real_wartosci.sort(function (x, y) {
-    return d3.ascending(x.miesiac, y.miesiac);
-  })
-
-  var cumsum = 0;
-
-  real_wartosci.forEach(function (d) {
-    d.miesiac = parseDate(d.miesiac)
-    d.wartosc = parseFloat(d.wartosc)
-    cumsum = cumsum + d.wartosc;
-    d.cumsum = cumsum;
-
-  });
-
-  real_raty.forEach(function (d) {
-    d.miesiac = parseDate(d.miesiac)
-    d.wartosc = parseFloat(d.wartosc)
-
-
-  });
-
-
-  create_graph(margin, width, height, real_wartosci, real_raty, real_wartosc_nieruchomosc, parseDate);
+  create_chart_kapital(margin, width, height, dane1['raty'], real_kpo);
+  create_chart_koszty(margin, width, 700, real_koszty, nom_koszty, real_raty, nom_raty, real_wartosc_nieruchomosc, nom_wartosc_nieruchomosc);
 
 </script>
 

@@ -1,6 +1,13 @@
 function create_chart_wibor(margin, width, height, wibor)
 {
 
+  var parseDateWibor = d3.timeParse("%Y-%m-%d");
+  
+  wibor.forEach(function (d) {
+    d.dzien = parseDateWibor(d.date)
+    d.wartosc = parseFloat(d.value)
+  });
+
 
 // Position the div element above the SVG container
 var svgwibor = d3.select('#ryswibor')
@@ -47,7 +54,7 @@ var yscalewibor = d3.scaleLinear()
   .domain([minYvalueW, maxYvalueW])
   .range([height, 0]);
 
-  var gridsHwibor = svgwibor.append('g')
+  svgwibor.append('g')
   .selectAll('line')
   .data(yscalewibor.ticks())
   .enter().append('line')
@@ -63,7 +70,7 @@ var yscalewibor = d3.scaleLinear()
   .style("font-size", "13px");
 
 
-  var kreska_wibor = svgwibor.append("path")
+  svgwibor.append("path")
   .datum(wibor)
   .attr("class", "kreska")
   .attr("d", d3.line()

@@ -2,7 +2,13 @@ function create_chart_inflacja(margin, width, height, inflacja)
 {
 
 
+    var parseDateWibor = d3.timeParse("%Y-%m-%d");
 
+  
+    inflacja.forEach(function (d) {
+      d.miesiac = parseDateWibor(d.date)
+      d.wartosc = parseFloat(d.value)
+    });
 // Position the div element above the SVG container
 var svginflacja = d3.select("#rysInflacja")
   .append("svg")
