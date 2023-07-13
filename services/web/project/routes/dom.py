@@ -1,5 +1,5 @@
 
-from flask import Blueprint, render_template, flash, redirect, url_for, request, send_file, sessions
+from flask import Blueprint, render_template, flash, redirect, url_for, request, send_file, sessions, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
 from ..models import User, Dom, Zapytanie, InflacjaMM
 from project import db
@@ -27,6 +27,12 @@ class Interpolator:
 
 
 dom = Blueprint('dom', __name__)
+
+
+
+@dom.route('/favicon.ico')
+def favicon():
+    return url_for('static', filename='favicon.ico')
 
 @dom.route('/kredyt')
 def kredyt():
@@ -98,11 +104,12 @@ def kredyt():
 
     #raty = [{'dzien':  dt.datetime.strptime(r['dzien'], '%Y-%m-%d'), 'wartosc': r['rata']} for r in wynik['raty']]
     raty = {f"{n['dzien']}": n['rata'] for n in wynik["raty"]}
+    kpo = {f"{n['dzien']}": n['K_po'] for n in wynik["raty"]}
     nadplaty = {f"{n['dzien']}": n['kwota'] for n in wynik["nadplaty"]}
     inne = {'2021-11-04': 50000}
 
     koszty = {x: float(raty.get(x, 0)) + float(nadplaty.get(x, 0)) + float(inne.get(x, 0))  for x in set(raty).union(nadplaty).union(inne)}
-    raty = {x: float(raty.get(x, 0)) for x in set(raty)}
+    #raty = {x: float(raty.get(x, 0)) for x in set(raty)}
 
     koszty_list = []
     for k in koszty.keys():
@@ -112,24 +119,33 @@ def kredyt():
     for k in raty.keys():
         raty_list.append({'dzien':dt.datetime.strptime(k, '%Y-%m-%d'), 'wartosc': raty[k]})
 
+    kpo_list = []
+    for k in wynik["raty"]:
+        kpo_list.append({'dzien':dt.datetime.strptime(k['dzien'], '%Y-%m-%d'), 'wartosc': k['K_po']})
 
-    real_wartosci = inf.urealnij(koszty_list)
+    real_koszty = inf.urealnij(koszty_list)
     real_raty = inf.urealnij(raty_list)
+    real_kpo = inf.urealnij(kpo_list)
 
-    nier_points = [{'dzien':start_date, 'wartosc': 500000}, {'dzien':dt.datetime.strptime('2056-01-01', '%Y-%m-%d'), 'wartosc': 1800000}]
+    nier_points = [{'dzien':start_date, 'wartosc': 500000}, {'dzien':dt.datetime.strptime('2056-01-01', '%Y-%m-%d'), 'wartosc': 1200000}]
     nier = Nieruchomosc(dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy,  liczba_wakacji, nier_points) 
     
     real_wartosc_nieruchomosc = inf.urealnij(nier.json_data)
 
-   
+    nom_koszty = [{'dzien': dt.datetime.strftime(r['dzien'], '%Y-%m'), 'wartosc': r['wartosc']} for r in koszty_list]
+    nom_raty = [{'dzien': dt.datetime.strftime(r['dzien'], '%Y-%m'), 'wartosc': r['wartosc']} for r in raty_list]
 
     return render_template('kredyt.html', 
-                           wibor=w.json_data,
+                           wibor=json.dumps(w.json_data),
                            wynik=json.dumps(wynik), 
-                           fin_data = fin_data,
+                           fin_data = json.dumps(fin_data),
                            inflacja=json.dumps(inf.json_data),
-                           real_wartosci=json.dumps(real_wartosci),
+                           real_koszty=json.dumps(real_koszty),
+                           nom_koszty=json.dumps(nom_koszty),
                            real_raty=json.dumps(real_raty),
+                           nom_raty=json.dumps(nom_raty),
+                           real_kpo=json.dumps(real_kpo),
+                           nom_wartosc_nieruchomosc=json.dumps(nier.get_points()),
                            real_wartosc_nieruchomosc=json.dumps(real_wartosc_nieruchomosc))
 
 

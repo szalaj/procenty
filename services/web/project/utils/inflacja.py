@@ -144,14 +144,15 @@ class Nieruchomosc:
 
         wartosci = []
 
-        while current_date + relativedelta(months=1)< self.data_koniec:
-            current_date = current_date + relativedelta(months=1)
+
+        while current_date<self.data_koniec:
+            
             new_timestamp = (current_date - dates[0]).total_seconds()
            
-
-        
             wartosc_value = float(self.interpolation_function(new_timestamp))
             wartosci.append({'dzien': current_date, 'wartosc': wartosc_value})
+
+            current_date = current_date + relativedelta(months=1)
 
 
 
@@ -159,3 +160,6 @@ class Nieruchomosc:
 
 
         self.json_data = wartosci
+    
+    def get_points(self):
+        return [{'dzien': dt.datetime.strftime(w['dzien'], '%Y-%m'), 'wartosc': w['wartosc']} for w in self.json_data]
