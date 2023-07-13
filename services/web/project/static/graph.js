@@ -33,7 +33,7 @@ function create_graph(margin, width, height, values, real_raty, real_wartosc_nie
   
   
   
-  var grids_real = svg_real.append('g')
+  svg_real.append('g')
     .selectAll('line')
     .data(xscale.ticks())
     .enter().append('line')
@@ -68,7 +68,7 @@ function create_graph(margin, width, height, values, real_raty, real_wartosc_nie
   
   
   
-var kreska_real = svg_real.selectAll("circle")
+    svg_real.selectAll("circle")
     .data(real_raty)
     .enter()
     .append("circle")
@@ -79,9 +79,6 @@ var kreska_real = svg_real.selectAll("circle")
   
   var maxYvalue = d3.max(values.map(a => a.cumsum).concat(real_wartosc_nieruchomosc.map(a=>a.wartosc)))*1.1;
  
-  
-  
-  
   
   var yscale_real_cumsum = d3.scaleLinear()
     .domain([0, maxYvalue])
@@ -101,7 +98,7 @@ var kreska_real = svg_real.selectAll("circle")
   
   
   
-    var kreska_real_cumsum = svg_real.append("path")
+    svg_real.append("path")
     .datum(values)
     .attr("class", "blue")
     .attr("d", d3.line()
@@ -116,7 +113,7 @@ var kreska_real = svg_real.selectAll("circle")
     
   });
   
-    var kreska_real_nier= svg_real.append("path")
+    svg_real.append("path")
     .datum(real_wartosc_nieruchomosc)
     .attr("class", "red")
     .attr("d", d3.line()
