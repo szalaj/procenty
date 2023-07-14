@@ -1,28 +1,12 @@
-function create_chart_kapital(margin, width, height, dane_wykres,  real_kpo)
+function create_chart_kapital(margin, width, height, dane_wykres, nom_cena_kosztowa, real_kpo, real_cena_kosztowa)
 {
 
   margin['top'] = 70;
   margin['bottom'] = 80
-  height = 420 - margin.top - margin.bottom;
+  height = 720 - margin.top - margin.bottom;
 
 
-  var parseDateWykres = d3.timeParse("%Y-%m-%d");
-  var parseDateRealKPO = d3.timeParse("%Y-%m");
-
-
-  dane_wykres.forEach(function (d) {
-    d.dzien = parseDateWykres(d.dzien)
-    d.K_po = parseFloat(d.K_po)
-    d.rata = parseFloat(d.rata)
-  });
-
-  real_kpo.forEach(function (d) {
-    d.dzien = parseDateRealKPO(d.miesiac)
-    d.K_po = parseFloat(d.wartosc)
-  });
-
-  console.log(real_kpo);
-
+  var parseDate = d3.timeParse("%Y-%m");
 
   var svg_kapital = d3.select("#wykres_kapital")
     .append("svg")
@@ -67,8 +51,8 @@ function create_chart_kapital(margin, width, height, dane_wykres,  real_kpo)
     .attr('stroke', 'black')
 
 
-
-    var maxYvalue = d3.max(dane_wykres.map(a => a.K_po).concat(real_kpo.map(a=>a.K_po)))*1.1;
+    nom_cena_kosztowa
+    var maxYvalue = d3.max(dane_wykres.map(a => a.K_po).concat(real_kpo.map(a=>a.K_po)).concat(nom_cena_kosztowa.map(a=>a.wartosc)))*1.1;
   
 
 
@@ -97,6 +81,15 @@ function create_chart_kapital(margin, width, height, dane_wykres,  real_kpo)
       .y(function (d) { return yscale_kapital(d.K_po) })
     )
 
+      //kapil nominal
+      svg_kapital.append("path")
+      .datum(nom_cena_kosztowa)
+      .attr("class", "red-dot")
+      .attr("d", d3.line()
+        .x(function (d) { return xscale(d.miesiac) })
+        .y(function (d) { return yscale_kapital(d.wartosc) })
+      )
+
   //kapial real
     svg_kapital.append("path")
     .datum(real_kpo)
@@ -105,6 +98,16 @@ function create_chart_kapital(margin, width, height, dane_wykres,  real_kpo)
       .x(function (d) { return xscale(d.dzien) })
       .y(function (d) { return yscale_kapital(d.K_po) })
     )
+
+      //kapial real
+      svg_kapital.append("path")
+      .datum(real_cena_kosztowa)
+      .attr("class", "red")
+      .attr("d", d3.line()
+        .x(function (d) { return xscale(d.miesiac) })
+        .y(function (d) { return yscale_kapital(d.wartosc) })
+      )
+    
 
       //legend
       svg_kapital.append("line")

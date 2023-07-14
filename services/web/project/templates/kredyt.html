@@ -216,17 +216,10 @@
   var wibor = JSON.parse('{{wibor|safe}}');
   var fin_data = JSON.parse('{{fin_data|safe}}');
 
-  console.log(dane1);
-  console.log(wibor);
-  console.log(fin_data);
-  console.log(inflacja);
-  console.log(real_koszty);
-  console.log(real_wartosc_nieruchomosc);
-  
-  console.log(real_kpo);
-  console.log('nom')
-  console.log(nom_koszty)
 
+
+console.log('nom koszty start');
+console.log(nom_koszty);
 
 
   var zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
@@ -254,10 +247,166 @@
     width = width_docs - margin.left - margin.right,
     height = 450 - margin.top - margin.bottom;
 
+    
+  var parseDateWykres = d3.timeParse("%Y-%m-%d");
+  var parseDateRealKPO = d3.timeParse("%Y-%m");
+
+  var dane_wykres = dane1['raty']
+  dane_wykres.forEach(function (d) {
+    d.dzien = parseDateWykres(d.dzien)
+    d.K_po = parseFloat(d.K_po)
+    d.rata = parseFloat(d.rata)
+  });
+
+  real_kpo.forEach(function (d) {
+    d.dzien = parseDateRealKPO(d.miesiac)
+    d.K_po = parseFloat(d.wartosc)
+  });
+
+  nom_koszty.sort(function (x, y) {
+    return d3.ascending(x.dzien, y.dzien);
+  })
+
+  
+
+  var parseDate = d3.timeParse("%Y-%m");
+  var cumsum_nom = 0
+
+  nom_koszty.forEach(function (d) {
+    
+    d.miesiac = parseDate(d.dzien)
+    d.wartosc = parseFloat(d.wartosc)
+    cumsum_nom = cumsum_nom + d.wartosc;
+    d.cumsum_nom = cumsum_nom;
+
+  });
+
+
+  
+
+  console.log(dane_wykres);
+
+console.log(nom_koszty);
+
+
+
+  const mergedResult = {};
+
+
+// Merge arr1
+dane_wykres.forEach(obj => {
+  
+  const yearMonth = obj.dzien.toISOString().substring(0, 7); // Extract 'YYYY-MM' from the date
+  
+  if (!mergedResult[yearMonth]) {
+    mergedResult[yearMonth] = obj.K_po;
+    
+  } else {
+    mergedResult[yearMonth] += obj.K_po;
+  }
+});
+
+
+// Merge arr2
+nom_koszty.forEach(obj => {
+  const yearMonth = obj.dzien
+
+  if (!mergedResult[yearMonth]) {
+    mergedResult[yearMonth] = obj.cumsum_nom;
+  } else {
+    mergedResult[yearMonth] += obj.cumsum_nom;
+    
+  }
+});
+
+
+
+
+
+  console.log('cena kosztowa')
+
+
+  const nom_cena_kosztowa = Object.entries(mergedResult).map(([miesiac, wartosc]) => ({ miesiac, wartosc }));
+  nom_cena_kosztowa.sort(function (x, y) {
+    return d3.ascending(x.miesiac, y.miesiac);
+  })
+  console.log(nom_cena_kosztowa)
+  nom_cena_kosztowa.forEach(function (d) {
+    
+    d.miesiac = parseDate(d.miesiac)
+    d.wartosc = parseFloat(d.wartosc)
+
+
+  });
+
+
+
+  var parseDate = d3.timeParse("%Y-%m");
+
+real_koszty.sort(function (x, y) {
+  return d3.ascending(x.miesiac, y.miesiac);
+})
+
+
+
+var cumsum = 0;
+
+real_koszty.forEach(function (d) {
+  d.miesiac = parseDate(d.miesiac)
+  d.wartosc = parseFloat(d.wartosc)
+  cumsum = cumsum + d.wartosc;
+  d.cumsum = cumsum;
+
+});
+  
+
+
+
+const mergedResultReal = {};
+
+
+// Merge arr1
+real_koszty.forEach(obj => {
+  
+  const yearMonth = obj.miesiac.toISOString().substring(0, 7); // Extract 'YYYY-MM' from the date
+  
+  if (!mergedResultReal[yearMonth]) {
+    mergedResultReal[yearMonth] = obj.cumsum;
+    
+  } else {
+    mergedResultReal[yearMonth] += obj.cumsum;
+  }
+});
+
+
+// Merge arr2
+real_kpo.forEach(obj => {
+  const yearMonth = obj.miesiac
+
+  if (!mergedResultReal[yearMonth]) {
+    mergedResultReal[yearMonth] = obj.K_po;
+  } else {
+    mergedResultReal[yearMonth] += obj.K_po;
+    
+  }
+});
+
+const real_cena_kosztowa = Object.entries(mergedResultReal).map(([miesiac, wartosc]) => ({ miesiac, wartosc }));
+real_cena_kosztowa.sort(function (x, y) {
+    return d3.ascending(x.miesiac, y.miesiac);
+  })
+
+  real_cena_kosztowa.forEach(function (d) {
+    
+    d.miesiac = parseDate(d.miesiac)
+    d.wartosc = parseFloat(d.wartosc)
+
+
+  });
 
   create_chart_wibor(margin, width, height, wibor);
   create_chart_inflacja(margin, width, height, inflacja);
-  create_chart_kapital(margin, width, height, dane1['raty'], real_kpo);
+  create_chart_kapital(margin, width, height, dane_wykres, nom_cena_kosztowa, real_kpo, real_cena_kosztowa);
   create_chart_koszty(margin, width, 700, real_koszty, nom_koszty, real_raty, nom_raty, real_wartosc_nieruchomosc, nom_wartosc_nieruchomosc);
 
 </script>

@@ -100,20 +100,37 @@ def kredyt():
 
     inf = InflacjaMiesiac(dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy,  liczba_wakacji, inflacja_dict, prognoza_inflacja)
 
-    print(f"inflacja przetrawiona {inf.json_data}")
-
-    #raty = [{'dzien':  dt.datetime.strptime(r['dzien'], '%Y-%m-%d'), 'wartosc': r['rata']} for r in wynik['raty']]
     raty = {f"{n['dzien']}": n['rata'] for n in wynik["raty"]}
-    kpo = {f"{n['dzien']}": n['K_po'] for n in wynik["raty"]}
     nadplaty = {f"{n['dzien']}": n['kwota'] for n in wynik["nadplaty"]}
-    inne = {'2021-11-04': 50000}
 
-    koszty = {x: float(raty.get(x, 0)) + float(nadplaty.get(x, 0)) + float(inne.get(x, 0))  for x in set(raty).union(nadplaty).union(inne)}
-    #raty = {x: float(raty.get(x, 0)) for x in set(raty)}
+    inne = [{'dzien':'2021-11-04', 'kwota': 50000}]
+
+    # koszty = {x: float(raty.get(x, 0)) + float(nadplaty.get(x, 0)) + float(inne.get(x, 0))  for x in sorted(list(set(raty).union(nadplaty).union(inne)))}
+    
+    koszty = {}
+    for k in wynik["raty"]:
+        miesiac = k['dzien'][0:7]
+        if miesiac in koszty:
+            koszty[miesiac] += float(k['rata'])
+        else:
+            koszty[miesiac] = float(k['rata'])
+    for k in wynik["nadplaty"]:
+        miesiac = k['dzien'][0:7]
+        if miesiac in koszty:
+            koszty[miesiac] += float(k['kwota'])
+        else:
+            koszty[miesiac] = float(k['kwota'])
+    for k in inne:
+        miesiac = k['dzien'][0:7]
+        if miesiac in koszty:
+            koszty[miesiac] += float(k['kwota'])
+        else:
+            koszty[miesiac] = float(k['kwota'])
+  
 
     koszty_list = []
     for k in koszty.keys():
-        koszty_list.append({'dzien':dt.datetime.strptime(k, '%Y-%m-%d'), 'wartosc': koszty[k]})
+        koszty_list.append({'dzien':dt.datetime.strptime(k, '%Y-%m'), 'wartosc': koszty[k]})
 
     raty_list = []
     for k in raty.keys():
