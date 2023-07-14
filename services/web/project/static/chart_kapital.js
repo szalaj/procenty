@@ -1,6 +1,10 @@
 function create_chart_kapital(margin, width, height, dane_wykres,  real_kpo)
 {
 
+  margin['top'] = 70;
+  margin['bottom'] = 80
+  height = 420 - margin.top - margin.bottom;
+
 
   var parseDateWykres = d3.timeParse("%Y-%m-%d");
   var parseDateRealKPO = d3.timeParse("%Y-%m");
@@ -87,7 +91,7 @@ function create_chart_kapital(margin, width, height, dane_wykres,  real_kpo)
   //kapil nominal
     svg_kapital.append("path")
     .datum(dane_wykres)
-    .attr("class", "kreska")
+    .attr("class", "kreska-dot")
     .attr("d", d3.line()
       .x(function (d) { return xscale(d.dzien) })
       .y(function (d) { return yscale_kapital(d.K_po) })
@@ -96,12 +100,36 @@ function create_chart_kapital(margin, width, height, dane_wykres,  real_kpo)
   //kapial real
     svg_kapital.append("path")
     .datum(real_kpo)
-    .attr("class", "red")
+    .attr("class", "kreska")
     .attr("d", d3.line()
       .x(function (d) { return xscale(d.dzien) })
       .y(function (d) { return yscale_kapital(d.K_po) })
     )
 
+      //legend
+      svg_kapital.append("line")
+      .attr("class", "kreska")
+      .attr("x1", 15)
+      .attr("y1", -40)
+      .attr("x2", 25)
+      .attr("y2", -40)
+  
+      svg_kapital.append("text")
+      .attr("x", "30")
+      .attr("y", "-37")
+      .text("- realna wartość kapitału do spłaty")
+  
+      svg_kapital.append("line")
+      .attr("class", "kreska-dot")
+      .attr("x1", 5)
+      .attr("y1", -20)
+      .attr("x2", 20)
+      .attr("y2", -20)
+  
+      svg_kapital.append("text")
+      .attr("x", "30")
+      .attr("y", "-17")
+      .text("- nominalna wartość kapitału do spłaty")
 
 
 

@@ -1,6 +1,10 @@
 function create_chart_koszty(margin, width, height, real_koszty, nom_koszty, real_raty, nom_raty, real_wartosc_nieruchomosc, nom_wartosc_nieruchomosc)
 {
 
+  margin['top'] = 140;
+  margin['bottom'] = 90;
+  height = 1000 - margin.top - margin.bottom;
+
 
   var parseDate = d3.timeParse("%Y-%m");
 
@@ -134,6 +138,27 @@ function create_chart_koszty(margin, width, height, real_koszty, nom_koszty, rea
     .attr("cy", d => yscale_real(d.wartosc))
     .attr("r", "2");
 
+    // legend
+    svg_real.append("circle").attr("class", "real")
+    .attr("cx", "20")
+    .attr("cy", "-120")
+    .attr("r", "4");
+
+    svg_real.append("text")
+    .attr("x", "30")
+    .attr("y", "-117")
+    .text("- realna wysokość miesięcznej raty")
+
+    svg_real.append("circle").attr("class", "nom")
+    .attr("cx", "20")
+    .attr("cy", "-100")
+    .attr("r", "4");
+
+    svg_real.append("text")
+    .attr("x", "30")
+    .attr("y", "-97")
+    .text("- nominalna wysokość miesięcznej raty")
+
   
   var maxYvalue = d3.max(real_koszty.map(a => a.cumsum).concat(real_wartosc_nieruchomosc.map(a=>a.wartosc)).concat(nom_wartosc_nieruchomosc.map(a=>a.wartosc)))*1.1;
  
@@ -171,6 +196,55 @@ function create_chart_koszty(margin, width, height, real_koszty, nom_koszty, rea
       .x(function (d) { return xscale(d.miesiac) })
       .y(function (d) { return yscale_real_cumsum(d.cumsum_nom) })
     )
+
+    //legend
+    svg_real.append("line")
+    .attr("class", "blue")
+    .attr("x1", 15)
+    .attr("y1", -80)
+    .attr("x2", 25)
+    .attr("y2", -80)
+
+    svg_real.append("text")
+    .attr("x", "30")
+    .attr("y", "-77")
+    .text("- realne całkowite koszty kredytu")
+
+    svg_real.append("line")
+    .attr("class", "blue-dot")
+    .attr("x1", 10)
+    .attr("y1", -60)
+    .attr("x2", 25)
+    .attr("y2", -60)
+
+    svg_real.append("text")
+    .attr("x", "30")
+    .attr("y", "-57")
+    .text("- nominalne całkowite koszty kredytu")
+
+    svg_real.append("line")
+    .attr("class", "red")
+    .attr("x1", 15)
+    .attr("y1", -40)
+    .attr("x2", 25)
+    .attr("y2", -40)
+
+    svg_real.append("text")
+    .attr("x", "30")
+    .attr("y", "-37")
+    .text("- realna wartość nieruchomości")
+
+    svg_real.append("line")
+    .attr("class", "red-dot")
+    .attr("x1",10)
+    .attr("y1", -20)
+    .attr("x2", 25)
+    .attr("y2", -20)
+
+    svg_real.append("text")
+    .attr("x", "30")
+    .attr("y", "-17")
+    .text("- nominalna wartość nieruchomości")
 
     real_wartosc_nieruchomosc.forEach(function (d) {
     d.miesiac = parseDate(d.miesiac)
