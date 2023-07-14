@@ -72,9 +72,11 @@ def kredyt():
     {'dzien':'02-05-2022', 'kwota':200.00},
     {'dzien':'25-04-2022', 'kwota':3000.00}]
 
-    # for o in range(okresy):
-    #     dzien = (start_date + relativedelta(months=o)).strftime('%Y-%m-%d')
-    #     nadplaty.append({'dzien': dzien, 'kwota': 2000})
+    nadplata_start = dt.datetime.strptime('12/05/2022', '%d/%m/%Y')
+    for o in range(240):
+        dzien = (nadplata_start + relativedelta(months=o)).strftime('%d-%m-%Y')
+        nadplaty.append({'dzien': dzien, 'kwota': 5000})
+
     for n in nadplaty:
         n['dzien'] = dt.datetime.strptime(n['dzien'], '%d-%m-%Y').strftime('%Y-%m-%d')
 
