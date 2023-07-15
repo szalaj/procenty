@@ -230,7 +230,7 @@ function create_chart_koszty(margin, width, height, real_koszty, nom_koszty, rea
     
   });
 
-  console.log(nom_wartosc_nieruchomosc)
+
   
     svg_real.append("path")
     .datum(real_wartosc_nieruchomosc)

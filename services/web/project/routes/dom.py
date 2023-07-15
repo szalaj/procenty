@@ -50,7 +50,7 @@ def kredyt():
     fin_data['okresy'] = okresy
     fin_data['data_start'] = data_start
 
-    prognoza = [('01/10/2029', 3.0), ('01/10/2044', 3.0), ('01/10/2160', 3.0)]
+    prognoza = [('01/10/2029', 3.0), ('01/10/2040', 7.0), ('01/10/2044', 3.0), ('01/10/2160', 3.0)]
 
     w = ut.WiborInter(rodzaj_wiboru, dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy, liczba_wakacji, prognoza)
 
@@ -75,7 +75,7 @@ def kredyt():
     nadplata_start = dt.datetime.strptime('12/05/2022', '%d/%m/%Y')
     for o in range(240):
         dzien = (nadplata_start + relativedelta(months=o)).strftime('%d-%m-%Y')
-        nadplaty.append({'dzien': dzien, 'kwota': 5000})
+        nadplaty.append({'dzien': dzien, 'kwota': 000})
 
     for n in nadplaty:
         n['dzien'] = dt.datetime.strptime(n['dzien'], '%d-%m-%Y').strftime('%Y-%m-%d')
@@ -138,9 +138,12 @@ def kredyt():
     for k in raty.keys():
         raty_list.append({'dzien':dt.datetime.strptime(k, '%Y-%m-%d'), 'wartosc': raty[k]})
 
-    kpo_list = []
+    kpo_list = [{'dzien':dt.datetime.strptime(data_start, '%d/%m/%Y'), 'wartosc': kapital}]
     for k in wynik["raty"]:
         kpo_list.append({'dzien':dt.datetime.strptime(k['dzien'], '%Y-%m-%d'), 'wartosc': k['K_po']})
+
+    nom_kpo = [{'dzien': dt.datetime.strftime(k['dzien'], '%Y-%m'), 'wartosc': k['wartosc']} for k in kpo_list]
+    
 
     real_koszty = inf.urealnij(koszty_list)
     real_raty = inf.urealnij(raty_list)
@@ -163,6 +166,7 @@ def kredyt():
                            nom_koszty=json.dumps(nom_koszty),
                            real_raty=json.dumps(real_raty),
                            nom_raty=json.dumps(nom_raty),
+                           nom_kpo=json.dumps(nom_kpo),
                            real_kpo=json.dumps(real_kpo),
                            nom_wartosc_nieruchomosc=json.dumps(nier.get_points()),
                            real_wartosc_nieruchomosc=json.dumps(real_wartosc_nieruchomosc))

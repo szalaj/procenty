@@ -185,7 +185,7 @@
       <div class="col" id="rysInflacja">Rys.Inflacja M/M. Połączona część rzeczywista z prognozą.</div>
     </div>
     <div class="row top-buffer">
-      <div class="col" id="wykres_kapital">Rys. Kapitał do spłaty (dług).</div>
+      <div class="col" id="wykres_kapital">Rys. Kapitał do spłaty (dług) oraz cena kosztowa.</div>
     </div>
     <div class="row top-buffer">
       <div class="col" id="wykres_real">Rys. Wartości nominalne i realne rat, kosztów skumulowanych, i wartości nieruchomości.</div>
@@ -210,6 +210,7 @@
   var nom_koszty = JSON.parse('{{nom_koszty|safe}}');
   var real_raty = JSON.parse('{{real_raty|safe}}');
   var nom_raty = JSON.parse('{{nom_raty|safe}}');
+  var nom_kpo = JSON.parse('{{nom_kpo|safe}}');
   var real_kpo = JSON.parse('{{real_kpo|safe}}');
   var real_wartosc_nieruchomosc = JSON.parse('{{real_wartosc_nieruchomosc|safe}}');
   var nom_wartosc_nieruchomosc = JSON.parse('{{nom_wartosc_nieruchomosc|safe}}');
@@ -218,8 +219,7 @@
 
 
 
-console.log('nom koszty start');
-console.log(nom_koszty);
+
 
 
   var zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
@@ -251,11 +251,21 @@ console.log(nom_koszty);
   var parseDateWykres = d3.timeParse("%Y-%m-%d");
   var parseDateRealKPO = d3.timeParse("%Y-%m");
 
+
   var dane_wykres = dane1['raty']
   dane_wykres.forEach(function (d) {
     d.dzien = parseDateWykres(d.dzien)
     d.K_po = parseFloat(d.K_po)
     d.rata = parseFloat(d.rata)
+  });
+
+  console.log('nom kpo'); 
+  console.log(nom_kpo);
+
+  nom_kpo.forEach(function (d) {
+    d.miesiac = d.dzien;
+    d.dzien = parseDateRealKPO(d.dzien);
+    d.K_po = parseFloat(d.wartosc);
   });
 
   real_kpo.forEach(function (d) {
@@ -273,20 +283,14 @@ console.log(nom_koszty);
   var cumsum_nom = 0
 
   nom_koszty.forEach(function (d) {
-    
-    d.miesiac = parseDate(d.dzien)
-    d.wartosc = parseFloat(d.wartosc)
+    d.huj = d.dzien;
+    d.miesiac = parseDate(d.dzien);
+    d.wartosc = parseFloat(d.wartosc);
     cumsum_nom = cumsum_nom + d.wartosc;
     d.cumsum_nom = cumsum_nom;
 
   });
 
-
-  
-
-  console.log(dane_wykres);
-
-console.log(nom_koszty);
 
 
 
@@ -294,9 +298,9 @@ console.log(nom_koszty);
 
 
 // Merge arr1
-dane_wykres.forEach(obj => {
+nom_kpo.forEach(obj => {
   
-  const yearMonth = obj.dzien.toISOString().substring(0, 7); // Extract 'YYYY-MM' from the date
+  const yearMonth = obj.miesiac; // Extract 'YYYY-MM' from the date
   
   if (!mergedResult[yearMonth]) {
     mergedResult[yearMonth] = obj.K_po;
@@ -309,7 +313,7 @@ dane_wykres.forEach(obj => {
 
 // Merge arr2
 nom_koszty.forEach(obj => {
-  const yearMonth = obj.dzien
+  const yearMonth = obj.huj
 
   if (!mergedResult[yearMonth]) {
     mergedResult[yearMonth] = obj.cumsum_nom;
@@ -323,14 +327,16 @@ nom_koszty.forEach(obj => {
 
 
 
-  console.log('cena kosztowa')
+
 
 
   const nom_cena_kosztowa = Object.entries(mergedResult).map(([miesiac, wartosc]) => ({ miesiac, wartosc }));
   nom_cena_kosztowa.sort(function (x, y) {
     return d3.ascending(x.miesiac, y.miesiac);
   })
-  console.log(nom_cena_kosztowa)
+
+
+
   nom_cena_kosztowa.forEach(function (d) {
     
     d.miesiac = parseDate(d.miesiac)
@@ -343,17 +349,18 @@ nom_koszty.forEach(obj => {
 
   var parseDate = d3.timeParse("%Y-%m");
 
-real_koszty.sort(function (x, y) {
+
+
+  real_koszty.sort(function (x, y) {
   return d3.ascending(x.miesiac, y.miesiac);
 })
-
-
 
 var cumsum = 0;
 
 real_koszty.forEach(function (d) {
-  d.miesiac = parseDate(d.miesiac)
-  d.wartosc = parseFloat(d.wartosc)
+  d.huj = d.miesiac;
+  d.miesiac = parseDate(d.miesiac);
+  d.wartosc = parseFloat(d.wartosc);
   cumsum = cumsum + d.wartosc;
   d.cumsum = cumsum;
 
@@ -368,8 +375,8 @@ const mergedResultReal = {};
 // Merge arr1
 real_koszty.forEach(obj => {
   
-  const yearMonth = obj.miesiac.toISOString().substring(0, 7); // Extract 'YYYY-MM' from the date
-  
+  const yearMonth = obj.huj; // Extract 'YYYY-MM' from the date
+
   if (!mergedResultReal[yearMonth]) {
     mergedResultReal[yearMonth] = obj.cumsum;
     
@@ -377,6 +384,8 @@ real_koszty.forEach(obj => {
     mergedResultReal[yearMonth] += obj.cumsum;
   }
 });
+
+
 
 
 // Merge arr2
@@ -391,7 +400,10 @@ real_kpo.forEach(obj => {
   }
 });
 
+
+
 const real_cena_kosztowa = Object.entries(mergedResultReal).map(([miesiac, wartosc]) => ({ miesiac, wartosc }));
+
 real_cena_kosztowa.sort(function (x, y) {
     return d3.ascending(x.miesiac, y.miesiac);
   })
@@ -404,9 +416,13 @@ real_cena_kosztowa.sort(function (x, y) {
 
   });
 
+
+
+
+
   create_chart_wibor(margin, width, height, wibor);
   create_chart_inflacja(margin, width, height, inflacja);
-  create_chart_kapital(margin, width, height, dane_wykres, nom_cena_kosztowa, real_kpo, real_cena_kosztowa);
+  create_chart_kapital(margin, width, height, nom_kpo, nom_cena_kosztowa, real_kpo, real_cena_kosztowa);
   create_chart_koszty(margin, width, 700, real_koszty, nom_koszty, real_raty, nom_raty, real_wartosc_nieruchomosc, nom_wartosc_nieruchomosc);
 
 </script>
