@@ -6,35 +6,8 @@ function create_chart_koszty(margin, width, height, real_koszty, nom_koszty, rea
   height = 1000 - margin.top - margin.bottom;
 
 
+
   var parseDate = d3.timeParse("%Y-%m");
-
-  real_koszty.sort(function (x, y) {
-    return d3.ascending(x.miesiac, y.miesiac);
-  })
-
-  nom_koszty.sort(function (x, y) {
-    return d3.ascending(x.dzien, y.dzien);
-  })
-
-  var cumsum = 0;
-
-  real_koszty.forEach(function (d) {
-    d.miesiac = parseDate(d.miesiac)
-    d.wartosc = parseFloat(d.wartosc)
-    cumsum = cumsum + d.wartosc;
-    d.cumsum = cumsum;
-
-  });
-
-  var cumsum_nom = 0
-  nom_koszty.forEach(function (d) {
-    d.miesiac = parseDate(d.dzien)
-    d.wartosc = parseFloat(d.wartosc)
-    cumsum_nom = cumsum_nom + d.wartosc;
-    d.cumsum_nom = cumsum_nom;
-
-  });
-
 
 
 
@@ -53,10 +26,7 @@ function create_chart_koszty(margin, width, height, real_koszty, nom_koszty, rea
 
 
   });
-  console.log('raty')
-  console.log(nom_raty)
-  console.log(real_raty)
-    
+
 
     var svg_real = d3.select("#wykres_real")
     .append("svg")
@@ -260,7 +230,7 @@ function create_chart_koszty(margin, width, height, real_koszty, nom_koszty, rea
     
   });
 
-  console.log(nom_wartosc_nieruchomosc)
+
   
     svg_real.append("path")
     .datum(real_wartosc_nieruchomosc)

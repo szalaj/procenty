@@ -50,7 +50,7 @@ def kredyt():
     fin_data['okresy'] = okresy
     fin_data['data_start'] = data_start
 
-    prognoza = [('01/10/2029', 3.0), ('01/10/2044', 3.0), ('01/10/2160', 3.0)]
+    prognoza = [('01/10/2029', 3.0), ('01/10/2040', 7.0), ('01/10/2044', 3.0), ('01/10/2160', 3.0)]
 
     w = ut.WiborInter(rodzaj_wiboru, dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy, liczba_wakacji, prognoza)
 
@@ -72,9 +72,11 @@ def kredyt():
     {'dzien':'02-05-2022', 'kwota':200.00},
     {'dzien':'25-04-2022', 'kwota':3000.00}]
 
-    # for o in range(okresy):
-    #     dzien = (start_date + relativedelta(months=o)).strftime('%Y-%m-%d')
-    #     nadplaty.append({'dzien': dzien, 'kwota': 2000})
+    nadplata_start = dt.datetime.strptime('12/05/2022', '%d/%m/%Y')
+    for o in range(240):
+        dzien = (nadplata_start + relativedelta(months=o)).strftime('%d-%m-%Y')
+        nadplaty.append({'dzien': dzien, 'kwota': 000})
+
     for n in nadplaty:
         n['dzien'] = dt.datetime.strptime(n['dzien'], '%d-%m-%Y').strftime('%Y-%m-%d')
 
@@ -100,28 +102,48 @@ def kredyt():
 
     inf = InflacjaMiesiac(dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy,  liczba_wakacji, inflacja_dict, prognoza_inflacja)
 
-    print(f"inflacja przetrawiona {inf.json_data}")
-
-    #raty = [{'dzien':  dt.datetime.strptime(r['dzien'], '%Y-%m-%d'), 'wartosc': r['rata']} for r in wynik['raty']]
     raty = {f"{n['dzien']}": n['rata'] for n in wynik["raty"]}
-    kpo = {f"{n['dzien']}": n['K_po'] for n in wynik["raty"]}
     nadplaty = {f"{n['dzien']}": n['kwota'] for n in wynik["nadplaty"]}
-    inne = {'2021-11-04': 50000}
 
-    koszty = {x: float(raty.get(x, 0)) + float(nadplaty.get(x, 0)) + float(inne.get(x, 0))  for x in set(raty).union(nadplaty).union(inne)}
-    #raty = {x: float(raty.get(x, 0)) for x in set(raty)}
+    inne = [{'dzien':'2021-11-04', 'kwota': 50000}]
+
+    # koszty = {x: float(raty.get(x, 0)) + float(nadplaty.get(x, 0)) + float(inne.get(x, 0))  for x in sorted(list(set(raty).union(nadplaty).union(inne)))}
+    
+    koszty = {}
+    for k in wynik["raty"]:
+        miesiac = k['dzien'][0:7]
+        if miesiac in koszty:
+            koszty[miesiac] += float(k['rata'])
+        else:
+            koszty[miesiac] = float(k['rata'])
+    for k in wynik["nadplaty"]:
+        miesiac = k['dzien'][0:7]
+        if miesiac in koszty:
+            koszty[miesiac] += float(k['kwota'])
+        else:
+            koszty[miesiac] = float(k['kwota'])
+    for k in inne:
+        miesiac = k['dzien'][0:7]
+        if miesiac in koszty:
+            koszty[miesiac] += float(k['kwota'])
+        else:
+            koszty[miesiac] = float(k['kwota'])
+  
 
     koszty_list = []
     for k in koszty.keys():
-        koszty_list.append({'dzien':dt.datetime.strptime(k, '%Y-%m-%d'), 'wartosc': koszty[k]})
+        koszty_list.append({'dzien':dt.datetime.strptime(k, '%Y-%m'), 'wartosc': koszty[k]})
 
     raty_list = []
     for k in raty.keys():
         raty_list.append({'dzien':dt.datetime.strptime(k, '%Y-%m-%d'), 'wartosc': raty[k]})
 
-    kpo_list = []
+    kpo_list = [{'dzien':dt.datetime.strptime(data_start, '%d/%m/%Y'), 'wartosc': kapital}]
     for k in wynik["raty"]:
         kpo_list.append({'dzien':dt.datetime.strptime(k['dzien'], '%Y-%m-%d'), 'wartosc': k['K_po']})
+
+    nom_kpo = [{'dzien': dt.datetime.strftime(k['dzien'], '%Y-%m'), 'wartosc': k['wartosc']} for k in kpo_list]
+    
 
     real_koszty = inf.urealnij(koszty_list)
     real_raty = inf.urealnij(raty_list)
@@ -144,6 +166,7 @@ def kredyt():
                            nom_koszty=json.dumps(nom_koszty),
                            real_raty=json.dumps(real_raty),
                            nom_raty=json.dumps(nom_raty),
+                           nom_kpo=json.dumps(nom_kpo),
                            real_kpo=json.dumps(real_kpo),
                            nom_wartosc_nieruchomosc=json.dumps(nier.get_points()),
                            real_wartosc_nieruchomosc=json.dumps(real_wartosc_nieruchomosc))
