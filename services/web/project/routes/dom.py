@@ -100,6 +100,8 @@ def kredyt():
 
     wynik = proc.create_kredyt(dane_kredytu, 'stale')
 
+    dzien_ostatniej_raty = max([dt.datetime.strptime(d['dzien'],'%Y-%m-%d') for d in wynik['raty']])
+
     inf = InflacjaMiesiac(dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy,  liczba_wakacji, inflacja_dict, prognoza_inflacja)
 
     raty = {f"{n['dzien']}": n['rata'] for n in wynik["raty"]}
@@ -150,7 +152,7 @@ def kredyt():
     real_kpo = inf.urealnij(kpo_list)
 
     nier_points = [{'dzien':start_date, 'wartosc': 500000}, {'dzien':dt.datetime.strptime('2056-01-01', '%Y-%m-%d'), 'wartosc': 1200000}]
-    nier = Nieruchomosc(dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy,  liczba_wakacji, nier_points) 
+    nier = Nieruchomosc(dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy,  liczba_wakacji, nier_points, dzien_ostatniej_raty) 
     
     real_wartosc_nieruchomosc = inf.urealnij(nier.json_data)
 
