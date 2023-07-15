@@ -124,6 +124,11 @@
       stroke-width: 1px;
       stroke: black;
     }
+    circle.nadplata {
+
+      fill: black;
+
+    }
     path.black-dot {
       fill: none;
       stroke-width: 1px;
@@ -185,6 +190,9 @@
       <div class="col" id="rysInflacja">Rys.Inflacja M/M. Połączona część rzeczywista z prognozą.</div>
     </div>
     <div class="row top-buffer">
+      <div class="col" id="rysNadplaty">Rys.Nadpłaty - wartości nominalne.</div>
+    </div>
+    <div class="row top-buffer">
       <div class="col" id="wykres_kapital">Rys. Kapitał do spłaty (dług) oraz cena kosztowa.</div>
     </div>
     <div class="row top-buffer">
@@ -202,7 +210,7 @@
   import { create_chart_kapital } from "{{url_for('static', filename='chart_kapital.js')}}";
   import { create_chart_wibor } from "{{url_for('static', filename='chart_wibor.js')}}";
   import { create_chart_inflacja } from "{{url_for('static', filename='chart_inflacja.js')}}";
-
+  import { create_chart_nadplaty } from "{{url_for('static', filename='chart_nadplaty.js')}}";
 
   var dane1 = JSON.parse('{{wynik|safe}}');
   var inflacja = JSON.parse('{{inflacja|safe}}');
@@ -219,7 +227,7 @@
 
 
 
-
+  console.log(dane1)
 
 
   var zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
@@ -291,6 +299,8 @@
 
   });
 
+  console.log('nom koszty')
+  console.log(nom_koszty)
 
 
 
@@ -422,6 +432,7 @@ real_cena_kosztowa.sort(function (x, y) {
 
   create_chart_wibor(margin, width, height, wibor);
   create_chart_inflacja(margin, width, height, inflacja);
+  create_chart_nadplaty(margin, width, height, dane1['nadplaty']);
   create_chart_kapital(margin, width, height, nom_kpo, nom_cena_kosztowa, real_kpo, real_cena_kosztowa);
   create_chart_koszty(margin, width, 700, real_koszty, nom_koszty, real_raty, nom_raty, real_wartosc_nieruchomosc, nom_wartosc_nieruchomosc);
 
