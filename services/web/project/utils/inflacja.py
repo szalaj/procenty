@@ -123,6 +123,7 @@ class Nieruchomosc:
     okresy: int
     liczba_wakacji: int
     points: list
+    dzien_ostatniej_raty: dt.datetime
 
     def __post_init__(self):
 
@@ -135,7 +136,8 @@ class Nieruchomosc:
         # Create an interpolation function using scipy.interpolate.interp1d
         self.interpolation_function = interp1d(timestamps, values)
 
-        self.data_koniec = self.data_start + relativedelta(months=(self.okresy+self.liczba_wakacji))
+        #self.data_koniec = self.data_start + relativedelta(months=(self.okresy+self.liczba_wakacji))
+        data_koniec=self.dzien_ostatniej_raty
 
         start_date = self.data_start
 
@@ -145,7 +147,7 @@ class Nieruchomosc:
         wartosci = []
 
 
-        while current_date<self.data_koniec:
+        while current_date<data_koniec:
             
             new_timestamp = (current_date - dates[0]).total_seconds()
            
@@ -154,6 +156,12 @@ class Nieruchomosc:
 
             current_date = current_date + relativedelta(months=1)
 
+        new_timestamp = (data_koniec - dates[0]).total_seconds()
+           
+        wartosc_value = float(self.interpolation_function(new_timestamp))
+        wartosci.append({'dzien': data_koniec, 'wartosc': wartosc_value})
+
+       
 
 
         # wartosci.append({'miesiac': dt.datetime.strftime(self.data_koniec, '%Y-%m'), 'wartosc': wartosc_value_koniec})
