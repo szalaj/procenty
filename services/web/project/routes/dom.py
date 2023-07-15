@@ -72,10 +72,10 @@ def kredyt():
     {'dzien':'02-05-2022', 'kwota':200.00},
     {'dzien':'25-04-2022', 'kwota':3000.00}]
 
-    nadplata_start = dt.datetime.strptime('12/05/2022', '%d/%m/%Y')
+    nadplata_start = dt.datetime.strptime('12/05/2024', '%d/%m/%Y')
     for o in range(240):
         dzien = (nadplata_start + relativedelta(months=o)).strftime('%d-%m-%Y')
-        nadplaty.append({'dzien': dzien, 'kwota': 000})
+        nadplaty.append({'dzien': dzien, 'kwota': 2000})
 
     for n in nadplaty:
         n['dzien'] = dt.datetime.strptime(n['dzien'], '%d-%m-%Y').strftime('%Y-%m-%d')
@@ -105,7 +105,7 @@ def kredyt():
     raty = {f"{n['dzien']}": n['rata'] for n in wynik["raty"]}
     nadplaty = {f"{n['dzien']}": n['kwota'] for n in wynik["nadplaty"]}
 
-    inne = [{'dzien':'2021-11-04', 'kwota': 50000}]
+    inne = [{'dzien':'2021-11-04', 'kwota': 40000}]
 
     # koszty = {x: float(raty.get(x, 0)) + float(nadplaty.get(x, 0)) + float(inne.get(x, 0))  for x in sorted(list(set(raty).union(nadplaty).union(inne)))}
     
