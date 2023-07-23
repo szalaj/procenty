@@ -58,3 +58,11 @@ class InflacjaMM(db.Model):
     id = db.Column(db.Integer, primary_key=True) 
     miesiac = db.Column(db.DateTime, unique=True, nullable=False)
     wartosc = db.Column(db.Numeric(4,2), nullable=False)
+
+
+class Kredyt(db.Model):
+    __tablename__ = 'kredyt'
+
+    id = db.Column(db.Integer, primary_key=True) 
+    data_uruchomienia = db.Column(db.DateTime, unique=True, nullable=False)
+    wartosc = db.Column(db.Numeric(4,2), nullable=False)

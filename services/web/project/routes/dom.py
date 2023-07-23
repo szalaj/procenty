@@ -34,6 +34,11 @@ dom = Blueprint('dom', __name__)
 def favicon():
     return url_for('static', filename='favicon.ico')
 
+
+@dom.route('/symulacja')
+def symulacja():
+    return 'symulacja'
+
 @dom.route('/kredyt')
 def kredyt():
 
