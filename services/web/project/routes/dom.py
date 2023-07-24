@@ -35,9 +35,9 @@ def favicon():
     return url_for('static', filename='favicon.ico')
 
 
-@dom.route('/symulacja')
+@dom.route('/symulacja', methods=['GET', 'POST'])
 def symulacja():
-    return 'symulacja'
+    return render_template('symulacja.html')
 
 @dom.route('/kredyt')
 def kredyt():
