@@ -99,25 +99,34 @@
 
 
     }
+    .alert {
+            padding: 20px;
+            margin: 5px;
+            color: #970020;
+            background-color: #ffd5de;
+        }
   </style>
 </head>
 
 <body>
 
 
-
- 
+    <div class="content">
+        {% for message in get_flashed_messages() %}
+            <div class="alert">{{ message }}</div>
+        {% endfor %}
+        {% block content %} {% endblock %}
     </div>
     <form id="upload-form" action="{{ url_for('dom.symulacja') }}" method="POST">
 
       <div class="row top-buffer">
         <div class="col-lg-3">
           <label for="idKapital1">Wartość kredytu</label>
-          <input type="text" class="form-control" placeholder="Ile?" name="kapital" id="idKapital1">
+          <input type="text" class="form-control" placeholder="Ile?" name="kapital" id="idKapital" value="{{kapital}}">
         </div>
         <div class="col-lg-3">
           <label for="idData1">Data uruchomienia</label>
-          <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataStart" id="idData1">
+          <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataStart" id="idData" value="{{data_start}}">
         </div>
 
         </div>
