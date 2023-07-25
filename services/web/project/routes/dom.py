@@ -37,13 +37,14 @@ def favicon():
 
 @dom.route('/symulacja', methods=['GET', 'POST'])
 def symulacja():
+    data_start = ''
+    kapital = ''
     if request.method == 'POST':
         data_start = request.form['dataStart']
         kapital = request.form['kapital']
-
         flash(f"co to ma być? {data_start}")
-        return render_template('symulacja.html', data_start=data_start, kapital=kapital)
-    return render_template('symulacja.html')
+
+    return render_template('symulacja.html', data_start=data_start, kapital=kapital)
 
 @dom.route('/kredyt')
 def kredyt():
