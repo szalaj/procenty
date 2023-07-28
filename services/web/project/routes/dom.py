@@ -1,7 +1,7 @@
 
 from flask import Blueprint, render_template, flash, redirect, url_for, request, send_file, sessions, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
-from ..models import User, Dom, Zapytanie, InflacjaMM
+from ..models import User, Dom, Zapytanie, InflacjaMM, Kredyt
 from project import db
 from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, validators
 from dateutil.relativedelta import relativedelta
@@ -33,6 +33,33 @@ dom = Blueprint('dom', __name__)
 @dom.route('/favicon.ico')
 def favicon():
     return url_for('static', filename='favicon.ico')
+
+
+@dom.route('/dodajkredyt', methods=['GET', 'POST'])
+@login_required
+def dodajkredyt():
+    data_start = ''
+    kapital = ''
+    if request.method == 'POST':
+        data_start = request.form['dataStart']
+        kapital = request.form['kapital']
+        try:
+            kr = Kredyt(data_uruchomienia=dt.datetime.strptime(data_start, '%d/%m/%Y'), wartosc=kapital)
+            db.session.add(kr)
+            db.session.commit()
+            flash(f"dodane {data_start}")
+        except:
+            flash("cos poszlo nie tak, sprawdx format daty")
+
+    return render_template('dodajkredyt.html', data_start=data_start, kapital=kapital)
+
+@dom.route('/pokazkredyty', methods=['GET'])
+@login_required
+def pokaz_kredyty():
+
+
+    return render_template('pokazkredyty.html')
+
 
 @dom.route('/kredyt')
 def kredyt():
