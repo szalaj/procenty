@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <script src="{{url_for('static', filename='d3.js')}}"></script>
 
-
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
@@ -22,89 +22,7 @@
     crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/downloadjs/1.4.8/download.min.js"></script>
   <title>Oblicz WPS</title>
-  <style>
-    .top-buffer {
-      margin-top: 20px;
-    }
-
-    span {
-
-      font-size: large;
-    }
-
-    path {
-      fill: none;
-      stroke-width: 1px;
-      stroke: black;
-    }
-
-    path.kreska {
-      fill: none;
-      stroke-width: 2px;
-      stroke: black;
-    }
-
-    path.kreska2 {
-      fill: none;
-      stroke-width: 2px;
-      stroke: rgb(61, 83, 53);
-      border-style: dotted;
-      stroke-dasharray: 5;
-    }
-
-    path.red {
-      fill: none;
-      stroke-width: 2px;
-      stroke: red;
-    }
-
-    path.red-dot {
-      fill: none;
-      stroke-width: 1px;
-      stroke: red;
-      border-style: dotted;
-      stroke-dasharray: 5;
-    }
-
-    path.black-dot {
-      fill: none;
-      stroke-width: 1px;
-      stroke: black;
-      border-style: dotted;
-      stroke-dasharray: 5;
-    }
-
-    line.gridline {
-      fill: none;
-      stroke-width: 1px;
-      stroke: black;
-      border-style: dotted;
-      stroke-dasharray: 5;
-    }
-
-    div.wykresy {
-      margin-left: 0px;
-      padding-left: 0px;
-
-    }
-
-    .sumy {}
-
-
-
-    a.metoda:link,
-    a.metoda:visited {
-
-      color: gray;
-
-
-    }
-    .alert {
-            padding: 20px;
-            margin: 5px;
-            color: #970020;
-            background-color: #ffd5de;
-        }
+  
   </style>
 </head>
 
@@ -117,7 +35,7 @@
         {% endfor %}
         {% block content %} {% endblock %}
     </div>
-    <form id="upload-form" action="{{ url_for('dom.symulacja') }}" method="POST">
+    <form id="upload-form" action="{{ url_for('dom.dodajkredyt') }}" method="POST">
 
       <div class="row top-buffer">
         <div class="col-lg-3">

@@ -35,9 +35,9 @@ def favicon():
     return url_for('static', filename='favicon.ico')
 
 
-@dom.route('/symulacja', methods=['GET', 'POST'])
+@dom.route('/dodajkredyt', methods=['GET', 'POST'])
 @login_required
-def symulacja():
+def dodajkredyt():
     data_start = ''
     kapital = ''
     if request.method == 'POST':
@@ -51,7 +51,15 @@ def symulacja():
         except:
             flash("cos poszlo nie tak, sprawdx format daty")
 
-    return render_template('symulacja.html', data_start=data_start, kapital=kapital)
+    return render_template('dodajkredyt.html', data_start=data_start, kapital=kapital)
+
+@dom.route('/pokazkredyty', methods=['GET'])
+@login_required
+def pokaz_kredyty():
+
+
+    return render_template('pokazkredyty.html')
+
 
 @dom.route('/kredyt')
 def kredyt():
