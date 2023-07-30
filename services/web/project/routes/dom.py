@@ -57,6 +57,10 @@ def dodajkredyt():
 @login_required
 def pokaz_kredyty():
 
+    kredyty = Kredyt.query.all()
+    for k in kredyty:
+        print(k)
+        print(k.as_dict())
 
     return render_template('pokazkredyty.html')
 
