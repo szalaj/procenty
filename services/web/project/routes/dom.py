@@ -9,12 +9,12 @@ import datetime as dt
 from pandas.tseries.offsets import BDay
 import pandas as pd
 from dataclasses import dataclass
-import project.utils.generate_model as ut
-import project.utils.proc as proc
+import utils.generate_model as ut
+import utils.proc as proc
 from sqlalchemy import text
 
-from ..utils.generate_model import Wibor
-from project.utils.inflacja import InflacjaMiesiac, Nieruchomosc
+from utils.generate_model import Wibor
+from utils.inflacja import InflacjaMiesiac, Nieruchomosc
 
 import json
 
