@@ -72,4 +72,4 @@ class Kredyt(db.Model):
         return f"{self.data_uruchomienia} - {self.wartosc}"
     
     def as_dict(self):
-       return {'data_uruchomienia': dt.datetime.strftime(self.data_uruchomienia, '%Y-%m-%d'), 'wartosc': float(self.wartosc)}
+       return {'id': self.id, 'data_uruchomienia': dt.datetime.strftime(self.data_uruchomienia, '%Y-%m-%d'), 'wartosc': float(self.wartosc)}

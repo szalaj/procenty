@@ -29,8 +29,7 @@ class Interpolator:
 dom = Blueprint('dom', __name__)
 
 
-
-@dom.route('/favicon.ico')
+@dom.route('/favicon')
 def favicon():
     return url_for('static', filename='favicon.ico')
 
@@ -63,10 +62,16 @@ def pokaz_kredyty():
     return render_template('pokazkredyty.html', kredyty=json.dumps(kredyty))
 
 
-@dom.route('/mojkredyt')
+@dom.route('/mojkredyt', methods=['GET', 'POST'])
 def mojkredyt():
 
-    kapital = 460000
+    if request.method == 'POST':
+        kapital = request.form['kapital']
+    else:
+        kapital = 460000
+
+
+
     marza = 2.99
     rodzaj_wiboru = '3M'
     data_start = '04/11/2021'

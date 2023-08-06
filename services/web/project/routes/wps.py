@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, flash, redirect, url_for, request,
 from flask_login import login_user, logout_user, login_required, current_user
 import requests
 import re
-import project.utils.generate_model
+import .project.utils.generate_model
 import pandas as pd
 from io import BytesIO
 import project.utils.proc
