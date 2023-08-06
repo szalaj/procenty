@@ -3,12 +3,12 @@ from flask import Blueprint, render_template, flash, redirect, url_for, request,
 from flask_login import login_user, logout_user, login_required, current_user
 import requests
 import re
-import project.utils.generate_model
+import utils.generate_model
 import pandas as pd
 from io import BytesIO
-import project.utils.proc
+import utils.proc
 import datetime as dt
-import project.utils.create_document
+import utils.create_document
 from werkzeug.utils import secure_filename
 import datetime
 
@@ -134,9 +134,9 @@ def main():
 
         
 
-        dane_kredytu =  project.utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False, False)
+        dane_kredytu =  utils.generate_model.generateFromWiborFile(kapital1, okresy, data_start1, marza, data_zamrozenia, rodzajWiboru, transze, False, False)
 
-        wibor = project.utils.generate_model.Wibor(rodzajWiboru)
+        wibor = utils.generate_model.Wibor(rodzajWiboru)
         wibor_start = wibor.getWibor(data_umowa)
         stala_stopa_uruch = round(wibor_start + marza,2)
         wibor_zamrozony = dane_kredytu['wibor_zamrozony']
@@ -144,7 +144,7 @@ def main():
         
         
 
-        dane_kredytu_alt =  project.utils.generate_model.generateFromWiborFile(kapital1,
+        dane_kredytu_alt =  utils.generate_model.generateFromWiborFile(kapital1,
                                                                                okresy,
                                                                                data_start1,
                                                                                marza,
@@ -156,8 +156,8 @@ def main():
                                                                                )
 
 
-        wynik = project.utils.proc.create_kredyt(dane_kredytu, rodzajRat)
-        wynik2 = project.utils.proc.create_kredyt(dane_kredytu_alt, rodzajRat)
+        wynik = utils.proc.create_kredyt(dane_kredytu, rodzajRat)
+        wynik2 = utils.proc.create_kredyt(dane_kredytu_alt, rodzajRat)
 
         fin_data = {}
         fin_data['dane'] = wynik
@@ -191,7 +191,7 @@ def get_doc():
     if request.method == 'POST':
         
         dane = request.get_json()
-        document = project.utils.create_document.create_document(dane)
+        document = utils.create_document.create_document(dane)
         
 
         print(dane.keys())

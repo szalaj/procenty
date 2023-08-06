@@ -6,6 +6,8 @@ from flask_apscheduler import APScheduler
 
 import requests
 
+print(__name__)
+
 db = SQLAlchemy()
 
 def init_app():
