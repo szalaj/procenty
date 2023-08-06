@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="{{url_for('static', filename='d3.js')}}"></script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+
+  <title>Kredyty</title>
+  
+  </style>
+</head>
+
+
+
+
+<body>
+
+    <div class="container">
+
+ 
+    <div class="content">
+        {% for message in get_flashed_messages() %}
+            <div class="alert">{{ message }}</div>
+        {% endfor %}
+        {% block content %} {% endblock %}
+    </div>
+
+          <h1 class="title">
+            Kredyty
+          </h1>
+          <p class="subtitle">
+            
+          </p>
+
+
+      <div class="columns mt-0" style="border:1px solid black;">
+        <div class="column">
+          First column
+        </div>
+        <div class="column">
+          Second column
+        </div>
+        <div class="column is-2">
+            <button class="button is-primary is-pulled-right">
+                Wybierz
+              </button>
+        </div>
+      </div>
+      <div class="columns mt-0" style="border:1px solid black;">
+        <div class="column">
+          First column
+        </div>
+        <div class="column">
+          Second column
+        </div>
+        <div class="column is-2">
+            <button class="button is-primary is-pulled-right">
+                Wybierz
+              </button>
+        </div>
+      </div>
+      
+
+    </div>
+<script type="module">
+
+const kredyty = JSON.parse('{{kredyty|safe}}');
+console.log(kredyty);
+    
+    
+</script>
+
+</body>
+
+</html>

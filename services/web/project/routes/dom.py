@@ -35,9 +35,9 @@ def favicon():
     return url_for('static', filename='favicon.ico')
 
 
-@dom.route('/dodajkredyt', methods=['GET', 'POST'])
+@dom.route('/kredyt', methods=['GET', 'POST'])
 @login_required
-def dodajkredyt():
+def kredyt():
     data_start = ''
     kapital = ''
     if request.method == 'POST':
@@ -51,18 +51,20 @@ def dodajkredyt():
         except:
             flash("cos poszlo nie tak, sprawdx format daty")
 
-    return render_template('dodajkredyt.html', data_start=data_start, kapital=kapital)
+    return render_template('kredyt.html', data_start=data_start, kapital=kapital)
 
 @dom.route('/pokazkredyty', methods=['GET'])
 @login_required
 def pokaz_kredyty():
 
+    kredyty = [k.as_dict() for k in Kredyt.query.all()]
 
-    return render_template('pokazkredyty.html')
+
+    return render_template('pokazkredyty.html', kredyty=json.dumps(kredyty))
 
 
-@dom.route('/kredyt')
-def kredyt():
+@dom.route('/mojkredyt')
+def mojkredyt():
 
     kapital = 460000
     marza = 2.99
@@ -186,7 +188,7 @@ def kredyt():
     nom_koszty = [{'dzien': dt.datetime.strftime(r['dzien'], '%Y-%m'), 'wartosc': r['wartosc']} for r in koszty_list]
     nom_raty = [{'dzien': dt.datetime.strftime(r['dzien'], '%Y-%m'), 'wartosc': r['wartosc']} for r in raty_list]
 
-    return render_template('kredyt.html', 
+    return render_template('mojkredyt.html', 
                            wibor=json.dumps(w.json_data),
                            wynik=json.dumps(wynik), 
                            fin_data = json.dumps(fin_data),

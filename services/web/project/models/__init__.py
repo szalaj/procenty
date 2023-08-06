@@ -2,6 +2,7 @@ from flask_login import UserMixin
 from .. import db
 from sqlalchemy.sql import func
 
+import datetime as dt
 
 
 
@@ -69,3 +70,6 @@ class Kredyt(db.Model):
 
     def __repr__(self):
         return f"{self.data_uruchomienia} - {self.wartosc}"
+    
+    def as_dict(self):
+       return {'data_uruchomienia': dt.datetime.strftime(self.data_uruchomienia, '%Y-%m-%d'), 'wartosc': float(self.wartosc)}
