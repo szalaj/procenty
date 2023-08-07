@@ -40,15 +40,16 @@
       
 
     </div>
+
 <script type="module">
 
 const kredyty = JSON.parse('{{kredyty|safe}}');
 console.log(kredyty);
 
-let kurde = d3.select("#takietam").selectAll('div').data(kredyty)
+let kurde = d3.select("#takietam").selectAll('div.kredyty').data(kredyty)
 .enter()
 .append('div')
-.attr('class', "columns mt-0")
+.attr('class', "kredyty columns mt-0")
 .attr('style', "border:1px solid black;")
 
 kurde.append('div').attr('class', 'column').html(d=>d.wartosc)

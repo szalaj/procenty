@@ -65,11 +65,32 @@ class Kredyt(db.Model):
     __tablename__ = 'kredyt'
 
     id = db.Column(db.Integer, primary_key=True) 
+    uzytkownik = db.Column(db.String, nullable=False)
     data_uruchomienia = db.Column(db.DateTime, unique=True, nullable=False)
-    wartosc = db.Column(db.Numeric(4,2), nullable=False)
+    wartosc = db.Column(db.Numeric(14,2), nullable=False)
+    okresy = db.Column(db.Integer, nullable=False)
+    marza = db.Column(db.Float, nullable=False)
+    rodzaj_wiboru = db.Column(db.String, nullable=False)
+    rodzaj_rat = db.Column(db.String, nullable=False)
+
 
     def __repr__(self):
         return f"{self.data_uruchomienia} - {self.wartosc}"
     
     def as_dict(self):
-       return {'id': self.id, 'data_uruchomienia': dt.datetime.strftime(self.data_uruchomienia, '%Y-%m-%d'), 'wartosc': float(self.wartosc)}
+       return {'id': self.id,
+               'data_uruchomienia': dt.datetime.strftime(self.data_uruchomienia, '%Y-%m-%d'),
+                'wartosc': float(self.wartosc),
+                'uzytkownik':self.uzytkownik,
+                'okresy':self.okresy,
+                'rodzaj_wiboru':self.rodzaj_wiboru,
+                'rodzaj_rat':self.rodzaj_rat,
+                'marza': float(self.marza)}
+
+class Nadplata(db.Model):
+    __tablename__ = 'nadplata'
+
+    id = db.Column(db.Integer, primary_key=True) 
+    kredyt_id  = db.Column(db.Integer, db.ForeignKey("kredyt.id"), nullable=False)
+    data_nadplaty = db.Column(db.DateTime, unique=True, nullable=False)
+    wartosc = db.Column(db.Numeric(14,2), nullable=False)
