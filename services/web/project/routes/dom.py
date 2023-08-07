@@ -43,7 +43,13 @@ def kredyt():
         data_start = request.form['dataStart']
         kapital = request.form['kapital']
         try:
-            kr = Kredyt(data_uruchomienia=dt.datetime.strptime(data_start, '%d/%m/%Y'), wartosc=kapital)
+            kr = Kredyt(uzytkownik=current_user.name,
+                        data_uruchomienia=dt.datetime.strptime(data_start, '%d/%m/%Y'),
+                         wartosc=kapital,
+                         marza=1.9,
+                         okresy=300,
+                         rodzaj_wiboru='3M',
+                         rodzaj_rat='stale')
             db.session.add(kr)
             db.session.commit()
             flash(f"dodane {data_start}")
