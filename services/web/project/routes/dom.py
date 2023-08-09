@@ -42,14 +42,19 @@ def kredyt():
     if request.method == 'POST':
         data_start = request.form['dataStart']
         kapital = request.form['kapital']
+        marza = request.form['marza']
+        okresy = request.form['okresy']
+        rodzaj_wiboru = request.form['rodzajWiboru']
+        rodzaj_rat = request.form['rodzajRat']
+
         try:
             kr = Kredyt(uzytkownik=current_user.name,
                         data_uruchomienia=dt.datetime.strptime(data_start, '%d/%m/%Y'),
                          wartosc=kapital,
-                         marza=1.9,
-                         okresy=300,
-                         rodzaj_wiboru='3M',
-                         rodzaj_rat='stale')
+                         marza=marza,
+                         okresy=okresy,
+                         rodzaj_wiboru=rodzaj_wiboru,
+                         rodzaj_rat=rodzaj_rat)
             db.session.add(kr)
             db.session.commit()
             flash(f"dodane {data_start}")
