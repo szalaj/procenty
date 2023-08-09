@@ -35,33 +35,60 @@
         {% endfor %}
         {% block content %} {% endblock %}
     </div>
-    <form id="upload-form" action="{{ url_for('dom.kredyt') }}" method="POST">
+
+
+
+    <form id="upload-form" action="{{ url_for('dom.kredyt') }}"  method="POST">
 
       <div class="row top-buffer">
         <div class="col-lg-3">
-          <label for="idKapital1">Wartość kredytu</label>
-          <input type="text" class="form-control" placeholder="Ile?" name="kapital" id="idKapital" value="{{kapital}}">
+          <label for="idKapital1">Wartość</label>
+          <input type="text" class="form-control" placeholder="Ile?" name="kapital" id="idKapital">
         </div>
         <div class="col-lg-3">
           <label for="idData1">Data uruchomienia</label>
-          <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataStart" id="idData" value="{{data_start}}">
+          <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataStart" id="idData">
         </div>
-
+        <div class="col-lg-3">
+          <label for="idUmowa">Data podpisania umowy</label>
+          <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataUmowa" id="idUmowa">
         </div>
-
-
+        <div class="col-lg-3">
+          <label for="idOkresy">Liczba rat miesięcznych</label>
+          <input type="text" class="form-control" placeholder="okresy" name="okresy" id="idOkresy">
+        </div>
+      </div>
+      <div class="row top-buffer">
+        <div class="col-lg-3">
+          <label for="idMarza">Marża</label>
+          <input type="text" class="form-control" placeholder="marża" name="marza" id="idMarza">
+        </div>
+        <div class="col-lg-3">
+          <label class="mr-sm-2" for="idRodzajWiboru">Rodzaj Wiboru</label>
+          <select class="custom-select mr-sm-2" id="idRodzajWiboru" name="rodzajWiboru">
+            <option value="3M" selected>Wibor 3M</option>
+            <option value="6M">Wibor 6M</option>
+          </select>
+        </div>
+        <div class="col-lg-3">
+          <label class="mr-sm-2" for="idRodzajRat">Rodzaj rat</label>
+          <select class="custom-select mr-sm-2" id="idRodzajRat" name="rodzajRat">
+            <option value="stale" selected>stałe</option>
+            <option value="malejace">malejące</option>
+          </select>
+        </div>
+      </div>
+    
  
       <div class="text-right top-buffer">
 
-        <button type="submit" class="btn btn-primary">Oblicz</button>
+        <button type="submit" class="btn btn-primary">Dodaj</button>
       </div>
 
 
 
 
     </form>
-
-
 
 
 </body>
