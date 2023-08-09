@@ -42,3 +42,27 @@ docker run -p 80:80 -d --network todo-app --name nginx serwer
 
 
 git tag -a v0.3 -m "super wersja 0.3"
+
+
+
+- czasami trzeba zdef znowu 
+$ export FLASK_APP=project/__init__.py
+
+
+---------------------
+
+$ flask shell
+$ from project import db
+
+- skasuj tablee jedengo modelu
+User.__table__.drop(db.engine)
+
+InflacjaMM.__table__.drop(db.engine)
+
+Dom.__table__.drop(db.engine)
+
+- skasuj wszystko
+db.drop_all()
+
+-stworz wszystko
+db.create_all()
