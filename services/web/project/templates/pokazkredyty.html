@@ -13,7 +13,7 @@
 
   <title>Kredyty</title>
   
-  </style>
+
 </head>
 
 
@@ -21,23 +21,40 @@
 
 <body>
 
-    <div class="container" id="takietam">
-
- 
-    <div class="content">
-        {% for message in get_flashed_messages() %}
-            <div class="alert">{{ message }}</div>
-        {% endfor %}
-        {% block content %} {% endblock %}
+  <section class="hero is-small is-primary level">
+    <div class="level-left">
+    <div class="hero-body">
+      
+        <p class="title">
+          Kredyty hipoteczne
+        </p>
+        <p class="subtitle">
+          Lista wszystkich kredytów
+        </p>
+      
+    </div>
     </div>
 
-          <h1 class="title">
-            Kredyty
-          </h1>
+    </div>
+  </section>
 
+  <div class="content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        {% if category == 'error' %}
+        <div class="alert">{{ message }}</div>
+        {% else %}
+        <div class="notification is-success">{{ message }}</div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+    {% block content %} {% endblock %}
+  </div>
 
- 
-      
+    <div class="section" id="takietam">
+
 
     </div>
 
@@ -58,6 +75,10 @@ let button = kurde.append('div').attr('class', 'column is-2').append('button')
 .attr('class', 'button is-primary is-pulled-right')
 .attr('id',d=>'kredyt-'+d.id).text(d=>'wybierz'+d.id)
 
+let button_edit = kurde.append('div').attr('class', 'column is-2').append('button')
+.attr('class', 'button is-warning is-pulled-right')
+.attr('id',d=>'kredyt-'+d.id).text(d=>'edytuj'+d.id)
+
 button.on('click', function (d) {
         d3.event.stopPropagation();
         var data = { name: "John", age: 30 };
@@ -74,6 +95,20 @@ button.on('click', function (d) {
         form.submit();
       });
     
+button_edit.on('click', function (d) {
+        d3.event.stopPropagation();
+        var form = document.createElement('form');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', "{{ url_for('dom.kredyt') }}");
+        form.style.display = 'hidden';
+        var input = document.createElement("input");
+        input.setAttribute("type", "hidden");
+        input.setAttribute("name", "dane");
+        input.setAttribute("value", JSON.stringify(d));
+        form.appendChild(input);
+        document.body.appendChild(form)
+        form.submit();
+      });
 </script>
 
 </body>

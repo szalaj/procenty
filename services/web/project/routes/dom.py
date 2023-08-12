@@ -37,31 +37,61 @@ def favicon():
 @dom.route('/kredyt', methods=['GET', 'POST'])
 @login_required
 def kredyt():
-    data_start = ''
-    kapital = ''
+
+    edycja = False
+    dane = ''
     if request.method == 'POST':
-        data_start = request.form['dataStart']
-        kapital = request.form['kapital']
-        marza = request.form['marza']
-        okresy = request.form['okresy']
-        rodzaj_wiboru = request.form['rodzajWiboru']
-        rodzaj_rat = request.form['rodzajRat']
 
-        try:
-            kr = Kredyt(uzytkownik=current_user.name,
-                        data_uruchomienia=dt.datetime.strptime(data_start, '%d/%m/%Y'),
-                         wartosc=kapital,
-                         marza=marza,
-                         okresy=okresy,
-                         rodzaj_wiboru=rodzaj_wiboru,
-                         rodzaj_rat=rodzaj_rat)
-            db.session.add(kr)
-            db.session.commit()
-            flash(f"dodane {data_start}")
-        except:
-            flash("cos poszlo nie tak, sprawdx format daty")
+        if 'dane' in request.form:
+            # edycja 
+            edycja = True
+            dane = request.form['dane']
+            print(dane)
+        else:
+            data_start = request.form['dataStart']
+            kapital = request.form['kapital']
+            marza = request.form['marza']
+            okresy = request.form['okresy']
+            rodzaj_wiboru = request.form['rodzajWiboru']
+            rodzaj_rat = request.form['rodzajRat']
 
-    return render_template('kredyt.html', data_start=data_start, kapital=kapital)
+            if 'id' in request.form:
+                
+                try:
+
+                    kr_id = request.form['id']
+
+                    kr = Kredyt.query.filter_by(id=kr_id).first()
+                    kr.data_uruchomienia = dt.datetime.strptime(data_start, '%d/%m/%Y')
+                    kr.wartosc = kapital
+                    kr.marza = marza
+                    kr.okresy = okresy
+                    kr.rodzaj_wiboru = rodzaj_wiboru
+                    kr.rodzaj_rat = rodzaj_rat
+                    db.session.commit()
+                    flash("zedytowano", 'ok')
+                    
+                except:
+                    flash("cos poszlo nie tak przy edycji", 'error')
+
+                return redirect(url_for('dom.pokaz_kredyty'))
+            else:
+
+                try:
+                    kr = Kredyt(uzytkownik=current_user.name,
+                                data_uruchomienia=dt.datetime.strptime(data_start, '%d/%m/%Y'),
+                                wartosc=kapital,
+                                marza=marza,
+                                okresy=okresy,
+                                rodzaj_wiboru=rodzaj_wiboru,
+                                rodzaj_rat=rodzaj_rat)
+                    db.session.add(kr)
+                    db.session.commit()
+                    flash(f"dodane {data_start}", 'ok')
+                except:
+                    flash("cos poszlo nie tak przy dodawaniu", 'error')
+
+    return render_template('kredyt.html', edycja = edycja, dane = dane)
 
 @dom.route('/pokazkredyty', methods=['GET'])
 @login_required
