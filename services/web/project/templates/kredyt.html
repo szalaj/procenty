@@ -38,93 +38,139 @@
   <div class="content">
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-      {% for category, message in messages %}
-        {% if category == 'error' %}
-        <div class="alert">{{ message }}</div>
-        {% else %}
-        <div class="notification is-success">{{ message }}</div>
-        {% endif %}
-      {% endfor %}
+    {% for category, message in messages %}
+    {% if category == 'error' %}
+    <div class="alert">{{ message }}</div>
+    {% else %}
+    <div class="notification is-success">{{ message }}</div>
     {% endif %}
-  {% endwith %}
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
     {% block content %} {% endblock %}
   </div>
 
 
+  <section class="section">
+    <form id="upload-form" action="{{ url_for('dom.kredyt') }}" method="POST">
 
-  <form id="upload-form" action="{{ url_for('dom.kredyt') }}" method="POST">
+      <div class="field is-horizontal">
+        <div class="field-body">
+          <div class="field">
+            <label class="label">Wartość</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="Ile?" name="kapital" id="idKapital">
+            </div>
+          </div>
 
-    <div class="row top-buffer">
-      <div class="col-lg-3">
-        <label for="idKapital1">Wartość</label>
-        <input type="text" class="form-control" placeholder="Ile?" name="kapital" id="idKapital">
+          <div class="field">
+            <label class="label">Data uruchomienia</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="DD/MM/YYYY" name="dataStart" id="idData">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Data podpisania umowy</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="DD/MM/YYYY" name="dataUmowa" id="idUmowa">
+            </div>
+          </div>
+
+        </div>
       </div>
-      <div class="col-lg-3">
-        <label for="idData1">Data uruchomienia</label>
-        <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataStart" id="idData">
+
+      <div class="field is-horizontal">
+        <div class="field-body">
+          <div class="field">
+            <label class="label">Liczba rat miesięcznych</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="okresy" name="okresy" id="idOkresy">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Marża</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="marża" name="marza" id="idMarza">
+            </div>
+          </div>
+
+
+        </div>
       </div>
-      <div class="col-lg-3">
-        <label for="idUmowa">Data podpisania umowy</label>
-        <input type="text" class="form-control" placeholder="DD/MM/YYYY" name="dataUmowa" id="idUmowa">
+
+      <div class="field is-horizontal">
+        <div class="field-body">
+
+          <div class="field is-narrow">
+            <label class="label">Rodzaj wiboru</label>
+            <div class="control">
+              <div class="select is-fullwidth">
+                <select id="idRodzajWiboru" name="rodzajWiboru">
+                  <option value="3M" selected>Wibor 3M</option>
+                  <option value="6M">Wibor 6M</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="field is-narrow">
+            <label class="label">Rodzaj rat</label>
+            <div class="control">
+              <div class="select is-fullwidth">
+                <select id="idRodzajRat" name="rodzajRat">
+                  <option value="stale" selected>stałe</option>
+                  <option value="malejace">malejące</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
       </div>
-      <div class="col-lg-3">
-        <label for="idOkresy">Liczba rat miesięcznych</label>
-        <input type="text" class="form-control" placeholder="okresy" name="okresy" id="idOkresy">
+
+      <div class="field">
+        <div class="control">
+          <button type="submit" class="button is-primary" id="idGuzik">
+            Dodaj
+          </button>
+        </div>
       </div>
-    </div>
-    <div class="row top-buffer">
-      <div class="col-lg-3">
-        <label for="idMarza">Marża</label>
-        <input type="text" class="form-control" placeholder="marża" name="marza" id="idMarza">
-      </div>
-      <div class="col-lg-3">
-        <label class="mr-sm-2" for="idRodzajWiboru">Rodzaj Wiboru</label>
-        <select class="custom-select mr-sm-2" id="idRodzajWiboru" name="rodzajWiboru">
-          <option value="3M" selected>Wibor 3M</option>
-          <option value="6M">Wibor 6M</option>
-        </select>
-      </div>
-      <div class="col-lg-3">
-        <label class="mr-sm-2" for="idRodzajRat">Rodzaj rat</label>
-        <select class="custom-select mr-sm-2" id="idRodzajRat" name="rodzajRat">
-          <option value="stale" selected>stałe</option>
-          <option value="malejace">malejące</option>
-        </select>
-      </div>
-    </div>
-
-
-    <div class="text-right top-buffer">
-
-      <button type="submit" class="btn btn-primary" id="idGuzik">Dodaj</button>
-    </div>
 
 
 
 
-  </form>
 
+    </form>
+  </section>
+
+  <section class="section">
+
+    <h1>Nadpłaty</h1>
+  </section>
   {% if edycja %}
   <script type="module">
 
     const dane = JSON.parse('{{dane|safe}}');
 
-    document.getElementById("idKapital").value =  dane['wartosc'];
+    document.getElementById("idKapital").value = dane['wartosc'];
 
     const date = d3.timeParse("%Y-%m-%d")(dane['data_uruchomienia'])
-    
-
-    let datestring = ("0" + date.getDate()).slice(-2) + "/" + ("0"+(date.getMonth()+1)).slice(-2) + "/" + date.getFullYear();
 
 
-    document.getElementById("idData").value =  datestring;
-    document.getElementById("idUmowa").value =  '';
-    document.getElementById("idOkresy").value =  dane['okresy'];
-    document.getElementById("idMarza").value =  dane['marza'];
-    document.getElementById("idRodzajWiboru").value =  dane['rodzaj_wiboru'];
-    document.getElementById("idRodzajRat").value =  dane['rodzaj_rat'];
+    let datestring = ("0" + date.getDate()).slice(-2) + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" + date.getFullYear();
 
-    document.getElementById("idGuzik").firstChild.data =  'Edytuj';
+
+    document.getElementById("idData").value = datestring;
+    document.getElementById("idUmowa").value = '';
+    document.getElementById("idOkresy").value = dane['okresy'];
+    document.getElementById("idMarza").value = dane['marza'];
+    document.getElementById("idRodzajWiboru").value = dane['rodzaj_wiboru'];
+    document.getElementById("idRodzajRat").value = dane['rodzaj_rat'];
+
+    document.getElementById("idGuzik").firstChild.data = 'Edytuj';
 
     var form = document.getElementById('upload-form');
     var input = document.createElement("input");
@@ -136,7 +182,7 @@
     console.log(dane['wartosc']);
 
   </script>
-   {% endif %}
+  {% endif %}
 
 </body>
 
