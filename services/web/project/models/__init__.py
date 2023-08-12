@@ -66,7 +66,8 @@ class Kredyt(db.Model):
 
     id = db.Column(db.Integer, primary_key=True) 
     uzytkownik = db.Column(db.String, nullable=False)
-    data_uruchomienia = db.Column(db.DateTime, unique=True, nullable=False)
+    data_uruchomienia = db.Column(db.DateTime, nullable=False)
+    data_umowy = db.Column(db.DateTime, nullable=True)
     wartosc = db.Column(db.Numeric(14,2), nullable=False)
     okresy = db.Column(db.Integer, nullable=False)
     marza = db.Column(db.Float, nullable=False)
