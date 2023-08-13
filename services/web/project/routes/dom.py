@@ -18,20 +18,14 @@ from utils.inflacja import InflacjaMiesiac, Nieruchomosc
 
 import json
 
-@dataclass
-class Interpolator:
-
-    data_startowa: str
-    okres: str
-    punkty: list
-
-
 dom = Blueprint('dom', __name__)
 
 
 @dom.route('/favicon')
 def favicon():
     return url_for('static', filename='favicon.ico')
+
+
 
 @dom.route('/kredyt/<int:kredyt_id>', methods=['GET'])
 @dom.route('/kredyt', methods=['GET', 'POST'])
@@ -44,10 +38,10 @@ def kredyt(kredyt_id=None):
     if request.method == 'GET' and kredyt_id:
         # zbierz dane kredytu
         kr = Kredyt.query.filter_by(id=kredyt_id).first().as_dict()
-        nadplaty =  [n.as_dict() for n in Nadplata.query.filter_by(kredyt_id=kredyt_id)]
+        kr['nadplaty'] =  [n.as_dict() for n in Nadplata.query.filter_by(kredyt_id=kredyt_id)]
         
         print(kr)
-        print(nadplaty)
+
 
 
     if request.method == 'POST':

@@ -6,7 +6,6 @@ from flask_apscheduler import APScheduler
 
 import requests
 
-print(__name__)
 
 db = SQLAlchemy()
 
@@ -39,7 +38,7 @@ def init_app():
     @scheduler.task('cron', id='updatewibor', hour=5, minute=0)
     def wibor_scheduler():
 
-        print('------------scheduler----------------')
+        #print('------------scheduler----------------')
 
         try:
             response6m = requests.get('https://stooq.pl/q/d/l/?s=plopln6m&i=d')
