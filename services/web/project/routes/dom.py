@@ -336,16 +336,4 @@ def daty():
 
     return render_template('daty.html', datki=json.loads(result))
 
-@dom.route("/logs", methods=['GET', 'POST'])
-@login_required
-def logs():
-    
-    zap = Zapytanie.query.all()
-
-    resp = ""
-    for z in zap:
-        resp += f" <<< {z.user} at {z.created} >>> "
-
-
-    return resp
 
