@@ -1,7 +1,7 @@
 
 from flask import Blueprint, render_template, flash, redirect, url_for, request, send_file, sessions, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
-from ..models import User, Dom, Zapytanie, InflacjaMM, Kredyt
+from ..models import User, Dom, Zapytanie, InflacjaMM, Kredyt, Nadplata
 from project import db
 from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, validators
 from dateutil.relativedelta import relativedelta
@@ -33,63 +33,91 @@ dom = Blueprint('dom', __name__)
 def favicon():
     return url_for('static', filename='favicon.ico')
 
-
+@dom.route('/kredyt/<int:kredyt_id>', methods=['GET'])
 @dom.route('/kredyt', methods=['GET', 'POST'])
 @login_required
-def kredyt():
+def kredyt(kredyt_id=None):
 
     edycja = False
     dane = ''
+
+    if request.method == 'GET' and kredyt_id:
+        # zbierz dane kredytu
+        kr = Kredyt.query.filter_by(id=kredyt_id).first().as_dict()
+        nadplaty =  [n.as_dict() for n in Nadplata.query.filter_by(kredyt_id=kredyt_id)]
+        
+        print(kr)
+        print(nadplaty)
+
+
     if request.method == 'POST':
 
-        if 'dane' in request.form:
-            # edycja 
-            edycja = True
-            dane = request.form['dane']
-            print(dane)
+        if 'wartosc_nadplaty' in request.form:
+            print(request.form['id'])
+            print(request.values)
+
+            kredyt_id = request.form['id']
+
+            data_nadplaty = request.form['data_nadplaty']
+            wartosc_nadplaty = request.form['wartosc_nadplaty']
+            nd = Nadplata(data_nadplaty=dt.datetime.strptime(data_nadplaty, '%d/%m/%Y'),
+                            wartosc=wartosc_nadplaty,
+                            kredyt_id=kredyt_id)
+            db.session.add(nd)
+            db.session.commit()
+            flash(f"nadplata dodana", 'ok')
         else:
-            data_start = request.form['dataStart']
-            kapital = request.form['kapital']
-            marza = request.form['marza']
-            okresy = request.form['okresy']
-            rodzaj_wiboru = request.form['rodzajWiboru']
-            rodzaj_rat = request.form['rodzajRat']
 
-            if 'id' in request.form:
-                
-                try:
-
-                    kr_id = request.form['id']
-
-                    kr = Kredyt.query.filter_by(id=kr_id).first()
-                    kr.data_uruchomienia = dt.datetime.strptime(data_start, '%d/%m/%Y')
-                    kr.wartosc = kapital
-                    kr.marza = marza
-                    kr.okresy = okresy
-                    kr.rodzaj_wiboru = rodzaj_wiboru
-                    kr.rodzaj_rat = rodzaj_rat
-                    db.session.commit()
-                    flash("zedytowano", 'ok')
-                    
-                except:
-                    flash("cos poszlo nie tak przy edycji", 'error')
-
-                return redirect(url_for('dom.pokaz_kredyty'))
+            if 'dane' in request.form:
+                # edycja 
+                edycja = True
+                dane = request.form['dane']
+                print(dane)
             else:
+                data_start = request.form['dataStart']
+                kapital = request.form['kapital']
+                marza = request.form['marza']
+                okresy = request.form['okresy']
+                rodzaj_wiboru = request.form['rodzajWiboru']
+                rodzaj_rat = request.form['rodzajRat']
 
-                try:
-                    kr = Kredyt(uzytkownik=current_user.name,
-                                data_uruchomienia=dt.datetime.strptime(data_start, '%d/%m/%Y'),
-                                wartosc=kapital,
-                                marza=marza,
-                                okresy=okresy,
-                                rodzaj_wiboru=rodzaj_wiboru,
-                                rodzaj_rat=rodzaj_rat)
-                    db.session.add(kr)
-                    db.session.commit()
-                    flash(f"dodane {data_start}", 'ok')
-                except:
-                    flash("cos poszlo nie tak przy dodawaniu", 'error')
+                if 'id' in request.form:
+                    
+                    try:
+
+                        kr_id = request.form['id']
+
+                        kr = Kredyt.query.filter_by(id=kr_id).first()
+                        kr.data_uruchomienia = dt.datetime.strptime(data_start, '%d/%m/%Y')
+                        kr.wartosc = kapital
+                        kr.marza = marza
+                        kr.okresy = okresy
+                        kr.rodzaj_wiboru = rodzaj_wiboru
+                        kr.rodzaj_rat = rodzaj_rat
+                        db.session.commit()
+                        flash("zedytowano", 'ok')
+                        
+                    except:
+                        flash("cos poszlo nie tak przy edycji", 'error')
+
+                    return redirect(url_for('dom.pokaz_kredyty'))
+                else:
+
+                    try:
+                        kr = Kredyt(uzytkownik=current_user.name,
+                                    data_uruchomienia=dt.datetime.strptime(data_start, '%d/%m/%Y'),
+                                    wartosc=kapital,
+                                    marza=marza,
+                                    okresy=okresy,
+                                    rodzaj_wiboru=rodzaj_wiboru,
+                                    rodzaj_rat=rodzaj_rat)
+                        db.session.add(kr)
+                        db.session.commit()
+                        flash(f"dodane {data_start}", 'ok')
+                    except:
+                        flash("cos poszlo nie tak przy dodawaniu", 'error')
+
+    
 
     return render_template('kredyt.html', edycja = edycja, dane = dane)
 
@@ -248,64 +276,6 @@ def mojkredyt():
                            nom_wartosc_nieruchomosc=json.dumps(nier.get_points()),
                            real_wartosc_nieruchomosc=json.dumps(real_wartosc_nieruchomosc))
 
-
-@dom.route('/domy')
-def domy():
-
-
-    sql2 = '''
-    with domek as (
-    select date(substring(data_zakupu,7,4) || '-' || substring(data_zakupu,4,2) || '-01') as miesiac, wartosc from dom
-    ),
-    inflacja as (
-    select date(substring(miesiac,1,7) || '-01') as miesiac, wartosc from inflacjamm
-    ),
-    cos as (
-    select 
-        domek.miesiac as domek_miesiac, 
-        inflacja.miesiac as inflacja_miesiac, 
-        domek.wartosc as domek_wartosc, 
-        CASE WHEN domek.miesiac=inflacja.miesiac THEN 1 ELSE inflacja.wartosc/100.0 END as inflacja_wartosc
-    from domek 
-    left outer join inflacja
-    on inflacja.miesiac >= domek.miesiac
-    ),
-    wartosci as (
-    select t1.inflacja_miesiac, t1.inflacja_wartosc, EXP(SUM(LN(t2.inflacja_wartosc))) as infl_kum, max(t1.domek_wartosc) as domek_wartosc
-    from cos t1
-    inner join cos t2
-    on t1.inflacja_miesiac >= t2.inflacja_miesiac
-    group by t1.inflacja_miesiac, t1.inflacja_wartosc
-    order by t1.inflacja_miesiac
-    )
-    select inflacja_miesiac, inflacja_wartosc, infl_kum, domek_wartosc, domek_wartosc/infl_kum as dom_real_wartosc
-    from wartosci
-    
-    '''
-
-    domy = Dom.query.all()
-    
-    inflacja = InflacjaMM.query.all()
-
-    inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja if row.miesiac >= dt.datetime.strptime('2021-11', '%Y-%m')]
-
-    # convert the list of dictionaries to JSON
-    inflacja_dumps = json.dumps(inflacja_dict)
-
-
-    res = db.session.execute(text(sql2))
-
-    #result_list = [{'id': row[0], 'domek_miesiac': row[1], 'inflacja_miesiac': row[2], 'domek_wartosc': row[3], 'inflacja_wartosc': row[4]} for row in res]
-
-    result_list= [{'inflacja_miesiac': row[0], 'inflacja_wartosc': row[1], 'infl_kum': row[2], 'dom_wartosc': row[3], 'dom_real_wartosc': row[4]} for row in res]
-
-    p = [ ('01/10/2044', 6.0), ('01/10/2052', 2.0) ,('01/10/2060', 10.0)]
-    w = ut.WiborInter('3M', dt.datetime.strptime("04/11/2019", '%d/%m/%Y'), 360, 10, p)
-
-    dane_kredytu =  ut.generateFromWiborFileInter(w, 400000, 200, dt.datetime.strptime("04/11/2019", '%d/%m/%Y'), 1, dt.datetime.strptime("04/11/2049", '%d/%m/%Y'), '3M', [], False, False)
-    wynik = proc.create_kredyt(dane_kredytu, 'malejace')
-
-    return render_template('domy.html', inflacja=inflacja_dumps, results=json.dumps(result_list), wibor=w.json_data, wynik=json.dumps(wynik))
 
 
 @dom.route('/kiedy', methods=['GET', 'POST']) 

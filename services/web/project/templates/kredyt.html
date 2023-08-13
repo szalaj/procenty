@@ -52,7 +52,7 @@
 
 
   <section class="section">
-    <form id="upload-form" action="{{ url_for('dom.kredyt') }}" method="POST">
+    <form id="kredyt-form" action="{{ url_for('dom.kredyt') }}" method="POST">
 
       <div class="field is-horizontal">
         <div class="field-body">
@@ -149,7 +149,44 @@
   <section class="section">
 
     <h1>Nadpłaty</h1>
+
+    <form id="nadplata-form" action="{{ url_for('dom.kredyt') }}" method="POST">
+
+      <div class="field is-horizontal">
+        <div class="field-body">
+          <div class="field">
+            <label class="label">Wartość</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="Ile?" name="wartosc_nadplaty" id="idNadplataWartosc">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Data</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="DD/MM/YYYY" name="data_nadplaty" id="idDataNadplaty">
+            </div>
+          </div>
+
+
+
+
+        </div>
+
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <button type="submit" class="button is-primary" id="idGuzik">
+            Dodaj
+          </button>
+        </div>
+      </div>
+
+    </form>
   </section>
+
+
   {% if edycja %}
   <script type="module">
 
@@ -172,14 +209,23 @@
 
     document.getElementById("idGuzik").firstChild.data = 'Edytuj';
 
-    var form = document.getElementById('upload-form');
-    var input = document.createElement("input");
+    let form = document.getElementById('kredyt-form');
+    let input = document.createElement("input");
     input.setAttribute("type", "hidden");
     input.setAttribute("name", "id");
     input.setAttribute("value", dane['id']);
     form.appendChild(input);
 
-    console.log(dane['wartosc']);
+    console.log('edycja')
+
+    let form2 = document.getElementById('nadplata-form');
+    let input2 = document.createElement("input");
+    input2.setAttribute("type", "hidden");
+    input2.setAttribute("name", "id");
+    input2.setAttribute("value", dane['id']);
+    form2.appendChild(input2);
+
+
 
   </script>
   {% endif %}
