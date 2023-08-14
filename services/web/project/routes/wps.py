@@ -24,7 +24,7 @@ bp = Blueprint('bp', __name__)
 
 ## ENTRY POINT
 ##
-@bp.route("/", methods=['GET', 'POST'])
+@bp.route("/obliczwibor", methods=['GET', 'POST'])
 @login_required
 def main():
 

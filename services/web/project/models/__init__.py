@@ -93,7 +93,7 @@ class Nadplata(db.Model):
 
     id = db.Column(db.Integer, primary_key=True) 
     kredyt_id  = db.Column(db.Integer, db.ForeignKey("kredyt.id"), nullable=False)
-    data_nadplaty = db.Column(db.DateTime, unique=True, nullable=False)
+    data_nadplaty = db.Column(db.DateTime, nullable=False)
     wartosc = db.Column(db.Numeric(14,2), nullable=False)
 
     def __repr__(self):

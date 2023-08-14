@@ -146,6 +146,8 @@
     </form>
   </section>
 
+
+
   <section class="section">
 
     <h1>Nadpłaty</h1>
@@ -186,11 +188,28 @@
     </form>
   </section>
 
+  <div class="container">
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th><abbr title="Position">Wartość</abbr></th>
+          <th>Data</th>
+        </tr>
+      </thead>
+      <tbody>
+
+
+      </tbody>
+    </table>
+  </div>
 
   {% if edycja %}
   <script type="module">
 
-    const dane = JSON.parse('{{dane|safe}}');
+    const dane = JSON.parse('{{dane |safe}}');
+
+    console.log(dane)
 
     document.getElementById("idKapital").value = dane['wartosc'];
 
@@ -225,6 +244,18 @@
     input2.setAttribute("value", dane['id']);
     form2.appendChild(input2);
 
+
+    let table = d3.select("tbody")
+    .selectAll("tr").data(dane['nadplaty'])
+    .enter().append("tr")
+
+
+    table.append('td')
+    .text(function(d){return d.wartosc;})
+
+    table.append('td')
+    .text(function(d){return d.data_nadplaty;})
+   
 
 
   </script>

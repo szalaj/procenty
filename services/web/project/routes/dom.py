@@ -26,9 +26,14 @@ def favicon():
     return url_for('static', filename='favicon.ico')
 
 
+@dom.route('/', methods=['GET'])
+@login_required
+def start():
 
-@dom.route('/kredyt/<int:kredyt_id>', methods=['GET'])
+    return redirect(url_for('dom.pokaz_kredyty'))
+
 @dom.route('/kredyt', methods=['GET', 'POST'])
+@dom.route('/kredyt/<kredyt_id>', methods=['GET', 'POST'])
 @login_required
 def kredyt(kredyt_id=None):
 
@@ -41,7 +46,8 @@ def kredyt(kredyt_id=None):
         kr['nadplaty'] =  [n.as_dict() for n in Nadplata.query.filter_by(kredyt_id=kredyt_id)]
         
         print(kr)
-
+        dane = json.dumps(kr)
+        edycja = True
 
 
     if request.method == 'POST':
@@ -60,6 +66,8 @@ def kredyt(kredyt_id=None):
             db.session.add(nd)
             db.session.commit()
             flash(f"nadplata dodana", 'ok')
+            print(url_for('dom.kredyt', kredyt_id=2))
+            return redirect(url_for('dom.kredyt', kredyt_id=kredyt_id))
         else:
 
             if 'dane' in request.form:
