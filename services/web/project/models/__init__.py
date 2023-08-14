@@ -93,5 +93,14 @@ class Nadplata(db.Model):
 
     id = db.Column(db.Integer, primary_key=True) 
     kredyt_id  = db.Column(db.Integer, db.ForeignKey("kredyt.id"), nullable=False)
-    data_nadplaty = db.Column(db.DateTime, unique=True, nullable=False)
+    data_nadplaty = db.Column(db.DateTime, nullable=False)
     wartosc = db.Column(db.Numeric(14,2), nullable=False)
+
+    def __repr__(self):
+        return f"{self.kredyt_id} - {self.wartosc}"
+    
+    def as_dict(self):
+       return {'id': self.id,
+               'data_nadplaty': dt.datetime.strftime(self.data_nadplaty, '%Y-%m-%d'),
+                'wartosc': float(self.wartosc),
+                'kredyt_id':self.kredyt_id}
