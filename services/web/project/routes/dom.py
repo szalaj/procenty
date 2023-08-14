@@ -132,22 +132,32 @@ def pokaz_kredyty():
 
     return render_template('pokazkredyty.html', kredyty=json.dumps(kredyty))
 
-
-@dom.route('/mojkredyt', methods=['GET', 'POST'])
-def mojkredyt():
-
-    if request.method == 'POST':
-        kapital = request.form['kapital']
-    else:
-        kapital = 460000
+@dom.route('/obliczkredyt/<kredyt_id>', methods=['GET', 'POST'])
+def obliczkredyt(kredyt_id=None):
 
 
+    kr = Kredyt.query.filter_by(id=kredyt_id).first().as_dict()
+    kr['nadplaty'] =  [n.as_dict() for n in Nadplata.query.filter_by(kredyt_id=kredyt_id)]
+        
+    # if request.method == 'POST':
+    #     kapital = request.form['kapital']
+    # else:
+    #     kapital = 460000
 
-    marza = 2.99
-    rodzaj_wiboru = '3M'
-    data_start = '04/11/2021'
-    okresy = 360
+
+
+    # marza = 2.99
+    # rodzaj_wiboru = '3M'
+    # data_start = '04/11/2021'
+    # okresy = 360
+    # liczba_wakacji = 0
+
+    kapital = kr['wartosc']
+    marza = kr['marza']
+    data_start = kr['data_uruchomienia']
+    okresy = kr['okresy']
     liczba_wakacji = 0
+    rodzaj_wiboru = kr['rodzaj_wiboru']
 
     fin_data = {}
     fin_data['kapital'] = kapital
@@ -157,39 +167,39 @@ def mojkredyt():
 
     prognoza = [('01/10/2029', 3.0), ('01/10/2040', 7.0), ('01/10/2044', 3.0), ('01/10/2160', 3.0)]
 
-    w = ut.WiborInter(rodzaj_wiboru, dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy, liczba_wakacji, prognoza)
+    w = ut.WiborInter(rodzaj_wiboru, dt.datetime.strptime(data_start, '%Y-%m-%d'), okresy, liczba_wakacji, prognoza)
 
-    start_date = dt.datetime.strptime(data_start, '%d/%m/%Y')
-    nadplaty = [{'dzien': '12-07-2023', 'kwota': 8000.00},
-    {'dzien': '10-07-2023', 'kwota': 150.00},
-    {'dzien':'06-07-2023', 'kwota':4500.00},
-    {'dzien':'27-06-2023', 'kwota':1000.00},
-    {'dzien':'16-06-2023', 'kwota':100.00},
-    {'dzien':'22-05-2023', 'kwota':600.00},
-    {'dzien':'13-04-2023', 'kwota':1500.00},
-    {'dzien':'20-03-2023', 'kwota':1700.00},
-    {'dzien':'20-02-2023', 'kwota':1000.00},
-    {'dzien':'26-01-2023', 'kwota':1000.00},
-    {'dzien':'16-12-2022', 'kwota':1000.00},
-    {'dzien':'17-11-2022', 'kwota':1990.45},
-    {'dzien':'14-10-2022', 'kwota':600.00},
-    {'dzien':'05-05-2022', 'kwota':608.00},
-    {'dzien':'02-05-2022', 'kwota':200.00},
-    {'dzien':'25-04-2022', 'kwota':3000.00}]
+    start_date = dt.datetime.strptime(data_start, '%Y-%m-%d')
 
-    nadplata_start = dt.datetime.strptime('12/05/2024', '%d/%m/%Y')
-    for o in range(240):
-        dzien = (nadplata_start + relativedelta(months=o)).strftime('%d-%m-%Y')
-        nadplaty.append({'dzien': dzien, 'kwota': 2000})
 
-    for n in nadplaty:
-        n['dzien'] = dt.datetime.strptime(n['dzien'], '%d-%m-%Y').strftime('%Y-%m-%d')
+    nadplaty = [{'dzien': n['data_nadplaty'], 'kwota': n['wartosc']} for n in kr['nadplaty']]
 
+    # nadplata_start = dt.datetime.strptime('12/05/2024', '%d/%m/%Y')
+    # for o in range(240):
+    #     dzien = (nadplata_start + relativedelta(months=o)).strftime('%d-%m-%Y')
+    #     nadplaty.append({'dzien': dzien, 'kwota': 2000})
+
+    # nadplaty = [{'dzien': '12-07-2023', 'kwota': 8000.00},
+    # {'dzien': '10-07-2023', 'kwota': 150.00},
+    # {'dzien':'06-07-2023', 'kwota':4500.00},
+    # {'dzien':'27-06-2023', 'kwota':1000.00},
+    # {'dzien':'16-06-2023', 'kwota':100.00},
+    # {'dzien':'22-05-2023', 'kwota':600.00},
+    # {'dzien':'13-04-2023', 'kwota':1500.00},
+    # {'dzien':'20-03-2023', 'kwota':1700.00},
+    # {'dzien':'20-02-2023', 'kwota':1000.00},
+    # {'dzien':'26-01-2023', 'kwota':1000.00},
+    # {'dzien':'16-12-2022', 'kwota':1000.00},
+    # {'dzien':'17-11-2022', 'kwota':1990.45},
+    # {'dzien':'14-10-2022', 'kwota':600.00},
+    # {'dzien':'05-05-2022', 'kwota':608.00},
+    # {'dzien':'02-05-2022', 'kwota':200.00},
+    # {'dzien':'25-04-2022', 'kwota':3000.00}]
 
 
     dane_kredytu =  ut.generateFromWiborFileInter(w, kapital,
                                                    okresy,
-                                                   dt.datetime.strptime(data_start, '%d/%m/%Y'), 
+                                                   start_date, 
                                                    marza,
                                                    [],
                                                    nadplaty, 
@@ -199,7 +209,6 @@ def mojkredyt():
 
     inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja if row.miesiac >= dt.datetime.strptime('2021-11', '%Y-%m')]
 
-    print(f"inflacja : {inflacja_dict}")
 
     prognoza_inflacja = [('01/10/2029', 100.2), ('01/10/2044', 100.2), ('01/10/2160', 100.2)]
 
@@ -207,12 +216,17 @@ def mojkredyt():
 
     dzien_ostatniej_raty = max([dt.datetime.strptime(d['dzien'],'%Y-%m-%d') for d in wynik['raty']])
 
-    inf = InflacjaMiesiac(dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy,  liczba_wakacji, inflacja_dict, prognoza_inflacja)
+    inf = InflacjaMiesiac(start_date, okresy,  liczba_wakacji, inflacja_dict, prognoza_inflacja)
 
     raty = {f"{n['dzien']}": n['rata'] for n in wynik["raty"]}
     nadplaty = {f"{n['dzien']}": n['kwota'] for n in wynik["nadplaty"]}
 
-    inne = [{'dzien':'2021-11-04', 'kwota': 40000}]
+
+    # inne = [{'dzien':'2021-11-04', 'kwota': 40000}]
+
+
+    inne = []
+
 
     # koszty = {x: float(raty.get(x, 0)) + float(nadplaty.get(x, 0)) + float(inne.get(x, 0))  for x in sorted(list(set(raty).union(nadplaty).union(inne)))}
     
@@ -245,7 +259,7 @@ def mojkredyt():
     for k in raty.keys():
         raty_list.append({'dzien':dt.datetime.strptime(k, '%Y-%m-%d'), 'wartosc': raty[k]})
 
-    kpo_list = [{'dzien':dt.datetime.strptime(data_start, '%d/%m/%Y'), 'wartosc': kapital}]
+    kpo_list = [{'dzien':start_date, 'wartosc': kapital}]
     for k in wynik["raty"]:
         kpo_list.append({'dzien':dt.datetime.strptime(k['dzien'], '%Y-%m-%d'), 'wartosc': k['K_po']})
 
@@ -257,14 +271,14 @@ def mojkredyt():
     real_kpo = inf.urealnij(kpo_list)
 
     nier_points = [{'dzien':start_date, 'wartosc': 500000}, {'dzien':dt.datetime.strptime('2056-01-01', '%Y-%m-%d'), 'wartosc': 1200000}]
-    nier = Nieruchomosc(dt.datetime.strptime(data_start, '%d/%m/%Y'), okresy,  liczba_wakacji, nier_points, dzien_ostatniej_raty) 
+    nier = Nieruchomosc(start_date, okresy,  liczba_wakacji, nier_points, dzien_ostatniej_raty) 
     
     real_wartosc_nieruchomosc = inf.urealnij(nier.json_data)
 
     nom_koszty = [{'dzien': dt.datetime.strftime(r['dzien'], '%Y-%m'), 'wartosc': r['wartosc']} for r in koszty_list]
     nom_raty = [{'dzien': dt.datetime.strftime(r['dzien'], '%Y-%m'), 'wartosc': r['wartosc']} for r in raty_list]
 
-    return render_template('mojkredyt.html', 
+    return render_template('obliczkredyt.html', 
                            wibor=json.dumps(w.json_data),
                            wynik=json.dumps(wynik), 
                            fin_data = json.dumps(fin_data),

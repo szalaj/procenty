@@ -73,9 +73,11 @@ let kurde = d3.select("#takietam").selectAll('div.kredyty').data(kredyty)
 
 kurde.append('div').attr('class', 'column').html(d=>d.wartosc)
 kurde.append('div').attr('class', 'column').html(d=>d.data_uruchomienia)
+
 let button = kurde.append('div').attr('class', 'column is-2').append('button')
 .attr('class', 'button is-primary is-pulled-right')
 .attr('id',d=>'kredyt-'+d.id).text(d=>'Oblicz')
+.attr('onclick', d=> "window.location.href='{{ url_for('dom.obliczkredyt', kredyt_id=0) }}'".replace("0",d.id))
 
 let button_edit = kurde.append('div').attr('class', 'column is-2').append('button')
 .attr('class', 'button is-warning is-pulled-right')
@@ -85,21 +87,7 @@ let button_edit = kurde.append('div').attr('class', 'column is-2').append('butto
 
 
 
-button.on('click', function (d) {
-        d3.event.stopPropagation();
-        var data = { name: "John", age: 30 };
-        var form = document.createElement('form');
-        form.setAttribute('method', 'post');
-        form.setAttribute('action', "{{ url_for('dom.mojkredyt') }}");
-        form.style.display = 'hidden';
-        var input = document.createElement("input");
-        input.setAttribute("type", "hidden");
-        input.setAttribute("name", "kapital");
-        input.setAttribute("value", d.wartosc);
-        form.appendChild(input);
-        document.body.appendChild(form)
-        form.submit();
-      });
+
     
 
 </script>
