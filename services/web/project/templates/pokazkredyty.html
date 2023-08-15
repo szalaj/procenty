@@ -85,6 +85,12 @@ let button_edit = kurde.append('div').attr('class', 'column is-2').append('butto
 .attr('onclick', d=> "window.location.href='{{ url_for('dom.kredyt', kredyt_id=0) }}'".replace("0",d.id))
 
 
+let button_usun = kurde.append('div').attr('class', 'column is-2').append('button')
+.attr('class', 'button is-danger is-pulled-right')
+.attr('id',d=>'kredyt-'+d.id).text(d=>'usun'+d.id)
+.attr('onclick', d=> "window.location.href='{{ url_for('dom.kredyt', kredyt_id=0, usun=True) }}'".replace("0",d.id))
+
+
 
 
 

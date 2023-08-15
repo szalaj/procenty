@@ -34,13 +34,17 @@ def start():
 
 @dom.route('/kredyt', methods=['GET', 'POST'])
 @dom.route('/kredyt/<kredyt_id>', methods=['GET', 'POST'])
+@dom.route('/kredyt/<kredyt_id>/<usun>', methods=['GET', 'POST'])
+@dom.route('/kredyt/<kredyt_id>/<nadplata_id>/<usun>', methods=['GET', 'POST'])
 @login_required
-def kredyt(kredyt_id=None):
+def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
 
     edycja = False
     dane = ''
 
-    if request.method == 'GET' and kredyt_id:
+    print(f"co przyszlo - kredytid {kredyt_id}, nadplata {nadplata_id}, usun {usun}")
+
+    if request.method == 'GET' and kredyt_id and not usun:
         # zbierz dane kredytu
         kr = Kredyt.query.filter_by(id=kredyt_id).first().as_dict()
         kr['nadplaty'] =  [n.as_dict() for n in Nadplata.query.filter_by(kredyt_id=kredyt_id)]
@@ -49,6 +53,34 @@ def kredyt(kredyt_id=None):
         dane = json.dumps(kr)
         edycja = True
 
+
+    if request.method == 'GET' and kredyt_id and not nadplata_id and usun:
+        # zbierz dane kredytu
+
+        print(kredyt_id + "usuniety")
+
+        Nadplata.query.filter_by(kredyt_id=kredyt_id).delete()
+
+        Kredyt.query.filter_by(id=kredyt_id).delete()
+
+        db.session.commit()
+        
+        flash('kredyt usunięty')
+        return redirect(url_for('dom.pokaz_kredyty'))
+
+    if request.method == 'GET' and kredyt_id and nadplata_id and usun:
+        # zbierz dane kredytu
+
+        print(nadplata_id, kredyt_id)
+
+        Nadplata.query.filter_by(id=nadplata_id).delete()
+
+
+
+        db.session.commit()
+        
+        flash('nadplata usunięta')
+        return redirect(url_for('dom.kredyt', kredyt_id=kredyt_id))
 
     if request.method == 'POST':
 
