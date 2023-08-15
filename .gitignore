@@ -4,3 +4,4 @@ loginfo.log
 __pycache__/
 *.py[cod]
 *$py.class
+backup/
