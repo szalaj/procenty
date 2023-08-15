@@ -195,6 +195,7 @@
         <tr>
           <th><abbr title="Position">Wartość</abbr></th>
           <th>Data</th>
+          <th>Usuń</th>
         </tr>
       </thead>
       <tbody>
@@ -256,6 +257,11 @@
     table.append('td')
     .text(function(d){return d.data_nadplaty;})
    
+
+    table.append('td')
+    .html(d=> "<a href='{{ url_for('dom.kredyt', kredyt_id=0, nadplata_id=99999999, usun=True) }}'>usun</a>".replace("0",dane['id']).replace('99999999', d.id))
+
+
 
 
   </script>
