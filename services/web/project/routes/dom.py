@@ -153,7 +153,7 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
 
     
 
-    return render_template('kredyt.html', edycja = edycja, dane = dane)
+    return render_template('dom/kredyt.html', edycja = edycja, dane = dane)
 
 @dom.route('/pokazkredyty', methods=['GET'])
 @login_required
@@ -162,7 +162,7 @@ def pokaz_kredyty():
     kredyty = [k.as_dict() for k in Kredyt.query.all()]
 
 
-    return render_template('pokazkredyty.html', kredyty=json.dumps(kredyty))
+    return render_template('dom/pokazkredyty.html', kredyty=json.dumps(kredyty))
 
 @dom.route('/obliczkredyt/<kredyt_id>', methods=['GET', 'POST'])
 def obliczkredyt(kredyt_id=None):
@@ -310,7 +310,7 @@ def obliczkredyt(kredyt_id=None):
     nom_koszty = [{'dzien': dt.datetime.strftime(r['dzien'], '%Y-%m'), 'wartosc': r['wartosc']} for r in koszty_list]
     nom_raty = [{'dzien': dt.datetime.strftime(r['dzien'], '%Y-%m'), 'wartosc': r['wartosc']} for r in raty_list]
 
-    return render_template('obliczkredyt.html', 
+    return render_template('dom/obliczkredyt.html', 
                            wibor=json.dumps(w.json_data),
                            wynik=json.dumps(wynik), 
                            fin_data = json.dumps(fin_data),
@@ -346,7 +346,7 @@ def kiedywibor():
   
         return json.dumps(miesiace)
 
-    return render_template('kiedy.html')
+    return render_template('dom/kiedy.html')
 
 @dom.route('/daty', methods=['GET', 'POST']) 
 @login_required
@@ -382,6 +382,6 @@ def daty():
     print(max_day_wibor.dayofweek)
 
 
-    return render_template('daty.html', datki=json.loads(result))
+    return render_template('dom/daty.html', datki=json.loads(result))
 
 

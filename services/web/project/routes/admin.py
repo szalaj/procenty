@@ -22,7 +22,7 @@ def login():
             login_user(u)
             return redirect(url_for('bp.main'))
 
-    return render_template('login.html')
+    return render_template('admin/login.html')
 
 @admin_bp.route('/logout', methods=['GET'])
 @login_required
