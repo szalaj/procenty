@@ -177,7 +177,7 @@ def main():
         db.session.commit()
 
         
-        return render_template('wykres.html', tech_data=tech_data, fin_data=fin_data)
+        return render_template('wps/wykres.html', tech_data=tech_data, fin_data=fin_data)
 
 
 
@@ -234,14 +234,14 @@ def podsumowanie():
         tech_data = json.loads(request.form['tech_data'])
 
 
-        return render_template('podsumowanie.html', tech_data=tech_data)
+        return render_template('wps/podsumowanie.html', tech_data=tech_data)
 
 
 @bp.route("/opis", methods=['GET'])
 def opis():
 
     
-    return render_template('opis.html')
+    return render_template('wps/opis.html')
 
 
 @bp.route("/logs", methods=['GET', 'POST'])
