@@ -20,7 +20,7 @@ def login():
         u = User.query.filter_by(name=uzytkownik, password=haslo).first()
         if u:
             login_user(u)
-            return redirect(url_for('bp.main'))
+            return redirect(url_for('dom.start'))
 
     return render_template('admin/login.html')
 
@@ -28,7 +28,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('bp.main'))
+    return redirect(url_for('dom.start'))
 
 
 @admin_bp.route('/backup')
