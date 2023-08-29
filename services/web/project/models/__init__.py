@@ -60,6 +60,9 @@ class InflacjaMM(db.Model):
     miesiac = db.Column(db.DateTime, unique=True, nullable=False)
     wartosc = db.Column(db.Numeric(4,2), nullable=False)
 
+    def __repr__(self):
+        return f"{self.miesiac}"
+
 
 class Kredyt(db.Model):
     __tablename__ = 'kredyt'
