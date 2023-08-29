@@ -239,7 +239,9 @@ def obliczkredyt(kredyt_id=None):
     
     inflacja = InflacjaMM.query.all()
 
-    inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja if row.miesiac >= dt.datetime.strptime('2021-11', '%Y-%m')]
+
+
+    inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja if row.miesiac >= start_date]
 
 
     prognoza_inflacja = [('01/10/2029', 100.2), ('01/10/2044', 100.2), ('01/10/2160', 100.2)]
