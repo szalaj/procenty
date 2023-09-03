@@ -53,7 +53,7 @@ def init_app():
         except:
             print('update wibor failed')
         
-    wibor_scheduler()
+    #wibor_scheduler()
     
     from .routes.admin import admin_bp as admin_blueprint
     app.register_blueprint(admin_blueprint)
