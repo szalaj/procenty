@@ -14,7 +14,8 @@ def load_user():
         with open('./project/seeds/user.csv', newline='') as csvfile:
             spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
             for row in spamreader:
-                d = User(name=row[0], password=row[1])
+                d = User(name=row[0])
+                d.set_password(row[1])
                 db.session.add(d)
                 db.session.commit()
             
@@ -47,4 +48,4 @@ def load_inflacja():
 
 if __name__ == "__main__":
     print('ehlo')
-    load_inflacja()
+    load_user()

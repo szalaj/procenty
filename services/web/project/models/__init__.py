@@ -1,6 +1,7 @@
 from flask_login import UserMixin
 from .. import db
 from sqlalchemy.sql import func
+from werkzeug.security import generate_password_hash, check_password_hash
 
 import datetime as dt
 
@@ -51,6 +52,13 @@ class User(UserMixin, db.Model):
 
     def get_id(self):         
         return self.id
+    
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+
 
 
 class InflacjaMM(db.Model):
