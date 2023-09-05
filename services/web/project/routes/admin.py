@@ -17,10 +17,11 @@ def login():
         uzytkownik = str(request.form['uzytkownik'])
         haslo = str(request.form['haslo'])
 
-        u = User.query.filter_by(name=uzytkownik, password=haslo).first()
+        u = User.query.filter_by(name=uzytkownik).first()
         if u:
-            login_user(u)
-            return redirect(url_for('dom.start'))
+            if u.check_password(haslo):
+                login_user(u)
+                return redirect(url_for('dom.start'))
 
     return render_template('admin/login.html')
 

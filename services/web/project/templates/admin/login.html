@@ -32,7 +32,7 @@ span {
     <div class="row">
       <div class="col">
     <nav class="navbar navbar-light bg-light">
-      <h1>Oblicz WPS</h1>
+      <h1>Logowanie</h1>
     </nav>
     </div>
     </div>
@@ -91,109 +91,7 @@ span {
   
 </div>
 
-    {% if dane %}
-
-    <script type="text/javascript">
-
-      
-
-      var dane_formularza = JSON.parse('{{form_data|tojson|safe}}');
-
-      console.log(dane_formularza)
-      
-
-      document.getElementById("idKapital1").value = String(dane_formularza["kapital1"]);
-      document.getElementById("idData1").value = String(dane_formularza["dataStart1"]);
-      document.getElementById("idOkresy").value = String(dane_formularza["okresy"]);
-      document.getElementById("idMarza").value = String(dane_formularza["marza"]);
-      document.getElementById("idDataZamrozenia").value = String(dane_formularza["dataZamrozenia"]);
-      document.getElementById("idRodzajRat").value = String(dane_formularza["rodzajRat"]);
-      document.getElementById("idRodzajWiboru").value = String(dane_formularza["rodzajWiboru"]);
-
-      console.log(dane_formularza["checkTr2"])
-
-      console.log(typeof dane_formularza["checkTr2"])
-
-      if (dane_formularza["checkTr2"]) {
-
-        document.getElementById('idCheckTransza2').checked = true;
-        document.getElementById('idKapital2').readOnly = false;
-        document.getElementById('idData2').readOnly = false;
-
-        document.getElementById('idKapital2').value = String(dane_formularza["kapital2"]);;
-        document.getElementById('idData2').value = String(dane_formularza["dataStart2"]);
-      } else 
-      {
-        document.getElementById('idCheckTransza2').checked = false;
-      }
-
-      if (dane_formularza["checkTr3"]) {
-
-      document.getElementById('idCheckTransza3').checked = true;
-      document.getElementById('idKapital3').readOnly = false;
-      document.getElementById('idData3').readOnly = false;
-
-      document.getElementById('idKapital3').value = String(dane_formularza["kapital3"]);;
-      document.getElementById('idData3').value = String(dane_formularza["dataStart3"]);
-      } else 
-      {
-      document.getElementById('idCheckTransza3').checked = false;
-      }
-      
-      var kredyt_dane = JSON.parse('{{dane | tojson|safe}}');
-
-      var data_zamrozenia_str = '{{data_zamrozenia}}';
-
-      console.log(data_zamrozenia_str)
-
-      const parseDzien = d3.timeParse("%Y-%m-%d")
-
-      const data_zamrozenia = parseDzien(data_zamrozenia_str)
-
-      kredyt_dane_do_zamr = kredyt_dane['raty'].filter(function(d) { return parseDzien(d['dzien']) <= data_zamrozenia  } )
-
-      console.log(kredyt_dane_do_zamr)
-
-      suma_rat = d3.sum(kredyt_dane['raty'], d => d.rata)
-
-      suma_rat_A = d3.sum(kredyt_dane_do_zamr, d => d.rata)
-
-
-      var kredyt_dane2 = JSON.parse('{{dane2 | tojson|safe}}');
-
-      kredyt_dane_do_zamr2 = kredyt_dane2['raty'].filter(function(d) { return parseDzien(d['dzien']) <= data_zamrozenia  } )
-
-      suma_rat2 = d3.sum(kredyt_dane2['raty'], d => d.rata)
-
-      suma_rat2_A = d3.sum(kredyt_dane_do_zamr2, d => d.rata)
-
-      suma_rat_B = suma_rat - suma_rat_A
-      suma_rat2_B = suma_rat2 - suma_rat2_A
-
-      zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
-      
-      d3.select("#suma_rat_A").text(zloty(suma_rat_A))
-
-      d3.select("#suma_rat2_A").text(zloty(suma_rat2_A))
-
-      d3.select("#roznica_A").text(zloty(suma_rat_A - suma_rat2_A))
-
-
-      d3.select("#suma_rat_B").text(zloty(suma_rat_B))
-
-      d3.select("#suma_rat2_B").text(zloty(suma_rat2_B))
-
-      d3.select("#roznica_B").text(zloty(suma_rat_B - suma_rat2_B))
-
-
-      d3.select("#suma_rat").text(zloty(suma_rat))
-
-      d3.select("#suma_rat2").text(zloty(suma_rat2))
-
-      d3.select("#roznica").text(zloty(suma_rat - suma_rat2))
-    </script>
-
-  {% endif %}
+    
 
   </body>
 </html>
