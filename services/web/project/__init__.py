@@ -40,24 +40,23 @@ def init_app():
 
         print('------------scheduler----------------')
 
-        #response6m = requests.get("https://www.onet.pl/")
-        
-        response6m = requests.get("https://stooq.pl/q/d/l/?s=plopln6m&i=d")
-        print(response6m)
-        # with open("./project/static/plopln6m_d.csv", "wb") as f:
-        #     f.write(response6m.content)
+        try:
+            response6m = requests.get('https://stooq.pl/q/d/l/?s=plopln6m&i=d')
+            
+            with open("./project/static/plopln6m_d.csv", "wb") as f:
+                f.write(response6m.content)
 
-
-
-        # response3m = requests.get('https://stooq.pl/q/d/l/?s=plopln3m&i=d')
-        
-        # with open("./project/static/plopln3m_d.csv", "wb") as f:
-        #     f.write(response3m.content)
+            response3m = requests.get('https://stooq.pl/q/d/l/?s=plopln3m&i=d')
+            
+            with open("./project/static/plopln3m_d.csv", "wb") as f:
+                f.write(response3m.content)
+        except:
+            print('update wibor failed')
 
         print('------------finish scheduler----------------')
 
         
-    wibor_scheduler()
+    #wibor_scheduler()
     
     from .routes.admin import admin_bp as admin_blueprint
     app.register_blueprint(admin_blueprint)
