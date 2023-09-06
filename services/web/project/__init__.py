@@ -40,24 +40,20 @@ def init_app():
 
         #print('------------scheduler----------------')
 
-        try:
-            response6m = requests.get('https://stooq.pl/q/d/l/?s=plopln6m&i=d')
-        except:
-            print('update wibor 3m failed')
-        
-        try:
-            with open("./project/static/plopln6m_d.csv", "wb") as f:
-                f.write(response6m.content)
-        except:
-            print('cant write')
 
-        try:
-            response3m = requests.get('https://stooq.pl/q/d/l/?s=plopln3m&i=d')
-            
-            with open("./project/static/plopln3m_d.csv", "wb") as f:
-                f.write(response3m.content)
-        except:
-            print('update wibor 6m failed')
+        response6m = requests.get('https://stooq.pl/q/d/l/?s=plopln6m&i=d')
+
+        with open("./project/static/plopln6m_d.csv", "wb") as f:
+            f.write(response6m.content)
+
+
+
+        response3m = requests.get('https://stooq.pl/q/d/l/?s=plopln3m&i=d')
+        
+        with open("./project/static/plopln3m_d.csv", "wb") as f:
+            f.write(response3m.content)
+
+        print('update wibor 6m failed')
         
     wibor_scheduler()
     
