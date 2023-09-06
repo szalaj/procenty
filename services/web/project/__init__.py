@@ -35,10 +35,10 @@ def init_app():
         return redirect(url_for('admin_bp.login'))
     
 
-    @scheduler.task('cron', id='updatewibor', hour=5, minute=0)
+    #@scheduler.task('cron', id='updatewibor', hour=5, minute=0)
     def wibor_scheduler():
 
-        #print('------------scheduler----------------')
+        print('------------scheduler----------------')
 
 
         response6m = requests.get('https://stooq.pl/q/d/l/?s=plopln6m&i=d')
@@ -53,7 +53,8 @@ def init_app():
         with open("./project/static/plopln3m_d.csv", "wb") as f:
             f.write(response3m.content)
 
-        print('update wibor 6m failed')
+        print('------------finish scheduler----------------')
+
         
     wibor_scheduler()
     
