@@ -159,6 +159,8 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
 @login_required
 def pokaz_kredyty():
 
+    print(request.remote_addr)
+
     kredyty = [k.as_dict() for k in Kredyt.query.all()]
 
 

@@ -35,10 +35,10 @@ def init_app():
         return redirect(url_for('admin_bp.login'))
     
 
-    @scheduler.task('cron', id='updatewibor', hour=5, minute=0)
+    #@scheduler.task('cron', id='updatewibor', hour=5, minute=0)
     def wibor_scheduler():
 
-        #print('------------scheduler----------------')
+        print('------------scheduler----------------')
 
         try:
             response6m = requests.get('https://stooq.pl/q/d/l/?s=plopln6m&i=d')
@@ -52,6 +52,9 @@ def init_app():
                 f.write(response3m.content)
         except:
             print('update wibor failed')
+
+        print('------------finish scheduler----------------')
+
         
     #wibor_scheduler()
     
