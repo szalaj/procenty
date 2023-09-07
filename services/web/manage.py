@@ -2,10 +2,13 @@ from flask.cli import FlaskGroup
 
 from project import init_app
 
-app = init_app()
-
-cli = FlaskGroup(app)
+def start_app(*args, **kwargs):
 
 
-if __name__ == "__main__":
-    cli()
+
+    app = init_app(kwargs['ifwibor'])
+
+    cli = FlaskGroup(app)
+
+    return app
+
