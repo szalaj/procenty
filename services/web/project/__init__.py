@@ -11,6 +11,7 @@ db = SQLAlchemy()
 
 def init_app():
  
+
     app = Flask(__name__)
     app.config.from_object("project.config.Config")
 
@@ -55,8 +56,8 @@ def init_app():
 
         print('------------finish scheduler----------------')
 
-        
-    wibor_scheduler()
+    # check later
+    #wibor_scheduler()
     
     from .routes.admin import admin_bp as admin_blueprint
     app.register_blueprint(admin_blueprint)
