@@ -389,3 +389,10 @@ def daty():
     return render_template('dom/daty.html', datki=json.loads(result))
 
 
+@dom.route('/animuj', methods=['GET', 'POST']) 
+@login_required
+def animuj():
+
+    return render_template('dom/animuj.html')
+
+
