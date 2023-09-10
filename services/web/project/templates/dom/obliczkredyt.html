@@ -59,6 +59,8 @@
   var nom_raty = JSON.parse('{{nom_raty|safe}}');
   var nom_kpo = JSON.parse('{{nom_kpo|safe}}');
   var real_kpo = JSON.parse('{{real_kpo|safe}}');
+  var nom_kmiesiac = JSON.parse('{{nom_kmiesiac|safe}}');
+  var real_kmiesiac = JSON.parse('{{real_kmiesiac|safe}}');
   var real_wartosc_nieruchomosc = JSON.parse('{{real_wartosc_nieruchomosc|safe}}');
   var nom_wartosc_nieruchomosc = JSON.parse('{{nom_wartosc_nieruchomosc|safe}}');
   var wibor = JSON.parse('{{wibor|safe}}');
@@ -67,6 +69,8 @@
 
 
   console.log(dane1)
+  console.log('kmiesiac')
+  console.log(nom_kmiesiac)
 
 
   var zloty = function (d) { return d3.format(",.2f")(d) + " zł"; }
@@ -120,6 +124,19 @@
     d.K_po = parseFloat(d.wartosc)
   });
 
+  nom_kmiesiac.forEach(function (d) {
+    d.miesiac = d.dzien;
+    d.dzien = parseDateRealKPO(d.dzien);
+    d.K_po = parseFloat(d.wartosc);
+  });
+
+  real_kmiesiac.forEach(function (d) {
+    d.dzien = parseDateRealKPO(d.miesiac)
+    d.K_po = parseFloat(d.wartosc)
+  });
+
+
+
   nom_koszty.sort(function (x, y) {
     return d3.ascending(x.dzien, y.dzien);
   })
@@ -147,7 +164,7 @@
 
 
 // Merge arr1
-nom_kpo.forEach(obj => {
+nom_kmiesiac.forEach(obj => {
   
   const yearMonth = obj.miesiac; // Extract 'YYYY-MM' from the date
   
@@ -238,7 +255,7 @@ real_koszty.forEach(obj => {
 
 
 // Merge arr2
-real_kpo.forEach(obj => {
+real_kmiesiac.forEach(obj => {
   const yearMonth = obj.miesiac
 
   if (!mergedResultReal[yearMonth]) {
@@ -264,6 +281,8 @@ real_cena_kosztowa.sort(function (x, y) {
 
 
   });
+
+  console.log(real_cena_kosztowa)
 
 
 
