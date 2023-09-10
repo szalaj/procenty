@@ -9,10 +9,10 @@ import decimal
 from decimal import Decimal, ROUND_HALF_UP
 
 class Rodzaj(Enum):
-    SPLATA = auto()
-    OPROCENTOWANIE = auto()
-    NADPLATA = auto()
-    TRANSZA = auto()
+    SPLATA = 3
+    OPROCENTOWANIE = 4
+    NADPLATA = 2
+    TRANSZA = 1
 
 @dataclass
 class Zdarzenie:
@@ -20,7 +20,8 @@ class Zdarzenie:
     rodzaj:Rodzaj
     wartosc:object
     def __lt__(self, other):
-        return self.data < other.data
+
+        return str(self.data) + str(self.rodzaj.value) < str(other.data) + str(other.rodzaj.value)
 
 class Kredyt:
     def __init__(self,K:Decimal, N:int, p:Decimal, marza:Decimal, start:dt.datetime, rodzajRat:str):
@@ -63,7 +64,7 @@ class Kredyt:
         grosze =  decimal.Decimal('.01')
 
         data = {
-            'dzien': str(dzien_raty.strftime('%Y-%m-%d')),
+            'dzien': dzien_raty.strftime('%Y-%m-%d'),
             'K': str(self.K.quantize(grosze, ROUND_HALF_UP)),  
             'odsetki': str(self.odsetki_naliczone.quantize(grosze, ROUND_HALF_UP)), 
             'odsetki_marza': str(self.odsetki_naliczone_marza.quantize(grosze, ROUND_HALF_UP)), 

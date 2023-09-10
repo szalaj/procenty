@@ -302,9 +302,37 @@ def obliczkredyt(kredyt_id=None):
     nom_kpo = [{'dzien': dt.datetime.strftime(k['dzien'], '%Y-%m'), 'wartosc': k['wartosc']} for k in kpo_list]
     
 
+    kmiesiac_list = []
+    kmiesiac = kapital
+    #
+    s_month = dt.datetime.strftime(start_date, '%Y-%m')
+    for k in wynik["nadplaty"]:
+        nadplata_miesiac = k['dzien'][0:7]
+        if nadplata_miesiac == s_month:
+            kmiesiac =- float(k['kwota'])
+    kmiesiac_list.append({'dzien': dt.datetime.strptime(s_month, '%Y-%m'), 'wartosc': kmiesiac})
+    #
+    for ds in sorted(wynik['raty'], key=lambda d: d['dzien']):
+        miesiac = ds['dzien'][0:7]
+        kmiesiac = float(ds['K_po'])
+        for k in wynik["nadplaty"]:
+            nadplata_miesiac = k['dzien'][0:7]
+            if nadplata_miesiac == miesiac and k['dzien']> ds['dzien']:
+                print('odejmiej')
+                print(kmiesiac)
+                kmiesiac -= float(k['kwota'])
+                print(kmiesiac)
+        kmiesiac_list.append({'dzien':dt.datetime.strptime(miesiac, '%Y-%m'), 'wartosc': kmiesiac})
+
+
+    nom_kmiesiac = [{'dzien': dt.datetime.strftime(k['dzien'], '%Y-%m'), 'wartosc': k['wartosc']} for k in kmiesiac_list]
+    
+    
     real_koszty = inf.urealnij(koszty_list)
     real_raty = inf.urealnij(raty_list)
     real_kpo = inf.urealnij(kpo_list)
+
+    real_kmiesiac = inf.urealnij(kmiesiac_list)
 
     nier_points = [{'dzien':start_date, 'wartosc': 500000}, {'dzien':dt.datetime.strptime('2056-01-01', '%Y-%m-%d'), 'wartosc': 1200000}]
     nier = Nieruchomosc(start_date, okresy,  liczba_wakacji, nier_points, dzien_ostatniej_raty) 
@@ -325,6 +353,8 @@ def obliczkredyt(kredyt_id=None):
                            nom_raty=json.dumps(nom_raty),
                            nom_kpo=json.dumps(nom_kpo),
                            real_kpo=json.dumps(real_kpo),
+                           nom_kmiesiac=json.dumps(nom_kmiesiac),
+                           real_kmiesiac=json.dumps(real_kmiesiac),
                            nom_wartosc_nieruchomosc=json.dumps(nier.get_points()),
                            real_wartosc_nieruchomosc=json.dumps(real_wartosc_nieruchomosc))
 
