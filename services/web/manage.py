@@ -1,6 +1,6 @@
 from flask.cli import FlaskGroup
 
-from project import init_app
+from obliczeniakredytowe import init_app
 
 app = init_app()
 

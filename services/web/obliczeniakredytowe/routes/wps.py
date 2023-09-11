@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 import datetime
 
 from ..models import User, Dom, Zapytanie
-from project import db
+from obliczeniakredytowe import db
 
 import json
 
@@ -28,10 +28,10 @@ bp = Blueprint('bp', __name__)
 @login_required
 def main():
 
-    df3 = pd.read_csv('project/static/plopln3m_d.csv', usecols=[0,1], index_col=0)
+    df3 = pd.read_csv('obliczeniakredytowe/static/plopln3m_d.csv', usecols=[0,1], index_col=0)
     df3.index = pd.to_datetime(df3.index, format='%Y-%m-%d')
 
-    df6 = pd.read_csv('project/static/plopln6m_d.csv', usecols=[0,1], index_col=0)
+    df6 = pd.read_csv('obliczeniakredytowe/static/plopln6m_d.csv', usecols=[0,1], index_col=0)
     df6.index = pd.to_datetime(df6.index, format='%Y-%m-%d')
 
     max_day_wibor3m = df3.index.max()
@@ -214,12 +214,12 @@ def wibor():
 
     response6m = requests.get('https://stooq.pl/q/d/l/?s=plopln6m&i=d')
     
-    with open("./project/static/plopln6m_d.csv", "wb") as f:
+    with open("./obliczeniakredytowe/static/plopln6m_d.csv", "wb") as f:
         f.write(response6m.content)
 
     response3m = requests.get('https://stooq.pl/q/d/l/?s=plopln3m&i=d')
     
-    with open("./project/static/plopln3m_d.csv", "wb") as f:
+    with open("./projobliczeniakredytoweect/static/plopln3m_d.csv", "wb") as f:
         f.write(response3m.content)
     
     return redirect(url_for('bp.main'))

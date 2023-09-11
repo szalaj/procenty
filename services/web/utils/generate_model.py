@@ -25,7 +25,7 @@ class WiborInter:
             file_name = 'plopln6m_d.csv'
             self._okres = 6
 
-        self.df = pd.read_csv('project/static/{}'.format(file_name), usecols=[0,1], index_col=0)
+        self.df = pd.read_csv('obliczeniakredytowe/static/{}'.format(file_name), usecols=[0,1], index_col=0)
         self.df.index = pd.to_datetime(self.df.index, format='%Y-%m-%d')
 
         self.df = self.df[self.df.index >= self.data_start-relativedelta(days=5)] 
@@ -122,7 +122,7 @@ class Wibor:
             file_name = 'plopln6m_d.csv'
             self._okres = 6
 
-        self.df = pd.read_csv('project/static/{}'.format(file_name), usecols=[0,1], index_col=0)
+        self.df = pd.read_csv('obliczeniakredytowe/static/{}'.format(file_name), usecols=[0,1], index_col=0)
         self.df.index = pd.to_datetime(self.df.index, format='%Y-%m-%d')
 
         # print(self.df.loc['2021-01-05'][0])
