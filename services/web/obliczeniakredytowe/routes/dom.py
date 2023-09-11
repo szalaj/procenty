@@ -2,7 +2,7 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request, send_file, sessions, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
 from ..models import User, Dom, Zapytanie, InflacjaMM, Kredyt, Nadplata
-from project import db
+from obliczeniakredytowe import db
 from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, validators
 from dateutil.relativedelta import relativedelta
 import datetime as dt
@@ -387,10 +387,10 @@ def kiedywibor():
 def daty():
 
 
-    df = pd.read_csv('project/static/plopln3m_d.csv', usecols=[0,1])
+    df = pd.read_csv('obliczeniakredytowe/static/plopln3m_d.csv', usecols=[0,1])
     result = df.to_json(orient="records")
 
-    df3 = pd.read_csv('project/static/plopln3m_d.csv', usecols=[0,1], index_col=0)
+    df3 = pd.read_csv('obliczeniakredytowe/static/plopln3m_d.csv', usecols=[0,1], index_col=0)
     df3.index = pd.to_datetime(df3.index, format='%Y-%m-%d')
 
     min_day_wibor = df3.index.min()

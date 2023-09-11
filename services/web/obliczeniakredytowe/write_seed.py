@@ -1,17 +1,17 @@
 
 # run with m switch from web/ $ python -m project.write_seed
-from project import init_app
+from obliczeniakredytowe import init_app
 import pandas as pd
-from project.models import Dom,User,InflacjaMM
+from obliczeniakredytowe.models import Dom,User,InflacjaMM
 import csv
 import datetime
 app = init_app()
 
-from project import db
+from obliczeniakredytowe import db
 
 def load_user():
     with app.app_context():
-        with open('./project/seeds/user.csv', newline='') as csvfile:
+        with open('./obliczeniakredytowe/seeds/user.csv', newline='') as csvfile:
             spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
             for row in spamreader:
                 d = User(name=row[0])
@@ -21,7 +21,7 @@ def load_user():
             
 def load_dom():
     with app.app_context():
-        with open('./project/seeds/dom.csv', newline='') as csvfile:
+        with open('./obliczeniakredytowe/seeds/dom.csv', newline='') as csvfile:
             spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
             for row in spamreader:
                 d = Dom(wartosc=row[0], data_zakupu=row[1])
@@ -31,7 +31,7 @@ def load_dom():
 
 def load_inflacja():
     with app.app_context():
-        inflacja_df = pd.read_csv('project/seeds/miesieczne_wskazniki_cen_towarow_i_uslug_konsumpcyjnych_od_1982_roku.csv', sep=';', encoding='cp1252')
+        inflacja_df = pd.read_csv('obliczeniakredytowe/seeds/miesieczne_wskazniki_cen_towarow_i_uslug_konsumpcyjnych_od_1982_roku.csv', sep=';', encoding='cp1252')
 
         #inflacja_df = pd.read_csv('project/seeds/miesieczne_wskazniki_cen_towarow_i_uslug_konsumpcyjnych_od_1982_roku.csv', sep=';')
         

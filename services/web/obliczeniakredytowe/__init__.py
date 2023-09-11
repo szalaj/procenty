@@ -13,7 +13,7 @@ def init_app():
  
 
     app = Flask(__name__)
-    app.config.from_object("project.config.Config")
+    app.config.from_object("obliczeniakredytowe.config.Config")
 
     
     db.init_app(app)
@@ -44,12 +44,12 @@ def init_app():
         try:
             response6m = requests.get('https://stooq.pl/q/d/l/?s=plopln6m&i=d')
             
-            with open("./project/static/plopln6m_d.csv", "wb") as f:
+            with open("./obliczeniakredytowe/static/plopln6m_d.csv", "wb") as f:
                 f.write(response6m.content)
 
             response3m = requests.get('https://stooq.pl/q/d/l/?s=plopln3m&i=d')
             
-            with open("./project/static/plopln3m_d.csv", "wb") as f:
+            with open("./obliczeniakredytowe/static/plopln3m_d.csv", "wb") as f:
                 f.write(response3m.content)
         except:
             print('update wibor failed')

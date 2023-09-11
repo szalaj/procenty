@@ -2,7 +2,7 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request, send_file, sessions
 from flask_login import login_user, logout_user, login_required, current_user
 from ..models import User, Dom, Zapytanie, InflacjaMM, Kredyt, Nadplata
-from project import db
+from obliczeniakredytowe import db
 import os
 import csv
 

@@ -1,5 +1,5 @@
 # file used for developing
-from project import init_app
+from obliczeniakredytowe import init_app
 
 print(__name__)
 
