@@ -1,3 +1,12 @@
+
+## nadanie uprawnien uzytkownikowi 'ubuntu' do zapisu do katalogu
+
+sudo chown -R ubuntu:ubuntu ~/procenty/services/web/obliczeniakredytowe/static/
+
+
+####
+
+
 ref . https://www.youtube.com/watch?v=z5XiVh6v4uI
 
 

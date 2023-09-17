@@ -115,3 +115,6 @@ class Nadplata(db.Model):
                'data_nadplaty': dt.datetime.strftime(self.data_nadplaty, '%Y-%m-%d'),
                 'wartosc': float(self.wartosc),
                 'kredyt_id':self.kredyt_id}
+    
+
+
