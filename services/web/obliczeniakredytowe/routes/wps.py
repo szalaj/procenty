@@ -5,14 +5,16 @@ import requests
 import re
 import utils.generate_model
 import pandas as pd
+import io
 from io import BytesIO
 import utils.proc
 import datetime as dt
 import utils.create_document
 from werkzeug.utils import secure_filename
+from sqlalchemy import func 
 import datetime
 
-from ..models import User, Dom, Zapytanie
+from ..models import User, Dom, Zapytanie, Wibor
 from obliczeniakredytowe import db
 
 import json
@@ -22,6 +24,23 @@ bp = Blueprint('bp', __name__)
 
 
 
+def update_wibor(rodzaj:str, link:str):
+
+
+    response = requests.get(link)    
+    df = pd.read_csv(io.StringIO(response.content.decode('utf-8')))
+
+
+    max_wib = db.session.query(func.coalesce(func.max(Wibor.data),datetime.datetime(2000,1,1))).filter(Wibor.rodzaj==rodzaj).first()
+    max_wib_str = dt.datetime.strftime(max_wib[0], '%Y-%m-%d')
+
+
+    df_w= df[df['Data']>max_wib_str].loc[:, ['Data', 'Otwarcie']]
+    df_w['rodzaj'] = rodzaj
+
+    df_w= df_w.rename(columns={"Data": "data", "Otwarcie": "wartosc"})
+    df_w.to_sql('wibor',con=db.engine, if_exists = 'append', index=False)
+
 
 
 
@@ -29,20 +48,13 @@ bp = Blueprint('bp', __name__)
 @login_required
 def wibor():
 
-    with requests.Session() as s:
-
-        response6m = s.get('https://stooq.pl/q/d/l/?s=plopln6m&i=d')
-    
 
 
+    update_wibor('wibor3m', 'https://stooq.pl/q/d/l/?s=plopln3m&i=d')
 
-        with open("./obliczeniakredytowe/static/plopln6m_d.csv", "w") as f:
-            f.write(response6m.content.decode('utf-8'))
+    update_wibor('wibor6m', 'https://stooq.pl/q/d/l/?s=plopln6m&i=d')
 
-    # response3m = requests.get('https://stooq.pl/q/d/l/?s=plopln3m&i=d')
-    
-    # with open("./obliczeniakredytowe/static/plopln3m_d.csv", "w") as f:
-    #     f.write(response3m.content.decode('utf-8'))
+
     
     return redirect(url_for('dom.pokaz_kredyty'))
 

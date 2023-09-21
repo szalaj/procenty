@@ -57,7 +57,7 @@ def init_app():
         print('------------finish scheduler----------------')
 
     # check later
-    wibor_scheduler()
+    #wibor_scheduler()
     
     from .routes.admin import admin_bp as admin_blueprint
     app.register_blueprint(admin_blueprint)

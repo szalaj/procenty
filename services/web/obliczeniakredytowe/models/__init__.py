@@ -118,3 +118,20 @@ class Nadplata(db.Model):
     
 
 
+class Wibor(db.Model):
+    __tablename__ = 'wibor'
+
+    id = db.Column(db.Integer, primary_key=True) 
+    rodzaj  = db.Column(db.String, nullable=False)
+    data = db.Column(db.DateTime, nullable=False)
+    wartosc = db.Column(db.Numeric(14,2), nullable=False)
+
+    def __repr__(self):
+        return f"{self.rodzaj} - {self.wartosc} - {self.data}"
+    
+    def as_dict(self):
+       return {'id': self.id,
+               'data': dt.datetime.strftime(self.data, '%Y-%m-%d'),
+                'wartosc': float(self.wartosc),
+                'rodzaj':self.rodzaj}
+    

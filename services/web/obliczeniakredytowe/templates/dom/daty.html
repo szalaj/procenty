@@ -45,8 +45,8 @@ var tech_data = JSON.parse('{{datki|tojson|safe}}');
     const parseDzien = d3.timeParse("%Y-%m-%d")
 
     tech_data.forEach(function (d) {
-        d.Data = parseDzien(d.Data)
-        d.Otwarcie = parseFloat(d.Otwarcie)
+        d.Data = parseDzien(d.data)
+        d.Otwarcie = parseFloat(d.wartosc)
     });
 
     console.log(tech_data)
