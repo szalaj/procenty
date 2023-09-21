@@ -11,7 +11,7 @@ import pandas as pd
 from dataclasses import dataclass
 import utils.generate_model as ut
 import utils.proc as proc
-from sqlalchemy import text
+from sqlalchemy import text as sql_text
 
 from utils.generate_model import Wibor
 from utils.inflacja import InflacjaMiesiac, Nieruchomosc
@@ -386,11 +386,14 @@ def kiedywibor():
 @login_required
 def daty():
 
+    df = pd.read_sql(sql_text(f"SELECT data, wartosc FROM wibor WHERE rodzaj='wibor3m'"), con=db.engine.connect())
 
-    df = pd.read_csv('obliczeniakredytowe/static/plopln3m_d.csv', usecols=[0,1])
+
+    #df = pd.read_csv('obliczeniakredytowe/static/plopln3m_d.csv', usecols=[0,1])
     result = df.to_json(orient="records")
 
-    df3 = pd.read_csv('obliczeniakredytowe/static/plopln3m_d.csv', usecols=[0,1], index_col=0)
+    #df3 = pd.read_csv('obliczeniakredytowe/static/plopln3m_d.csv', usecols=[0,1], index_col=0)
+    df3 = pd.read_sql(sql_text(f"SELECT data, wartosc FROM wibor WHERE rodzaj='wibor3m'"), con=db.engine.connect(), index_col='data')
     df3.index = pd.to_datetime(df3.index, format='%Y-%m-%d')
 
     min_day_wibor = df3.index.min()

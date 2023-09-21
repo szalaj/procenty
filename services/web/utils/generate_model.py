@@ -6,6 +6,13 @@ from dataclasses import dataclass
 from scipy.interpolate import interp1d
 import numpy as np
 
+from obliczeniakredytowe.models import User, Dom, Zapytanie,  Kredyt
+from obliczeniakredytowe.models import Wibor as WiborModel
+
+from obliczeniakredytowe import db
+
+from sqlalchemy import text as sql_text
+
 @dataclass
 class WiborInter:
     """interpolowanie wibour dla wartosci, ktorych jeszce nie znamy."""
@@ -19,29 +26,39 @@ class WiborInter:
 
     def __post_init__(self):
         if self.wibor_typ=='3M':
-            file_name = 'plopln3m_d.csv'
             self._okres = 3
+            wib_rodzaj = 'wibor3m'
         elif self.wibor_typ=='6M':
-            file_name = 'plopln6m_d.csv'
             self._okres = 6
+            wib_rodzaj = 'wibor6m'
 
-        self.df = pd.read_csv('obliczeniakredytowe/static/{}'.format(file_name), usecols=[0,1], index_col=0)
+        # self.df = pd.read_csv('obliczeniakredytowe/static/{}'.format(file_name), usecols=[0,1], index_col=0)
+        # self.df.index = pd.to_datetime(self.df.index, format='%Y-%m-%d')    
+
+        self.df = pd.read_sql(sql_text(f"SELECT data, wartosc FROM wibor WHERE rodzaj='{wib_rodzaj}'"), con=db.engine.connect(), index_col='data')
+
         self.df.index = pd.to_datetime(self.df.index, format='%Y-%m-%d')
+
+        self.df.sort_index(inplace=True)
+
+        print(self.df.info())
 
         self.df = self.df[self.df.index >= self.data_start-relativedelta(days=5)] 
 
         self.data_koniec = self.data_start + relativedelta(months=(self.okresy+self.liczba_wakacji))
 
-        print(type(self.data_koniec))
+
 
         self.max_wibor_real = self.df.index.max()
 
-        #print(f"index min: {self.df.index.min()} , index max: {self.df.index.max()}, data koniec: {self.data_koniec}")
+        print(f"index min: {self.df.index.min()} , index max: {self.df.index.max()}, data koniec: {self.data_koniec}")
 
         if self.points:
             self.points = [(dt.datetime.strptime(p[0], '%d/%m/%Y'), p[1]) for p in self.points if dt.datetime.strptime(p[0], '%d/%m/%Y') > self.df.index.max()]
    
-        self.points.append((self.df.index.max(), self.df.loc[self.df.index.max(), 'Otwarcie']))
+        self.points.append((self.df.index.max(), self.df.loc[self.df.index.max(), 'wartosc']))
+
+        print(self.points)
 
         #interpolation
         dates, values = zip(*self.points)
@@ -63,14 +80,14 @@ class WiborInter:
         self.points.append((self.data_koniec, wibor_value_koniec))
 
  
-        new_df = pd.DataFrame(self.points, columns=['Data', 'Otwarcie'])
+        new_df = pd.DataFrame(self.points, columns=['data', 'wartosc'])
         #new_df['Date'] = pd.to_datetime(new_df['Date'])
-        new_df.set_index('Data', inplace=True)
+        new_df.set_index('data', inplace=True)
 
         # Concatenate the original DataFrame and the new DataFrame
         dff = pd.concat([self.df, new_df])
         dff = dff.sort_index()
-        self.json_data = [{'date': dt.datetime.strftime(index, '%Y-%m-%d'), 'value': value} for index, value in dff['Otwarcie'].items()]
+        self.json_data = [{'date': dt.datetime.strftime(index, '%Y-%m-%d'), 'value': value} for index, value in dff['wartosc'].items()]
 
 
     def getWibor(self, data) -> float:
@@ -116,14 +133,17 @@ class Wibor:
 
         file_name=''
         if rodzajWiboru=='3M':
-            file_name = 'plopln3m_d.csv'
             self._okres = 3
+            wib_rodzaj = 'wibor3m'
         elif rodzajWiboru=='6M':
-            file_name = 'plopln6m_d.csv'
             self._okres = 6
+            wib_rodzaj = 'wibor6m'
 
-        self.df = pd.read_csv('obliczeniakredytowe/static/{}'.format(file_name), usecols=[0,1], index_col=0)
+        self.df = pd.read_sql(sql_text(f"SELECT data, wartosc FROM wibor WHERE rodzaj='{wib_rodzaj}'"), con=db.engine.connect(), index_col='data')
+
         self.df.index = pd.to_datetime(self.df.index, format='%Y-%m-%d')
+
+        self.df.sort_index(inplace=True)
 
         # print(self.df.loc['2021-01-05'][0])
         # print(self.df.index.get_indexer('2021-01-05'))

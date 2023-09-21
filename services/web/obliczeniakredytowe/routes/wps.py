@@ -24,6 +24,23 @@ bp = Blueprint('bp', __name__)
 
 
 
+def update_wibor(rodzaj:str, link:str):
+
+
+    response = requests.get(link)    
+    df = pd.read_csv(io.StringIO(response.content.decode('utf-8')))
+
+
+    max_wib = db.session.query(func.coalesce(func.max(Wibor.data),datetime.datetime(2000,1,1))).filter(Wibor.rodzaj==rodzaj).first()
+    max_wib_str = dt.datetime.strftime(max_wib[0], '%Y-%m-%d')
+
+
+    df_w= df[df['Data']>max_wib_str].loc[:, ['Data', 'Otwarcie']]
+    df_w['rodzaj'] = rodzaj
+
+    df_w= df_w.rename(columns={"Data": "data", "Otwarcie": "wartosc"})
+    df_w.to_sql('wibor',con=db.engine, if_exists = 'append', index=False)
+
 
 
 
@@ -32,32 +49,12 @@ bp = Blueprint('bp', __name__)
 def wibor():
 
 
-    # response6m = requests.get('https://stooq.pl/q/d/l/?s=plopln6m&i=d')
+
+    update_wibor('wibor3m', 'https://stooq.pl/q/d/l/?s=plopln3m&i=d')
+
+    update_wibor('wibor6m', 'https://stooq.pl/q/d/l/?s=plopln6m&i=d')
 
 
-    # with open("./obliczeniakredytowe/static/plopln6m_d.csv", "w") as f:
-    #     f.write(response6m.content.decode('utf-8'))
-
-    # response3m = requests.get('https://stooq.pl/q/d/l/?s=plopln3m&i=d')
-    
-    # with open("./obliczeniakredytowe/static/plopln3m_d.csv", "w") as f:
-    #     f.write(response3m.content.decode('utf-8'))
-
-
-    response3m = requests.get('https://stooq.pl/q/d/l/?s=plopln3m&i=d')    
-
-    df = pd.read_csv(io.StringIO(response3m.content.decode('utf-8')))
-
-
-    max_3m = db.session.query(func.coalesce(func.max(Wibor.data),datetime.datetime(2000,1,1))).filter(Wibor.rodzaj=='wibor3m').first()
-
-    print(max_3m)
-
-    # stworz df
-    # 
-    # wybierz z df rekordy z data wieksza niz max(tabela)
-    # 
-    # zapisz te rekordy do tabeli    
     
     return redirect(url_for('dom.pokaz_kredyty'))
 
