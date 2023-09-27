@@ -343,7 +343,7 @@ def obliczkredyt(kredyt_id=None):
     nom_raty = [{'dzien': dt.datetime.strftime(r['dzien'], '%Y-%m'), 'wartosc': r['wartosc']} for r in raty_list]
 
     return render_template('dom/obliczkredyt.html', 
-                           wibor=json.dumps(w.json_data),
+                           wibor=json.dumps({'rodzaj_wiboru':rodzaj_wiboru, 'dane': w.json_data}),
                            wynik=json.dumps(wynik), 
                            fin_data = json.dumps(fin_data),
                            inflacja=json.dumps(inf.json_data),

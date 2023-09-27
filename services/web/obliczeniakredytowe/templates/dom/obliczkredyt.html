@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <div class="container">
-    <div class="row top-buffer">
-      <div class="col" id="dane">
+<div class="container">
+  <div class="row top-buffer">
+    <h1 class="title">Kredyt</h1>
+  </div>
+
+  <div class="row top-buffer">
+    <!-- <div class="col" id="dane">
         <ul class="list-group list-group-flush">
           <li>Kapitał pożyczony: <div style="float: right" id="kapital"></div>
           </li>
@@ -21,26 +25,62 @@
           </li>
         </ul>
       </div>
+    </div> -->
+    <div class="columns">
+      <div class="column">
+        <ul class="list-group list-group-flush">
+          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Kapitał pożyczony</span><span class="tekst" id="kapital"></span></div>
+          </li>
+          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Data uruchomienia</span><span class="tekst" id="data_start"></span></div>
+          </li>
+          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Marża</span><span class="tekst" id="marza"></span></div>
+          </li>
+          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Liczba rat</span><span class="tekst" id="okresy"></span></div>
+          </li>
+        </ul>
+      </div>
+      <div class="column">
+        <ul>
+          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Wskaźnik</span></span><span class="tekst" id="rodzaj_wiboru_id"></span></div>
+          </li>      
+          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Suma rat</span></span><span class="tekst" id="suma_rat"></span></div>
+          </li>
+          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Suma nadpłat</span></span><span class="tekst" id="suma_nadplat"></span></div>
+          </li>
+          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Zapłacono do banku</span></span><span class="tekst" id="suma_cala"></span></div>
+          </li>
+        </ul>
+      </div>
+
     </div>
-    <div class="row top-buffer">
-      <div class="col" id="ryswibor">Rys. Wibor 3M. Połączona część rzeczywista z prognozą.</div>
-    </div>
-    <div class="row top-buffer">
-      <div class="col" id="rysInflacja">Rys.Inflacja M/M. Połączona część rzeczywista z prognozą.</div>
-    </div>
-    <div class="row top-buffer">
-      <div class="col" id="rysNadplaty">Rys.Nadpłaty - wartości nominalne.</div>
-    </div>
-    <div class="row top-buffer">
-      <div class="col" id="wykres_kapital">Rys. Kapitał do spłaty (dług) oraz cena kosztowa.</div>
-    </div>
-    <div class="row top-buffer">
-      <div class="col" id="wykres_real">Rys. Wartości nominalne i realne rat, kosztów skumulowanych, i wartości nieruchomości.</div>
-    </div>
-    <div class="row top-buffer">
-    </div>
+
   </div>
-  
+
+
+
+
+
+
+<div class="row top-buffer">
+  <div class="col" id="ryswibor">Rys. Wibor 3M. Połączona część rzeczywista z prognozą.</div>
+</div>
+<div class="row top-buffer">
+  <div class="col" id="rysInflacja">Rys.Inflacja M/M. Połączona część rzeczywista z prognozą.</div>
+</div>
+<div class="row top-buffer">
+  <div class="col" id="rysNadplaty">Rys.Nadpłaty - wartości nominalne.</div>
+</div>
+<div class="row top-buffer">
+  <div class="col" id="wykres_kapital">Rys. Kapitał do spłaty (dług) oraz cena kosztowa.</div>
+</div>
+<div class="row top-buffer">
+  <div class="col" id="wykres_real">Rys. Wartości nominalne i realne rat, kosztów skumulowanych, i wartości
+    nieruchomości.</div>
+</div>
+<div class="row top-buffer">
+</div>
+</div>
+
 
 </body>
 
@@ -63,12 +103,13 @@
   var real_kmiesiac = JSON.parse('{{real_kmiesiac|safe}}');
   var real_wartosc_nieruchomosc = JSON.parse('{{real_wartosc_nieruchomosc|safe}}');
   var nom_wartosc_nieruchomosc = JSON.parse('{{nom_wartosc_nieruchomosc|safe}}');
-  var wibor = JSON.parse('{{wibor|safe}}');
+  var wibor_all = JSON.parse('{{wibor|safe}}');
   var fin_data = JSON.parse('{{fin_data|safe}}');
 
+ var wibor = wibor_all['dane']
+ var rodzaj_wiboru=wibor_all['rodzaj_wiboru']
 
-
-  console.log(dane1)
+  console.log(wibor)
   console.log('kmiesiac')
   console.log(nom_kmiesiac)
 
@@ -82,12 +123,12 @@
 
   d3.select("#kapital").text(zloty(fin_data['kapital']))
   d3.select("#okresy").text(fin_data['okresy'])
-  d3.select("#marza").text(fin_data['marza'])
+  d3.select("#marza").text(fin_data['marza'] + '%')
   d3.select("#data_start").text(fin_data['data_start'])
   d3.select("#suma_rat").text(zloty(suma_rat))
   d3.select("#suma_nadplat").text(zloty(suma_nadplat))
   d3.select("#suma_cala").text(zloty(suma_rat + suma_nadplat))
-
+  d3.select("#rodzaj_wiboru_id").text('WIBOR ' + rodzaj_wiboru)
 
 
 
@@ -98,7 +139,7 @@
     width = width_docs - margin.left - margin.right,
     height = 450 - margin.top - margin.bottom;
 
-    
+
   var parseDateWykres = d3.timeParse("%Y-%m-%d");
   var parseDateRealKPO = d3.timeParse("%Y-%m");
 
@@ -110,7 +151,7 @@
     d.rata = parseFloat(d.rata)
   });
 
-  console.log('nom kpo'); 
+  console.log('nom kpo');
   console.log(nom_kpo);
 
   nom_kpo.forEach(function (d) {
@@ -141,7 +182,7 @@
     return d3.ascending(x.dzien, y.dzien);
   })
 
-  
+
 
   var parseDate = d3.timeParse("%Y-%m");
   var cumsum_nom = 0
@@ -163,31 +204,31 @@
   const mergedResult = {};
 
 
-// Merge arr1
-nom_kmiesiac.forEach(obj => {
-  
-  const yearMonth = obj.miesiac; // Extract 'YYYY-MM' from the date
-  
-  if (!mergedResult[yearMonth]) {
-    mergedResult[yearMonth] = obj.K_po;
-    
-  } else {
-    mergedResult[yearMonth] += obj.K_po;
-  }
-});
+  // Merge arr1
+  nom_kmiesiac.forEach(obj => {
+
+    const yearMonth = obj.miesiac; // Extract 'YYYY-MM' from the date
+
+    if (!mergedResult[yearMonth]) {
+      mergedResult[yearMonth] = obj.K_po;
+
+    } else {
+      mergedResult[yearMonth] += obj.K_po;
+    }
+  });
 
 
-// Merge arr2
-nom_koszty.forEach(obj => {
-  const yearMonth = obj.huj
+  // Merge arr2
+  nom_koszty.forEach(obj => {
+    const yearMonth = obj.huj
 
-  if (!mergedResult[yearMonth]) {
-    mergedResult[yearMonth] = obj.cumsum_nom;
-  } else {
-    mergedResult[yearMonth] += obj.cumsum_nom;
-    
-  }
-});
+    if (!mergedResult[yearMonth]) {
+      mergedResult[yearMonth] = obj.cumsum_nom;
+    } else {
+      mergedResult[yearMonth] += obj.cumsum_nom;
+
+    }
+  });
 
 
 
@@ -204,7 +245,7 @@ nom_koszty.forEach(obj => {
 
 
   nom_cena_kosztowa.forEach(function (d) {
-    
+
     d.miesiac = parseDate(d.miesiac)
     d.wartosc = parseFloat(d.wartosc)
 
@@ -218,64 +259,64 @@ nom_koszty.forEach(obj => {
 
 
   real_koszty.sort(function (x, y) {
-  return d3.ascending(x.miesiac, y.miesiac);
-})
+    return d3.ascending(x.miesiac, y.miesiac);
+  })
 
-var cumsum = 0;
+  var cumsum = 0;
 
-real_koszty.forEach(function (d) {
-  d.huj = d.miesiac;
-  d.miesiac = parseDate(d.miesiac);
-  d.wartosc = parseFloat(d.wartosc);
-  cumsum = cumsum + d.wartosc;
-  d.cumsum = cumsum;
+  real_koszty.forEach(function (d) {
+    d.huj = d.miesiac;
+    d.miesiac = parseDate(d.miesiac);
+    d.wartosc = parseFloat(d.wartosc);
+    cumsum = cumsum + d.wartosc;
+    d.cumsum = cumsum;
 
-});
-  
-
-
-
-const mergedResultReal = {};
-
-
-// Merge arr1
-real_koszty.forEach(obj => {
-  
-  const yearMonth = obj.huj; // Extract 'YYYY-MM' from the date
-
-  if (!mergedResultReal[yearMonth]) {
-    mergedResultReal[yearMonth] = obj.cumsum;
-    
-  } else {
-    mergedResultReal[yearMonth] += obj.cumsum;
-  }
-});
+  });
 
 
 
 
-// Merge arr2
-real_kmiesiac.forEach(obj => {
-  const yearMonth = obj.miesiac
-
-  if (!mergedResultReal[yearMonth]) {
-    mergedResultReal[yearMonth] = obj.K_po;
-  } else {
-    mergedResultReal[yearMonth] += obj.K_po;
-    
-  }
-});
+  const mergedResultReal = {};
 
 
+  // Merge arr1
+  real_koszty.forEach(obj => {
 
-const real_cena_kosztowa = Object.entries(mergedResultReal).map(([miesiac, wartosc]) => ({ miesiac, wartosc }));
+    const yearMonth = obj.huj; // Extract 'YYYY-MM' from the date
 
-real_cena_kosztowa.sort(function (x, y) {
+    if (!mergedResultReal[yearMonth]) {
+      mergedResultReal[yearMonth] = obj.cumsum;
+
+    } else {
+      mergedResultReal[yearMonth] += obj.cumsum;
+    }
+  });
+
+
+
+
+  // Merge arr2
+  real_kmiesiac.forEach(obj => {
+    const yearMonth = obj.miesiac
+
+    if (!mergedResultReal[yearMonth]) {
+      mergedResultReal[yearMonth] = obj.K_po;
+    } else {
+      mergedResultReal[yearMonth] += obj.K_po;
+
+    }
+  });
+
+
+
+  const real_cena_kosztowa = Object.entries(mergedResultReal).map(([miesiac, wartosc]) => ({ miesiac, wartosc }));
+
+  real_cena_kosztowa.sort(function (x, y) {
     return d3.ascending(x.miesiac, y.miesiac);
   })
 
   real_cena_kosztowa.forEach(function (d) {
-    
+
     d.miesiac = parseDate(d.miesiac)
     d.wartosc = parseFloat(d.wartosc)
 

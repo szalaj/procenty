@@ -2,7 +2,12 @@ from flask.cli import FlaskGroup
 import os
 from obliczeniakredytowe import init_app
 
-os.environ['APPDB_PATH'] = "/home/ubuntu/data/" 
+
+if 1:
+    os.environ['APPDB_PATH'] = "/home/ubuntu/data/" 
+else:
+    # test mode with gunicorn
+    os.environ['APPDB_PATH'] = "/home/szalaj/procenty/services/db/" 
 
 app = init_app()
 
