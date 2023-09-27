@@ -1,9 +1,7 @@
 function create_chart_kapital(margin, width, height, nom_kpo, nom_cena_kosztowa, real_kpo, real_cena_kosztowa)
 {
 
-  margin['top'] = 120;
-  margin['bottom'] = 80
-  margin['left'] = 100;
+
   height = 720 - margin.top - margin.bottom;
 
 

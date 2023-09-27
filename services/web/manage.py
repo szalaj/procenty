@@ -3,7 +3,7 @@ import os
 from obliczeniakredytowe import init_app
 
 
-if 1:
+if 0:
     os.environ['APPDB_PATH'] = "/home/ubuntu/data/" 
 else:
     # test mode with gunicorn

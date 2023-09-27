@@ -2,52 +2,65 @@
 
 {% block content %}
 <div class="container">
-  <div class="row top-buffer">
+
+  <div class="block m-4">
     <h1 class="title">Kredyt</h1>
   </div>
 
-  <div class="row top-buffer">
-    <!-- <div class="col" id="dane">
-        <ul class="list-group list-group-flush">
-          <li>Kapitał pożyczony: <div style="float: right" id="kapital"></div>
-          </li>
-          <li>Marża:<div style="float: right" id="marza"></div>
-          </li>
-          <li>Okresy:<div style="float: right" id="okresy"></div>
-          </li>
-          <li>Data uruchomienia:<div style="float: right" id="data_start"></div>
-          </li>
-          <li>Suma rat:<div style="float: right" id="suma_rat"></div>
-          </li>
-          <li>Suma nadpłat:<div style="float: right" id="suma_nadplat"></div>
-          </li>
-          <li>Zapłacono do banku:<div style="float: right" id="suma_cala"></div>
-          </li>
-        </ul>
-      </div>
-    </div> -->
+  <div class="block m-4">
+
     <div class="columns">
       <div class="column">
         <ul class="list-group list-group-flush">
-          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Kapitał pożyczony</span><span class="tekst" id="kapital"></span></div>
+          <li>
+            <div class="kontainer">
+              <div class="filler"></div><span class="naklejka">Kapitał pożyczony</span><span class="tekst"
+                id="kapital"></span>
+            </div>
           </li>
-          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Data uruchomienia</span><span class="tekst" id="data_start"></span></div>
+          <li>
+            <div class="kontainer">
+              <div class="filler"></div><span class="naklejka">Data uruchomienia</span><span class="tekst"
+                id="data_start"></span>
+            </div>
           </li>
-          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Marża</span><span class="tekst" id="marza"></span></div>
+          <li>
+            <div class="kontainer">
+              <div class="filler"></div><span class="naklejka">Marża</span><span class="tekst" id="marza"></span>
+            </div>
           </li>
-          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Liczba rat</span><span class="tekst" id="okresy"></span></div>
+          <li>
+            <div class="kontainer">
+              <div class="filler"></div><span class="naklejka">Liczba rat</span><span class="tekst" id="okresy"></span>
+            </div>
           </li>
         </ul>
       </div>
       <div class="column">
         <ul>
-          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Wskaźnik</span></span><span class="tekst" id="rodzaj_wiboru_id"></span></div>
-          </li>      
-          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Suma rat</span></span><span class="tekst" id="suma_rat"></span></div>
+          <li>
+            <div class="kontainer">
+              <div class="filler"></div><span class="naklejka">Wskaźnik</span></span><span class="tekst"
+                id="rodzaj_wiboru_id"></span>
+            </div>
           </li>
-          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Suma nadpłat</span></span><span class="tekst" id="suma_nadplat"></span></div>
+          <li>
+            <div class="kontainer">
+              <div class="filler"></div><span class="naklejka">Suma rat</span></span><span class="tekst"
+                id="suma_rat"></span>
+            </div>
           </li>
-          <li><div class="kontainer"><div class="filler"></div><span class="naklejka">Zapłacono do banku</span></span><span class="tekst" id="suma_cala"></span></div>
+          <li>
+            <div class="kontainer">
+              <div class="filler"></div><span class="naklejka">Suma nadpłat</span></span><span class="tekst"
+                id="suma_nadplat"></span>
+            </div>
+          </li>
+          <li>
+            <div class="kontainer">
+              <div class="filler"></div><span class="naklejka">Zapłacono do banku</span></span><span class="tekst"
+                id="suma_cala"></span>
+            </div>
           </li>
         </ul>
       </div>
@@ -61,25 +74,21 @@
 
 
 
-<div class="row top-buffer">
-  <div class="col" id="ryswibor">Rys. Wibor 3M. Połączona część rzeczywista z prognozą.</div>
-</div>
-<div class="row top-buffer">
-  <div class="col" id="rysInflacja">Rys.Inflacja M/M. Połączona część rzeczywista z prognozą.</div>
-</div>
-<div class="row top-buffer">
-  <div class="col" id="rysNadplaty">Rys.Nadpłaty - wartości nominalne.</div>
-</div>
-<div class="row top-buffer">
-  <div class="col" id="wykres_kapital">Rys. Kapitał do spłaty (dług) oraz cena kosztowa.</div>
-</div>
-<div class="row top-buffer">
-  <div class="col" id="wykres_real">Rys. Wartości nominalne i realne rat, kosztów skumulowanych, i wartości
+
+  <div class="block m-4" id="ryswibor">Rys. Wibor 3M. Połączona część rzeczywista z prognozą.</div>
+
+  <div class="block m-4" id="rysInflacja">Rys.Inflacja M/M. Połączona część rzeczywista z prognozą.</div>
+
+
+  <div class="block m-4" id="rysNadplaty">Rys.Nadpłaty - wartości nominalne.</div>
+
+  <div class="block m-4" id="wykres_kapital">Rys. Kapitał do spłaty (dług) oraz cena kosztowa.</div>
+
+  <div class="block m-4" id="wykres_real">Rys. Wartości nominalne i realne rat, kosztów skumulowanych, i wartości
     nieruchomości.</div>
+
 </div>
-<div class="row top-buffer">
-</div>
-</div>
+
 
 
 </body>
@@ -106,8 +115,8 @@
   var wibor_all = JSON.parse('{{wibor|safe}}');
   var fin_data = JSON.parse('{{fin_data|safe}}');
 
- var wibor = wibor_all['dane']
- var rodzaj_wiboru=wibor_all['rodzaj_wiboru']
+  var wibor = wibor_all['dane']
+  var rodzaj_wiboru = wibor_all['rodzaj_wiboru']
 
   console.log(wibor)
   console.log('kmiesiac')
