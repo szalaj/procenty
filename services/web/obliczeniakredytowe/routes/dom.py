@@ -259,11 +259,7 @@ def obliczkredyt(kredyt_id=None):
 
 
     # inne = [{'dzien':'2021-11-04', 'kwota': 40000}]
-
-
     inne = []
-
-
     # koszty = {x: float(raty.get(x, 0)) + float(nadplaty.get(x, 0)) + float(inne.get(x, 0))  for x in sorted(list(set(raty).union(nadplaty).union(inne)))}
     
     koszty = {}
@@ -345,6 +341,7 @@ def obliczkredyt(kredyt_id=None):
     return render_template('dom/obliczkredyt.html', 
                            wibor=json.dumps({'rodzaj_wiboru':rodzaj_wiboru, 'dane': w.json_data}),
                            wynik=json.dumps(wynik), 
+                           kredyt_id = kredyt_id,
                            fin_data = json.dumps(fin_data),
                            inflacja=json.dumps(inf.json_data),
                            real_koszty=json.dumps(real_koszty),

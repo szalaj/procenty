@@ -70,10 +70,22 @@
   </div>
 
 
+  <div class="block m-4">
 
+  <div class="columns is-vcentered">
+    <div class="column is-narrow">
 
+       <button class="button is-primary" onclick="window.location.href='{{ url_for('dom.kredyt', kredyt_id=kredyt_id) }}'">Dodaj nadpłatę</button>
 
-
+    </div>
+    <div class="column">
+      <div class="box">
+        Obecnie nadpłaty wynoszą <span id="nadplaty_wszystkie"></span>
+      
+      </div>
+    </div>
+  </div>
+</div>
 
   <div class="block m-4" id="ryswibor">Rys. Wibor 3M. Połączona część rzeczywista z prognozą.</div>
 
@@ -86,6 +98,19 @@
 
   <div class="block m-4" id="wykres_real">Rys. Wartości nominalne i realne rat, kosztów skumulowanych, i wartości
     nieruchomości.</div>
+
+
+    <div class="block m-4">
+
+      <div class="columns is-vcentered">
+        <div class="column is-narrow">
+    
+           <button class="button is-danger">Usuń kredyt</button>
+    
+        </div>
+        <div class="column">
+      </div>
+    </div>
 
 </div>
 
@@ -118,7 +143,7 @@
   var wibor = wibor_all['dane']
   var rodzaj_wiboru = wibor_all['rodzaj_wiboru']
 
-  console.log(wibor)
+  console.log(dane1)
   console.log('kmiesiac')
   console.log(nom_kmiesiac)
 
@@ -139,6 +164,8 @@
   d3.select("#suma_cala").text(zloty(suma_rat + suma_nadplat))
   d3.select("#rodzaj_wiboru_id").text('WIBOR ' + rodzaj_wiboru)
 
+  d3.select("#nadplaty_wszystkie").text(zloty(suma_nadplat))
+  
 
 
 
