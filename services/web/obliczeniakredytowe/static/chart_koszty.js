@@ -1,8 +1,7 @@
 function create_chart_koszty(margin, width, height, real_koszty, nom_koszty, real_raty, nom_raty, real_wartosc_nieruchomosc, nom_wartosc_nieruchomosc)
 {
 
-  margin['top'] = 140;
-  margin['bottom'] = 90;
+
   height = 1000 - margin.top - margin.bottom;
 
 

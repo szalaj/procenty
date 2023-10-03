@@ -150,6 +150,8 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
                         flash(f"dodane {data_start}", 'ok')
                     except:
                         flash("cos poszlo nie tak przy dodawaniu", 'error')
+                    
+                    return redirect(url_for('dom.pokaz_kredyty'))
 
     
 
@@ -259,11 +261,7 @@ def obliczkredyt(kredyt_id=None):
 
 
     # inne = [{'dzien':'2021-11-04', 'kwota': 40000}]
-
-
     inne = []
-
-
     # koszty = {x: float(raty.get(x, 0)) + float(nadplaty.get(x, 0)) + float(inne.get(x, 0))  for x in sorted(list(set(raty).union(nadplaty).union(inne)))}
     
     koszty = {}
@@ -343,8 +341,9 @@ def obliczkredyt(kredyt_id=None):
     nom_raty = [{'dzien': dt.datetime.strftime(r['dzien'], '%Y-%m'), 'wartosc': r['wartosc']} for r in raty_list]
 
     return render_template('dom/obliczkredyt.html', 
-                           wibor=json.dumps(w.json_data),
+                           wibor=json.dumps({'rodzaj_wiboru':rodzaj_wiboru, 'dane': w.json_data}),
                            wynik=json.dumps(wynik), 
+                           kredyt_id = kredyt_id,
                            fin_data = json.dumps(fin_data),
                            inflacja=json.dumps(inf.json_data),
                            real_koszty=json.dumps(real_koszty),
