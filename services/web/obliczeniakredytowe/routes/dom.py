@@ -150,6 +150,8 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
                         flash(f"dodane {data_start}", 'ok')
                     except:
                         flash("cos poszlo nie tak przy dodawaniu", 'error')
+                    
+                    return redirect(url_for('dom.pokaz_kredyty'))
 
     
 
