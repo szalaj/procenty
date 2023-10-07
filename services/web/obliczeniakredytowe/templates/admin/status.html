@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<div class="content">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  {% for category, message in messages %}
+  {% if category == 'error' %}
+  <div class="alert">{{ message }}</div>
+  {% else %}
+  <div class="notification is-success">{{ message }}</div>
+  {% endif %}
+  {% endfor %}
+  {% endif %}
+  {% endwith %}
+
+
+  <div class="container">
+
+
+    <div class="section">
+            
+      <h1 class="title">Status</h1>
+      
+
+<p>
+Data minimalna wiboru <span id="min_wibor_date"></span></p>
+<p>
+Data maksymalna wiboru <span id="max_wibor_data"></span>
+</p>
+</div>
+
+  </div>
+
+<script>
+
+// load wibor variable sent from admin status as jinja variable
+var wibor = JSON.parse('{{wibor|safe}}');
+
+// make chart in d3 js of wibor where x asis is data and y axis is wibor value
+
+// max value of date in wibor
+var max_date = d3.max(wibor, d => d.data);
+
+// min value of date in wibor
+var min_date = d3.min(wibor, d => d.data);
+
+d3.select("#min_wibor_date").text(min_date)
+d3.select("#max_wibor_data").text(max_date)
+
+
+console.log(wibor)
+
+
+
+</script>
+
+  {% endblock %}

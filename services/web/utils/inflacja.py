@@ -18,48 +18,96 @@ class InflacjaMiesiac:
     prognoza: list
 
     def __post_init__(self):
-        self.df = pd.DataFrame(self.dane)
-        #self.df.index = pd.to_datetime(self.df.index, format='%Y-%m-%d')
-        self.df.set_index('miesiac', inplace=True)
-        self.df["wartosc"] = pd.to_numeric(self.df["wartosc"])
-        self.df.index = pd.to_datetime(self.df.index, format='%Y-%m')
-       
 
         self.data_koniec = self.data_start + relativedelta(months=(self.okresy+self.liczba_wakacji))
 
-        self.max_inflacja_real = self.df.index.max()
+        if self.dane:
+            self.df = pd.DataFrame(self.dane)
+            print(self.df.info())
+            #self.df.index = pd.to_datetime(self.df.index, format='%Y-%m-%d')
+            self.df.set_index('miesiac', inplace=True)
+            self.df["wartosc"] = pd.to_numeric(self.df["wartosc"])
+            self.df.index = pd.to_datetime(self.df.index, format='%Y-%m')
+       
 
 
-        if self.prognoza:
-            self.prognoza = [(dt.datetime.strptime(p[0], '%d/%m/%Y'), p[1]) for p in self.prognoza if dt.datetime.strptime(p[0], '%d/%m/%Y') > self.df.index.max()]
-   
-        self.prognoza.append((self.df.index.max(), self.df.loc[self.df.index.max(), 'wartosc']))
+            self.max_inflacja_real = self.df.index.max()
 
-        #interpolation
-        dates, values = zip(*self.prognoza)
+            if self.data_koniec > self.max_inflacja_real:
 
-        # Convert dates to numerical values representing time or elapsed time
-        timestamps = np.array([(date - self.max_inflacja_real).total_seconds() for date in dates])
+                if self.prognoza:
+                    self.prognoza = [(dt.datetime.strptime(p[0], '%d/%m/%Y'), p[1]) for p in self.prognoza if dt.datetime.strptime(p[0], '%d/%m/%Y') > self.df.index.max()]
+        
+                self.prognoza.append((self.df.index.max(), self.df.loc[self.df.index.max(), 'wartosc']))
 
-        # Create an interpolation function using scipy.interpolate.interp1d
-        self.interpolation_function = interp1d(timestamps, values)
+                #interpolation
+                dates, values = zip(*self.prognoza)
 
-        # Convert the new date to a numerical value
-        end_timestamp = (self.data_koniec - self.max_inflacja_real).total_seconds()
+                # Convert dates to numerical values representing time or elapsed time
+                timestamps = np.array([(date - self.max_inflacja_real).total_seconds() for date in dates])
 
-        # Use the interpolation function to estimate the value at the new date
-        inflacja_value_koniec= self.interpolation_function(end_timestamp).item()
+                # Create an interpolation function using scipy.interpolate.interp1d
+                self.interpolation_function = interp1d(timestamps, values)
 
-        self.prognoza = [p for p in self.prognoza if p[0] < self.data_koniec and p[0]> self.df.index.max()]
+                # Convert the new date to a numerical value
+                end_timestamp = (self.data_koniec - self.max_inflacja_real).total_seconds()
 
-        self.prognoza.append((self.data_koniec, inflacja_value_koniec))
+                # Use the interpolation function to estimate the value at the new date
+                inflacja_value_koniec= self.interpolation_function(end_timestamp).item()
 
-        new_df = pd.DataFrame(self.prognoza, columns=['miesiac', 'wartosc'])
-        #new_df['Date'] = pd.to_datetime(new_df['Date'])
-        new_df.set_index('miesiac', inplace=True)
-   
-        # Concatenate the original DataFrame and the new DataFrame
-        self.dff = pd.concat([self.df, new_df])
+                self.prognoza = [p for p in self.prognoza if p[0] < self.data_koniec and p[0]> self.df.index.max()]
+
+                self.prognoza.append((self.data_koniec, inflacja_value_koniec))
+
+                new_df = pd.DataFrame(self.prognoza, columns=['miesiac', 'wartosc'])
+                #new_df['Date'] = pd.to_datetime(new_df['Date'])
+                new_df.set_index('miesiac', inplace=True)
+        
+                # Concatenate the original DataFrame and the new DataFrame
+                self.dff = pd.concat([self.df, new_df])
+            else:
+                self.dff = self.df[self.df.index <= self.data_koniec]
+
+
+        else:
+
+            if self.prognoza:
+                self.prognoza = [(dt.datetime.strptime(p[0], '%d/%m/%Y'), p[1]) for p in self.prognoza]
+
+            #interpolation
+            dates, values = zip(*self.prognoza)
+
+            min_date = min(dates)
+
+            print(f"min_date: {min_date}, data start: {self.data_start}, data koniec: {self.data_koniec}")
+
+            # Convert dates to numerical values representing time or elapsed time
+            timestamps = np.array([(date-min_date).total_seconds() for date in dates])
+
+            # Create an interpolation function using scipy.interpolate.interp1d
+            self.interpolation_function = interp1d(timestamps, values)
+
+            # Convert the new date to a numerical value
+            start_timestamp = (self.data_start-min_date).total_seconds()
+
+            inflacja_value_start= self.interpolation_function(start_timestamp).item()
+
+            # Convert the new date to a numerical value
+            end_timestamp = (self.data_koniec - min_date).total_seconds()
+
+            # Use the interpolation function to estimate the value at the new date
+            inflacja_value_koniec= self.interpolation_function(end_timestamp).item()
+
+            self.prognoza.append((self.data_start, inflacja_value_start))
+            self.prognoza.append((self.data_koniec, inflacja_value_koniec))
+
+            self.prognoza = [p for p in self.prognoza if p[0] >= self.data_start and p[0]<=self.data_koniec]
+
+            self.dff = pd.DataFrame(self.prognoza, columns=['miesiac', 'wartosc'])
+            #new_df['Date'] = pd.to_datetime(new_df['Date'])
+            self.dff.set_index('miesiac', inplace=True)
+
+
         self.dff = self.dff.sort_index()
 
       
@@ -67,22 +115,26 @@ class InflacjaMiesiac:
         self.json_data = [{'date': dt.datetime.strftime(index, '%Y-%m-%d'), 'value': round(value,2)} for index, value in self.dff['wartosc'].items()]
 
     def _getInflacja(self, dzien):
-        if dzien > self.max_inflacja_real:
-            # Generate a new date for interpolation
+        if self.dane:
+            if dzien > self.max_inflacja_real:
+                # Generate a new date for interpolation
+                
+                # Convert the new date to a numerical value
+                new_timestamp = (dzien - self.max_inflacja_real).total_seconds()
+
+                # Use the interpolation function to estimate the value at the new date
+                inflacja_value = float(self.interpolation_function(new_timestamp))
+                
+            else:
+                inflacja_value = self._getInflacjaReal(dzien)
             
+        else:
             # Convert the new date to a numerical value
-            new_timestamp = (dzien - self.max_inflacja_real).total_seconds()
+            new_timestamp = (dzien - self.data_start).total_seconds()
 
             # Use the interpolation function to estimate the value at the new date
             inflacja_value = float(self.interpolation_function(new_timestamp))
             
-            
-            
-            
-        else:
-            inflacja_value = self._getInflacjaReal(dzien)
-        
-        
         return inflacja_value
 
     def _getInflacjaReal(self,dzien):

@@ -4,7 +4,10 @@ from flask_login import login_user, logout_user, login_required, current_user
 from ..models import User, Dom, Zapytanie, InflacjaMM, Kredyt, Nadplata
 from obliczeniakredytowe import db
 import os
+from sqlalchemy import text as sql_text
 import csv
+import pandas as pd
+import json
 
 admin_bp = Blueprint('admin_bp', __name__)
 
@@ -86,3 +89,19 @@ def backup():
     flash('backup zrobiony')
     return redirect(url_for('dom.pokaz_kredyty'))
 
+@admin_bp.route('/status')
+@login_required
+def status():
+
+    df = pd.read_sql(sql_text(f"SELECT data, wartosc FROM wibor"), con=db.engine.connect())
+
+
+    # convert columns of df to list of dictionaries (one dict per row)
+    dta = df.to_dict(orient='records')
+
+    # conver df records into json 
+
+    print(dta)
+
+
+    return render_template('admin/status.html', wibor=json.dumps(dta))
