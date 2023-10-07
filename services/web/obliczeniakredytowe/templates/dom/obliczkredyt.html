@@ -105,7 +105,7 @@
       <div class="columns is-vcentered">
         <div class="column is-narrow">
     
-           <button class="button is-danger">Usuń kredyt</button>
+           <button class="button is-danger" id="btnUsunKredyt">Usuń kredyt</button>
     
         </div>
         <div class="column">
@@ -139,6 +139,8 @@
   var nom_wartosc_nieruchomosc = JSON.parse('{{nom_wartosc_nieruchomosc|safe}}');
   var wibor_all = JSON.parse('{{wibor|safe}}');
   var fin_data = JSON.parse('{{fin_data|safe}}');
+
+  const kredyt_id = {{kredyt_id}};
 
   var wibor = wibor_all['dane']
   var rodzaj_wiboru = wibor_all['rodzaj_wiboru']
@@ -363,6 +365,7 @@
 
 
 
+  d3.select('#btnUsunKredyt').attr('onclick', "window.location.href='{{ url_for('dom.usun_kredyt', kredyt_id=0) }}'".replace("0", kredyt_id))
 
 
   create_chart_wibor(margin, width, height, wibor);

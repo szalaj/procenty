@@ -32,9 +32,37 @@ def start():
 
     return redirect(url_for('dom.pokaz_kredyty'))
 
+
+@dom.route('/kredyt/usun/<kredyt_id>', methods=['GET', 'POST'])
+@dom.route('/kredyt/usun/<kredyt_id>/<usun>', methods=['GET', 'POST'])
+@login_required
+def usun_kredyt(kredyt_id=None, usun=False):
+
+    if request.method == 'GET' and kredyt_id and not usun:
+
+
+
+        return render_template('dom/usun_kredyt.html', kredyt_id = kredyt_id)
+    
+    if request.method == 'GET' and kredyt_id and usun:
+
+        print(kredyt_id + "usuniety")
+
+        Nadplata.query.filter_by(kredyt_id=kredyt_id).delete()
+
+        Kredyt.query.filter_by(id=kredyt_id).delete()
+
+        db.session.commit()
+        
+        flash('kredyt usunięty')
+
+        return redirect(url_for('dom.pokaz_kredyty'))
+
+    
+    return redirect(url_for('dom.pokaz_kredyty'))
+
 @dom.route('/kredyt', methods=['GET', 'POST'])
 @dom.route('/kredyt/<kredyt_id>', methods=['GET', 'POST'])
-@dom.route('/kredyt/<kredyt_id>/<usun>', methods=['GET', 'POST'])
 @dom.route('/kredyt/<kredyt_id>/<nadplata_id>/<usun>', methods=['GET', 'POST'])
 @login_required
 def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
@@ -54,19 +82,7 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
         edycja = True
 
 
-    if request.method == 'GET' and kredyt_id and not nadplata_id and usun:
-        # zbierz dane kredytu
 
-        print(kredyt_id + "usuniety")
-
-        Nadplata.query.filter_by(kredyt_id=kredyt_id).delete()
-
-        Kredyt.query.filter_by(id=kredyt_id).delete()
-
-        db.session.commit()
-        
-        flash('kredyt usunięty')
-        return redirect(url_for('dom.pokaz_kredyty'))
 
     if request.method == 'GET' and kredyt_id and nadplata_id and usun:
         # zbierz dane kredytu
