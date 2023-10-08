@@ -73,6 +73,7 @@
 
   <div id="navbarBasicExample" class="navbar-menu">
     <div class="navbar-start">
+      {% if current_user.is_authenticated %}
       <a class="navbar-item" href="{{url_for('dom.pokaz_kredyty')}}">
         Lista kredytów
       </a>
@@ -80,7 +81,7 @@
       <a class="navbar-item" href="{{url_for('dom.kredyt')}}">
         Dodaj kredyt
       </a>
-
+      {% endif %}
 
     </div>
 
@@ -91,10 +92,8 @@
           <a class="button is-light" href="{{ url_for('admin_bp.logout') }}">
             {{current_user.name}} - Wyloguj
           </a>
-          {%- else %}Logowanie{}
-          <a class="button is-light" href="{{ url_for('admin_bp.login') }}">
-            Logowanie
-          </a>
+          {%- else %}
+
           {% endif %}
         </div>
       </div>
