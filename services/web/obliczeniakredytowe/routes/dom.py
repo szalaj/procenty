@@ -264,13 +264,13 @@ def obliczkredyt(kredyt_id=None):
     inflacja_dict = [{'miesiac': row.miesiac.strftime('%Y-%m'), 'wartosc': str(row.wartosc)} for row in inflacja if row.miesiac >= start_date]
 
 
-    prognoza_inflacja = [('01/10/2029', 100.2), ('01/10/2044', 100.2), ('01/10/2160', 100.2)]
+    prognoza_inflacja = [('01/10/2020', 100.01),('01/10/2029', 100.2), ('01/10/2044', 100.2), ('01/10/2160', 100.2)]
 
     wynik = proc.create_kredyt(dane_kredytu, 'stale')
 
     dzien_ostatniej_raty = max([dt.datetime.strptime(d['dzien'],'%Y-%m-%d') for d in wynik['raty']])
 
-    inf = InflacjaMiesiac(start_date, okresy,  liczba_wakacji, inflacja_dict, prognoza_inflacja)
+    inf = InflacjaMiesiac(start_date, okresy, liczba_wakacji, inflacja_dict, prognoza_inflacja)
 
     raty = {f"{n['dzien']}": n['rata'] for n in wynik["raty"]}
     nadplaty = {f"{n['dzien']}": n['kwota'] for n in wynik["nadplaty"]}

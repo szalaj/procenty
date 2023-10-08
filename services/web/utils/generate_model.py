@@ -21,7 +21,6 @@ class WiborInter:
     data_start: dt.datetime
     okresy: int
     liczba_wakacji: int
-
     points: list
 
     def __post_init__(self):
@@ -53,39 +52,45 @@ class WiborInter:
 
         print(f"index min: {self.df.index.min()} , index max: {self.df.index.max()}, data koniec: {self.data_koniec}")
 
-        if self.points:
-            self.points = [(dt.datetime.strptime(p[0], '%d/%m/%Y'), p[1]) for p in self.points if dt.datetime.strptime(p[0], '%d/%m/%Y') > self.df.index.max()]
-   
-        self.points.append((self.df.index.max(), self.df.loc[self.df.index.max(), 'wartosc']))
+        if self.data_koniec > self.max_wibor_real:
 
-        print(self.points)
+            if self.points:
+                self.points = [(dt.datetime.strptime(p[0], '%d/%m/%Y'), p[1]) for p in self.points if dt.datetime.strptime(p[0], '%d/%m/%Y') > self.df.index.max()]
+    
+            self.points.append((self.df.index.max(), self.df.loc[self.df.index.max(), 'wartosc']))
 
-        #interpolation
-        dates, values = zip(*self.points)
+            print(self.points)
 
-        # Convert dates to numerical values representing time or elapsed time
-        timestamps = np.array([(date - self.max_wibor_real).total_seconds() for date in dates])
+            #interpolation
+            dates, values = zip(*self.points)
 
-        # Create an interpolation function using scipy.interpolate.interp1d
-        self.interpolation_function = interp1d(timestamps, values)
+            # Convert dates to numerical values representing time or elapsed time
+            timestamps = np.array([(date - self.max_wibor_real).total_seconds() for date in dates])
 
-        # Convert the new date to a numerical value
-        end_timestamp = (self.data_koniec - self.max_wibor_real).total_seconds()
+            # Create an interpolation function using scipy.interpolate.interp1d
+            self.interpolation_function = interp1d(timestamps, values)
 
-        # Use the interpolation function to estimate the value at the new date
-        wibor_value_koniec= self.interpolation_function(end_timestamp).item()
+            # Convert the new date to a numerical value
+            end_timestamp = (self.data_koniec - self.max_wibor_real).total_seconds()
 
-        self.points = [p for p in self.points if p[0] < self.data_koniec]
+            # Use the interpolation function to estimate the value at the new date
+            wibor_value_koniec= self.interpolation_function(end_timestamp).item()
 
-        self.points.append((self.data_koniec, wibor_value_koniec))
+            self.points = [p for p in self.points if p[0] < self.data_koniec]
 
- 
-        new_df = pd.DataFrame(self.points, columns=['data', 'wartosc'])
-        #new_df['Date'] = pd.to_datetime(new_df['Date'])
-        new_df.set_index('data', inplace=True)
+            self.points.append((self.data_koniec, wibor_value_koniec))
 
-        # Concatenate the original DataFrame and the new DataFrame
-        dff = pd.concat([self.df, new_df])
+    
+            new_df = pd.DataFrame(self.points, columns=['data', 'wartosc'])
+            #new_df['Date'] = pd.to_datetime(new_df['Date'])
+            new_df.set_index('data', inplace=True)
+
+            # Concatenate the original DataFrame and the new DataFrame
+            dff = pd.concat([self.df, new_df])
+
+        else:
+            dff = self.df[self.df.index <= self.data_koniec]
+
         dff = dff.sort_index()
         self.json_data = [{'date': dt.datetime.strftime(index, '%Y-%m-%d'), 'value': value} for index, value in dff['wartosc'].items()]
 
