@@ -104,10 +104,7 @@ def status():
 
     df_inflacjamm =pd.read_sql(sql_text(f"SElECT miesiac, wartosc FROM inflacjamm"), con=db.engine.connect(), parse_dates='miesiac')
 
-
     df_inflacjamm['miesiac'] = df_inflacjamm['miesiac'].dt.strftime('%Y-%m')
-
-
 
     dr_inflacja = df_inflacjamm.to_dict(orient='records')
 

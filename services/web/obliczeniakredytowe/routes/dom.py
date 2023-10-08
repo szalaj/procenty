@@ -101,20 +101,25 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
     if request.method == 'POST':
 
         if 'wartosc_nadplaty' in request.form:
-            print(request.form['id'])
-            print(request.values)
+
 
             kredyt_id = request.form['id']
 
             data_nadplaty = request.form['data_nadplaty']
             wartosc_nadplaty = request.form['wartosc_nadplaty']
-            nd = Nadplata(data_nadplaty=dt.datetime.strptime(data_nadplaty, '%d/%m/%Y'),
+
+            wartosc_nadplaty = float(wartosc_nadplaty.replace(',','.'))
+
+            try:
+                nd = Nadplata(data_nadplaty=dt.datetime.strptime(data_nadplaty, '%d/%m/%Y'),
                             wartosc=wartosc_nadplaty,
                             kredyt_id=kredyt_id)
-            db.session.add(nd)
-            db.session.commit()
-            flash(f"nadplata dodana", 'ok')
-            print(url_for('dom.kredyt', kredyt_id=2))
+                db.session.add(nd)
+                db.session.commit()
+                flash(f"nadplata dodana", 'ok')
+            except:
+                flash("cos poszlo nie tak przy dodawaniu. Sprawdź kwotę i format daty", 'error')
+
             return redirect(url_for('dom.kredyt', kredyt_id=kredyt_id))
         else:
 
