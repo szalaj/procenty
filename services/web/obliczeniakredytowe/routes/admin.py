@@ -8,6 +8,7 @@ from sqlalchemy import text as sql_text
 import csv
 import pandas as pd
 import json
+import datetime as dt
 
 admin_bp = Blueprint('admin_bp', __name__)
 
@@ -93,7 +94,7 @@ def backup():
 @login_required
 def status():
 
-    df = pd.read_sql(sql_text(f"SELECT data, wartosc FROM wibor"), con=db.engine.connect())
+    df = pd.read_sql(sql_text(f"SELECT data, wartosc, rodzaj FROM wibor"), con=db.engine.connect())
 
 
     # convert columns of df to list of dictionaries (one dict per row)
@@ -101,7 +102,19 @@ def status():
 
     # conver df records into json 
 
-    print(dta)
+    df_inflacjamm =pd.read_sql(sql_text(f"SElECT miesiac, wartosc FROM inflacjamm"), con=db.engine.connect())
+    df_inflacjamm['miesiac'] = pd.to_datetime(df_inflacjamm.miesiac, format='%Y-%m-%d %H:%M:%S')
+    print(df_inflacjamm.info())
+
+    df_inflacjamm['miesiac'] = df_inflacjamm['miesiac'].dt.strftime('%Y-%m')
+
+    print(df_inflacjamm)
 
 
-    return render_template('admin/status.html', wibor=json.dumps(dta))
+    dr_inflacja = df_inflacjamm.to_dict(orient='records')
+
+    print(dr_inflacja)
+
+
+
+    return render_template('admin/status.html', wibor=json.dumps(dta), inflacja=json.dumps(dr_inflacja))

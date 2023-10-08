@@ -23,35 +23,82 @@
     <div class="section">
             
       <h1 class="title">Status</h1>
+
+      <h3>Wibor 3M</h3>
       
 
 <p>
-Data minimalna wiboru <span id="min_wibor_date"></span></p>
+Data minimalna wiboru <span id="min_wibor_date_3m"></span></p>
 <p>
-Data maksymalna wiboru <span id="max_wibor_data"></span>
+Data maksymalna wiboru <span id="max_wibor_data_3m"></span>
 </p>
+
+
+<h3>Wibor 6M</h3>
+<p>
+  Data minimalna wiboru <span id="min_wibor_date_6m"></span></p>
+  <p>
+  Data maksymalna wiboru <span id="max_wibor_data_6m"></span>
+  </p>
+
+  <h3>Inflacja m/m</h3>
+<p>
+  Data minimalna <span id="min_inflacja_data"></span></p>
+  <p>
+  Data maksymalna <span id="max_inflacja_data"></span>
+  </p>
 </div>
+
+</div>
+
+
 
   </div>
 
 <script>
 
 // load wibor variable sent from admin status as jinja variable
-var wibor = JSON.parse('{{wibor|safe}}');
+const wibor = JSON.parse('{{wibor|safe}}');
+const inflacja = JSON.parse('{{inflacja|safe}}');
 
-// make chart in d3 js of wibor where x asis is data and y axis is wibor value
+// select only wibor items of rodzaj = '3M'
+
+const wibor3M = wibor.filter(function (d) { return d.rodzaj=='wibor3m'})
 
 // max value of date in wibor
-var max_date = d3.max(wibor, d => d.data);
+var max_date = d3.max(wibor3M, d => d.data);
 
 // min value of date in wibor
-var min_date = d3.min(wibor, d => d.data);
+var min_date = d3.min(wibor3M, d => d.data);
 
-d3.select("#min_wibor_date").text(min_date)
-d3.select("#max_wibor_data").text(max_date)
+d3.select("#min_wibor_date_3m").text(min_date)
+d3.select("#max_wibor_data_3m").text(max_date)
 
 
-console.log(wibor)
+
+const wibor6M = wibor.filter(function (d) { return d.rodzaj=='wibor6m'})
+
+// max value of date in wibor
+max_date = d3.max(wibor6M, d => d.data);
+
+// min value of date in wibor
+min_date = d3.min(wibor6M, d => d.data);
+
+d3.select("#min_wibor_date_6m").text(min_date)
+d3.select("#max_wibor_data_6m").text(max_date)
+
+
+// max value of date in wibor
+max_date = d3.max(inflacja, d => d.miesiac);
+
+// min value of date in wibor
+min_date = d3.min(inflacja, d => d.miesiac);
+
+d3.select("#min_inflacja_data").text(min_date)
+d3.select("#max_inflacja_data").text(max_date)
+
+console.log(inflacja)
+
 
 
 
