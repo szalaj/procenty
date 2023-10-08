@@ -102,18 +102,16 @@ def status():
 
     # conver df records into json 
 
-    df_inflacjamm =pd.read_sql(sql_text(f"SElECT miesiac, wartosc FROM inflacjamm"), con=db.engine.connect())
-    df_inflacjamm['miesiac'] = pd.to_datetime(df_inflacjamm.miesiac, format='%Y-%m-%d %H:%M:%S')
-    print(df_inflacjamm.info())
+    df_inflacjamm =pd.read_sql(sql_text(f"SElECT miesiac, wartosc FROM inflacjamm"), con=db.engine.connect(), parse_dates='miesiac')
+
 
     df_inflacjamm['miesiac'] = df_inflacjamm['miesiac'].dt.strftime('%Y-%m')
 
-    print(df_inflacjamm)
 
 
     dr_inflacja = df_inflacjamm.to_dict(orient='records')
 
-    print(dr_inflacja)
+    
 
 
 
