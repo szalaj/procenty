@@ -10,6 +10,8 @@ import pandas as pd
 import json
 import datetime as dt
 
+from werkzeug.exceptions import HTTPException
+
 admin_bp = Blueprint('admin_bp', __name__)
 
 @admin_bp.route('/login', methods=['GET', 'POST'])
@@ -113,3 +115,11 @@ def status():
 
 
     return render_template('admin/status.html', wibor=json.dumps(dta), inflacja=json.dumps(dr_inflacja))
+
+
+
+
+def page_not_found(e):
+    print('404')
+    # note that we set the 404 status explicitly
+    return render_template('admin/500_generic.html'), 404
