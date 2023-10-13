@@ -7,6 +7,7 @@ from flask_apscheduler import APScheduler
 import requests
 
 
+
 db = SQLAlchemy()
 
 def init_app():
@@ -15,7 +16,10 @@ def init_app():
     app = Flask(__name__)
     app.config.from_object("obliczeniakredytowe.config.Config")
 
-    
+    from .routes.admin import page_not_found
+    app.register_error_handler(404, page_not_found)
+    app.register_error_handler(500, page_not_found)
+
     db.init_app(app)
     
     login_manager = LoginManager()
