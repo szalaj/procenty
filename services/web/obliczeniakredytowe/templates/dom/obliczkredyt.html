@@ -173,7 +173,7 @@
 
   var width_docs = document.getElementById('ryswibor').clientWidth;
 
-  var margin = { top: 60, right: 30, bottom: 70, left: 80 },
+  var margin = { top: 160, right: 30, bottom: 70, left: 80 },
     width = width_docs - margin.left - margin.right,
     height = 450 - margin.top - margin.bottom;
 
@@ -371,8 +371,8 @@
   create_chart_wibor(margin, width, height, wibor);
   create_chart_inflacja(margin, width, height, inflacja);
   create_chart_nadplaty(margin, width, height, dane1['nadplaty']);
-  create_chart_kapital(margin, width, height, nom_kpo, nom_cena_kosztowa, real_kpo, real_cena_kosztowa);
-  create_chart_koszty(margin, width, 700, real_koszty, nom_koszty, real_raty, nom_raty, real_wartosc_nieruchomosc, nom_wartosc_nieruchomosc);
+  create_chart_kapital(margin, width, 1200, nom_kpo, nom_cena_kosztowa, real_kpo, real_cena_kosztowa);
+  create_chart_koszty(margin, width, 1400, real_koszty, nom_koszty, real_raty, nom_raty, real_wartosc_nieruchomosc, nom_wartosc_nieruchomosc);
 
 </script>
 

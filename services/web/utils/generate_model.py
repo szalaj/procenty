@@ -189,11 +189,34 @@ class Wibor:
 def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transze, nadplaty, tylko_marza=False):
 
 
-    miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
-  
+    #miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
+    miesiace = []
+    wakacje= ['2022-08', '2022-09', '2022-10', '2022-11', '2023-02', '2023-05', '2023-08', '2023-11']
+
     grosze =  decimal.Decimal('.01')
 
     opr_arr = []
+
+    n=0
+    N=1
+    wakacje_in_progress=False
+    while N!=okresy:
+        miesiac =  start_date + relativedelta(months=n)
+        # check if miesiac is not same month and day as wakacje
+        if not (miesiac.strftime('%Y-%m') in wakacje):
+            N+=1
+            miesiace.append(miesiac.strftime('%Y-%m-%d'))
+            if wakacje_in_progress:
+                wakacje_in_progress=False
+                opr_arr.append({"dzien":miesiac.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor.getWibor(miesiac)).quantize(grosze))})
+        else:
+            wakacje_in_progress=True
+            opr_arr.append({"dzien":miesiac.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(0).quantize(grosze))})
+        n+=1
+
+        
+  
+
     if not tylko_marza:
         for i in range(0, int(okresy/wibor.okres)+1):
                 wibor_day =  start_date + relativedelta(months=3*i)
