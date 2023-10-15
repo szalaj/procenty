@@ -191,14 +191,14 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
 
     #miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
     miesiace = []
-    wakacje= ['2022-08', '2022-09', '2022-10', '2022-11', '2023-02', '2023-05', '2023-08', '2023-11']
+    wakacje= ['2022-08', '2022-09','2022-10','2022-11', '2023-02','2023-05','2023-08','2023-11']
 
     grosze =  decimal.Decimal('.01')
 
     opr_arr = []
 
-    n=0
-    N=1
+    n=1
+    N=0
     wakacje_in_progress=False
     while N!=okresy:
         miesiac =  start_date + relativedelta(months=n)
@@ -241,61 +241,9 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
             "nadplaty": nadplaty,
             "p": p_start,
             "marza": marza,
-            "start": miesiace[0],
-            "daty_splaty": miesiace[1:],
+            "start": start_date.strftime('%Y-%m-%d'),
+            "daty_splaty": miesiace,
             "oprocentowanie": opr_arr }
-
-    return data
-
-
-
-def generateFromWiborFile(kapital, okresy, start_date, marza, dzien_zamrozenia, rodzajWiboru, transze, wibor_start, tylko_marza=False):
-
-
-    wibor = Wibor(rodzajWiboru)
-    
-
-    miesiace = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
-
-    wibor_zamr_value = wibor.getWibor(dzien_zamrozenia)
-   
-    grosze =  decimal.Decimal('.01')
-
-    opr_arr = []
-    if not tylko_marza:
-        for i in range(0, int(okresy/wibor.okres)+1):
-                wibor_day =  start_date + relativedelta(months=3*i)
-                if wibor_day < dzien_zamrozenia:
-                    if not wibor_start:
-                        wibor_value = wibor.getWibor(wibor_day)
-                    else:
-                        wibor_value = wibor_start
-                    opr_arr.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_value).quantize(grosze))})
-        if not wibor_start:
-            opr_arr.append({"dzien":dzien_zamrozenia.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_zamr_value).quantize(grosze))})
-        else:
-            opr_arr.append({"dzien":dzien_zamrozenia.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_start).quantize(grosze))})
-
-    transze_out = []
-    if transze:
-        for tr in transze:
-            transze_out.append({"dzien":tr['dzien'].strftime('%Y-%m-%d'), "kapital": tr['wartosc']})
-
-
-    if tylko_marza:
-        p_start = float(decimal.Decimal(marza).quantize(grosze))
-    else:
-        p_start = float(decimal.Decimal(wibor.getWibor(start_date)+marza).quantize(grosze))
-
-    data = {"K": kapital,
-            "transze": transze_out,
-            "p": p_start,
-            "marza": marza,
-            "start": miesiace[0],
-            "daty_splaty": miesiace[1:],
-            "oprocentowanie": opr_arr,
-            "dzien_zamrozenia": dzien_zamrozenia.strftime('%Y-%m-%d'),
-            "wibor_zamrozony": wibor_zamr_value }
 
     return data
 
