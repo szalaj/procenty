@@ -337,10 +337,9 @@ def obliczkredyt(kredyt_id=None):
         for k in wynik["nadplaty"]:
             nadplata_miesiac = k['dzien'][0:7]
             if nadplata_miesiac == miesiac and k['dzien']> ds['dzien']:
-                print('odejmiej')
-                print(kmiesiac)
+
                 kmiesiac -= float(k['kwota'])
-                print(kmiesiac)
+
         kmiesiac_list.append({'dzien':dt.datetime.strptime(miesiac, '%Y-%m'), 'wartosc': kmiesiac})
 
 
