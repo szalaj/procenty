@@ -304,8 +304,10 @@ def obliczkredyt(kredyt_id=None):
     nom_kpo = []
     nom_cena_kosztowa = []
     suma_kroczaca_kosztow = 0
-    for i in range(okresy):
-        dzien = start_date + relativedelta(months=i)
+    dzien = start_date + relativedelta(months=1)
+
+    while dzien <= dzien_ostatniej_raty:
+
         if dt.datetime.strftime(dzien, '%Y-%m') in koszty:
             suma_kroczaca_kosztow += koszty[dt.datetime.strftime(dzien, '%Y-%m')]
         # find rata by dzien
@@ -316,8 +318,8 @@ def obliczkredyt(kredyt_id=None):
         nom_kpo.append({'dzien': dt.datetime.strftime(dzien, '%Y-%m'), 'wartosc': last_kpo})
         nom_cena_kosztowa.append({'dzien': dzien, 'wartosc': last_kpo + suma_kroczaca_kosztow})
 
-        if dzien > dzien_ostatniej_raty:
-            raise Exception('dzien > dzien ostatniej raty')
+
+        dzien = dzien + relativedelta(months=1)
 
 
     #nom_kpo = [{'dzien': dt.datetime.strftime(k['dzien'], '%Y-%m'), 'wartosc': k['wartosc']} for k in kpo_list]
