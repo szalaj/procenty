@@ -235,7 +235,7 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
     # df sorted by dzien
     df = df.sort_values(by=['dzien'])
 
-    print(df)
+    #print(df)
 
     # oprocentowanie z uwzglednieniem wakacji kredytowych
     opr_wakacje = []
@@ -256,7 +256,7 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
                 opr_wakacje.append({"dzien":r['dzien'], "proc": r['proc']})
 
 
-    print(opr_wakacje)
+    #print(opr_wakacje)
 
     transze_out = []
     if transze:

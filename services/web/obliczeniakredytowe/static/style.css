@@ -19,6 +19,12 @@
     stroke: rgb(0, 0, 0);
   }
 
+  path.kreska-czerwona {
+    fill: none;
+    stroke-width: 2px;
+    stroke: rgb(171, 13, 13);
+  }
+  
   path.kreska-dot {
     fill: none;
     stroke-width: 2px;

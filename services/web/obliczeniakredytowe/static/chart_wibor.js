@@ -1,4 +1,4 @@
-function create_chart_wibor(margin, width, height, wibor)
+function create_chart_wibor(margin, width, height, wibor, oprocentowanie)
 {
 
   var parseDateWibor = d3.timeParse("%Y-%m-%d");
@@ -6,6 +6,11 @@ function create_chart_wibor(margin, width, height, wibor)
   wibor.forEach(function (d) {
     d.dzien = parseDateWibor(d.date)
     d.wartosc = parseFloat(d.value)
+  });
+
+  oprocentowanie.forEach(function (d) {
+    d.dzien = parseDateWibor(d.dzien)
+    d.wartosc = parseFloat(d.proc)
   });
 
 
@@ -47,8 +52,9 @@ var gridswibor = svgwibor.append('g')
     .attr('y2', height)
 
 
-var maxYvalueW = d3.max(wibor, function (d) { return d.wartosc });
-var minYvalueW = d3.min(wibor, function (d) { return d.wartosc });
+
+var maxYvalueW = d3.max(wibor.concat(oprocentowanie), function (d) { return d.wartosc });
+var minYvalueW = d3.min(wibor.concat(oprocentowanie), function (d) { return d.wartosc });
 
 var yscalewibor = d3.scaleLinear()
   .domain([minYvalueW, maxYvalueW])
@@ -78,6 +84,15 @@ var yscalewibor = d3.scaleLinear()
     .y(function (d) { return yscalewibor(d.wartosc) })
   )
 
+
+
+  svgwibor.append("path")
+  .datum(oprocentowanie)
+  .attr("class", "kreska-czerwona")
+  .attr("d", d3.line()
+    .x(function (d) { return xscalewibor(d.dzien) })
+    .y(function (d) { return yscalewibor(d.wartosc) })
+  )
 
 
 
