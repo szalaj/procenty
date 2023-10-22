@@ -231,27 +231,7 @@ def obliczkredyt(kredyt_id=None):
 
     nadplaty = [{'dzien': n['data_nadplaty'], 'kwota': n['wartosc']} for n in kr['nadplaty']]
 
-    # nadplata_start = dt.datetime.strptime('12/05/2024', '%d/%m/%Y')
-    # for o in range(240):
-    #     dzien = (nadplata_start + relativedelta(months=o)).strftime('%d-%m-%Y')
-    #     nadplaty.append({'dzien': dzien, 'kwota': 2000})
 
-    # nadplaty = [{'dzien': '12-07-2023', 'kwota': 8000.00},
-    # {'dzien': '10-07-2023', 'kwota': 150.00},
-    # {'dzien':'06-07-2023', 'kwota':4500.00},
-    # {'dzien':'27-06-2023', 'kwota':1000.00},
-    # {'dzien':'16-06-2023', 'kwota':100.00},
-    # {'dzien':'22-05-2023', 'kwota':600.00},
-    # {'dzien':'13-04-2023', 'kwota':1500.00},
-    # {'dzien':'20-03-2023', 'kwota':1700.00},
-    # {'dzien':'20-02-2023', 'kwota':1000.00},
-    # {'dzien':'26-01-2023', 'kwota':1000.00},
-    # {'dzien':'16-12-2022', 'kwota':1000.00},
-    # {'dzien':'17-11-2022', 'kwota':1990.45},
-    # {'dzien':'14-10-2022', 'kwota':600.00},
-    # {'dzien':'05-05-2022', 'kwota':608.00},
-    # {'dzien':'02-05-2022', 'kwota':200.00},
-    # {'dzien':'25-04-2022', 'kwota':3000.00}]
 
 
     dane_kredytu =  ut.generateFromWiborFileInter(w, kapital,
@@ -318,8 +298,31 @@ def obliczkredyt(kredyt_id=None):
     for k in wynik["raty"]:
         kpo_list.append({'dzien':dt.datetime.strptime(k['dzien'], '%Y-%m-%d'), 'wartosc': k['K_po']})
 
-    nom_kpo = [{'dzien': dt.datetime.strftime(k['dzien'], '%Y-%m'), 'wartosc': k['wartosc']} for k in kpo_list]
-    
+    # max data raty
+    dzien_ostatniej_raty = max([dt.datetime.strptime(d['dzien'],'%Y-%m-%d') for d in wynik['raty']])
+    last_kpo = kapital
+    nom_kpo = []
+    nom_cena_kosztowa = []
+    suma_kroczaca_kosztow = 0
+    for i in range(okresy):
+        dzien = start_date + relativedelta(months=i)
+        if dt.datetime.strftime(dzien, '%Y-%m') in koszty:
+            suma_kroczaca_kosztow += koszty[dt.datetime.strftime(dzien, '%Y-%m')]
+        # find rata by dzien
+        rata = [r for r in wynik['raty'] if r['dzien'][:7] == dt.datetime.strftime(dzien, '%Y-%m')]
+        if rata:
+            last_kpo = float(rata[0]['K_po'])
+        
+        nom_kpo.append({'dzien': dt.datetime.strftime(dzien, '%Y-%m'), 'wartosc': last_kpo})
+        nom_cena_kosztowa.append({'dzien': dzien, 'wartosc': last_kpo + suma_kroczaca_kosztow})
+
+        if dzien > dzien_ostatniej_raty:
+            raise Exception('dzien > dzien ostatniej raty')
+
+
+    #nom_kpo = [{'dzien': dt.datetime.strftime(k['dzien'], '%Y-%m'), 'wartosc': k['wartosc']} for k in kpo_list]
+    print(nom_cena_kosztowa)
+    print(len(nom_kpo))
 
     kmiesiac_list = []
     kmiesiac = kapital
@@ -337,10 +340,9 @@ def obliczkredyt(kredyt_id=None):
         for k in wynik["nadplaty"]:
             nadplata_miesiac = k['dzien'][0:7]
             if nadplata_miesiac == miesiac and k['dzien']> ds['dzien']:
-                print('odejmiej')
-                print(kmiesiac)
+
                 kmiesiac -= float(k['kwota'])
-                print(kmiesiac)
+
         kmiesiac_list.append({'dzien':dt.datetime.strptime(miesiac, '%Y-%m'), 'wartosc': kmiesiac})
 
 
@@ -348,8 +350,17 @@ def obliczkredyt(kredyt_id=None):
     
     
     real_koszty = inf.urealnij(koszty_list)
+   
     real_raty = inf.urealnij(raty_list)
     real_kpo = inf.urealnij(kpo_list)
+
+    real_cena_kosztowa = inf.urealnij(nom_cena_kosztowa)
+
+    print(real_cena_kosztowa)
+
+    nom_cena_kosztowa = [{'dzien': dt.datetime.strftime(r['dzien'], '%Y-%m'), 'wartosc':r['wartosc']} for r in nom_cena_kosztowa]
+    real_cena_kosztowa = [{'dzien': r['miesiac'], 'wartosc':r['wartosc']} for r in real_cena_kosztowa]
+    
 
     real_kmiesiac = inf.urealnij(kmiesiac_list)
 
@@ -364,11 +375,14 @@ def obliczkredyt(kredyt_id=None):
     return render_template('dom/obliczkredyt.html', 
                            wibor=json.dumps({'rodzaj_wiboru':rodzaj_wiboru, 'dane': w.json_data}),
                            wynik=json.dumps(wynik), 
+                           oprocentowanie=json.dumps(dane_kredytu['oprocentowanie']),
                            kredyt_id = kredyt_id,
                            fin_data = json.dumps(fin_data),
                            inflacja=json.dumps(inf.json_data),
                            real_koszty=json.dumps(real_koszty),
                            nom_koszty=json.dumps(nom_koszty),
+                           nom_cena_kosztowa = json.dumps(nom_cena_kosztowa),
+                           real_cena_kosztowa = json.dumps(real_cena_kosztowa),
                            real_raty=json.dumps(real_raty),
                            nom_raty=json.dumps(nom_raty),
                            nom_kpo=json.dumps(nom_kpo),

@@ -23,7 +23,7 @@ class InflacjaMiesiac:
 
         if self.dane:
             self.df = pd.DataFrame(self.dane)
-            print(self.df.info())
+
             #self.df.index = pd.to_datetime(self.df.index, format='%Y-%m-%d')
             self.df.set_index('miesiac', inplace=True)
             self.df["wartosc"] = pd.to_numeric(self.df["wartosc"])

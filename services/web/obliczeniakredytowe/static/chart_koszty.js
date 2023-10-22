@@ -2,7 +2,7 @@ function create_chart_koszty(margin, width, height, real_koszty, nom_koszty, rea
 {
 
 
-  height = 1000 - margin.top - margin.bottom;
+  height = height - margin.top - margin.bottom;
 
 
 

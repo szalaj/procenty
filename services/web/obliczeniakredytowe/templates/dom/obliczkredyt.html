@@ -129,6 +129,8 @@
   var inflacja = JSON.parse('{{inflacja|safe}}');
   var real_koszty = JSON.parse('{{real_koszty|safe}}');
   var nom_koszty = JSON.parse('{{nom_koszty|safe}}');
+  var nom_cena_kosztowa = JSON.parse('{{nom_cena_kosztowa|safe}}');
+  var real_cena_kosztowa = JSON.parse('{{real_cena_kosztowa|safe}}');
   var real_raty = JSON.parse('{{real_raty|safe}}');
   var nom_raty = JSON.parse('{{nom_raty|safe}}');
   var nom_kpo = JSON.parse('{{nom_kpo|safe}}');
@@ -139,6 +141,9 @@
   var nom_wartosc_nieruchomosc = JSON.parse('{{nom_wartosc_nieruchomosc|safe}}');
   var wibor_all = JSON.parse('{{wibor|safe}}');
   var fin_data = JSON.parse('{{fin_data|safe}}');
+  const oprocentowanie = JSON.parse('{{oprocentowanie|safe}}');
+  
+  console.log(oprocentowanie)
 
   const kredyt_id = {{kredyt_id}};
 
@@ -173,9 +178,10 @@
 
   var width_docs = document.getElementById('ryswibor').clientWidth;
 
-  var margin = { top: 60, right: 30, bottom: 70, left: 80 },
-    width = width_docs - margin.left - margin.right,
-    height = 450 - margin.top - margin.bottom;
+  var margin1 = { top: 40, right: 30, bottom: 70, left: 80 },
+    margin2 = { top: 160, right: 30, bottom: 70, left: 80 },
+    width = width_docs - margin1.left - margin1.right,
+    height = 450 - margin1.top - margin1.bottom;
 
 
   var parseDateWykres = d3.timeParse("%Y-%m-%d");
@@ -196,6 +202,18 @@
     d.miesiac = d.dzien;
     d.dzien = parseDateRealKPO(d.dzien);
     d.K_po = parseFloat(d.wartosc);
+  });
+
+  nom_cena_kosztowa.forEach(function (d) {
+    d.miesiac = d.dzien;
+    d.dzien = parseDateRealKPO(d.dzien);
+    d.wartosc = parseFloat(d.wartosc);
+  });
+
+  real_cena_kosztowa.forEach(function (d) {
+    d.miesiac = d.dzien;
+    d.dzien = parseDateRealKPO(d.dzien);
+    d.wartosc = parseFloat(d.wartosc);
   });
 
   real_kpo.forEach(function (d) {
@@ -239,46 +257,6 @@
 
 
 
-  const mergedResult = {};
-
-
-  // Merge arr1
-  nom_kmiesiac.forEach(obj => {
-
-    const yearMonth = obj.miesiac; // Extract 'YYYY-MM' from the date
-
-    if (!mergedResult[yearMonth]) {
-      mergedResult[yearMonth] = obj.K_po;
-
-    } else {
-      mergedResult[yearMonth] += obj.K_po;
-    }
-  });
-
-
-  // Merge arr2
-  nom_koszty.forEach(obj => {
-    const yearMonth = obj.huj
-
-    if (!mergedResult[yearMonth]) {
-      mergedResult[yearMonth] = obj.cumsum_nom;
-    } else {
-      mergedResult[yearMonth] += obj.cumsum_nom;
-
-    }
-  });
-
-
-
-
-
-
-
-
-  const nom_cena_kosztowa = Object.entries(mergedResult).map(([miesiac, wartosc]) => ({ miesiac, wartosc }));
-  nom_cena_kosztowa.sort(function (x, y) {
-    return d3.ascending(x.miesiac, y.miesiac);
-  })
 
 
 
@@ -314,44 +292,6 @@
 
 
 
-  const mergedResultReal = {};
-
-
-  // Merge arr1
-  real_koszty.forEach(obj => {
-
-    const yearMonth = obj.huj; // Extract 'YYYY-MM' from the date
-
-    if (!mergedResultReal[yearMonth]) {
-      mergedResultReal[yearMonth] = obj.cumsum;
-
-    } else {
-      mergedResultReal[yearMonth] += obj.cumsum;
-    }
-  });
-
-
-
-
-  // Merge arr2
-  real_kmiesiac.forEach(obj => {
-    const yearMonth = obj.miesiac
-
-    if (!mergedResultReal[yearMonth]) {
-      mergedResultReal[yearMonth] = obj.K_po;
-    } else {
-      mergedResultReal[yearMonth] += obj.K_po;
-
-    }
-  });
-
-
-
-  const real_cena_kosztowa = Object.entries(mergedResultReal).map(([miesiac, wartosc]) => ({ miesiac, wartosc }));
-
-  real_cena_kosztowa.sort(function (x, y) {
-    return d3.ascending(x.miesiac, y.miesiac);
-  })
 
   real_cena_kosztowa.forEach(function (d) {
 
@@ -363,16 +303,17 @@
 
   console.log(real_cena_kosztowa)
 
-
+  console.log('--real kpo---')
+  console.log(real_kpo)
 
   d3.select('#btnUsunKredyt').attr('onclick', "window.location.href='{{ url_for('dom.usun_kredyt', kredyt_id=0) }}'".replace("0", kredyt_id))
 
 
-  create_chart_wibor(margin, width, height, wibor);
-  create_chart_inflacja(margin, width, height, inflacja);
-  create_chart_nadplaty(margin, width, height, dane1['nadplaty']);
-  create_chart_kapital(margin, width, height, nom_kpo, nom_cena_kosztowa, real_kpo, real_cena_kosztowa);
-  create_chart_koszty(margin, width, 700, real_koszty, nom_koszty, real_raty, nom_raty, real_wartosc_nieruchomosc, nom_wartosc_nieruchomosc);
+  create_chart_wibor(margin1, width, height, wibor, oprocentowanie);
+  create_chart_inflacja(margin1, width, height, inflacja);
+  create_chart_nadplaty(margin1, width, height, dane1['nadplaty']);
+  create_chart_kapital(margin2, width, 1200, nom_kpo, nom_cena_kosztowa, real_kpo, real_cena_kosztowa);
+  create_chart_koszty(margin2, width, 1400, real_koszty, nom_koszty, real_raty, nom_raty, real_wartosc_nieruchomosc, nom_wartosc_nieruchomosc);
 
 </script>
 

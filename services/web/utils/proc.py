@@ -13,6 +13,7 @@ class Rodzaj(Enum):
     OPROCENTOWANIE = 4
     NADPLATA = 2
     TRANSZA = 1
+    WAKACJE = 5
 
 @dataclass
 class Zdarzenie:
@@ -225,7 +226,7 @@ class Kredyt:
 
             
 
-def create_kredyt(dane_kredytu, rodzajRat) -> Kredyt:
+def create_kredyt(dane_kredytu, rodzajRat):
 
     dane = dane_kredytu
 

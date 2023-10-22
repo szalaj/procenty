@@ -2,7 +2,7 @@ function create_chart_kapital(margin, width, height, nom_kpo, nom_cena_kosztowa,
 {
 
 
-  height = 720 - margin.top - margin.bottom;
+  height = height - margin.top - margin.bottom;
 
 
   var parseDate = d3.timeParse("%Y-%m");
@@ -20,7 +20,7 @@ function create_chart_kapital(margin, width, height, nom_kpo, nom_cena_kosztowa,
 
 
   var xscale = d3.scaleTime()
-    .domain(d3.extent(nom_kpo, d => d.dzien))
+    .domain(d3.extent(real_kpo, d => d.dzien))
     .range([0, width]);
 
 
