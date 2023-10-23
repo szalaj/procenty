@@ -182,12 +182,18 @@ class Wibor:
 
 
 
-def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transze, nadplaty, tylko_marza=False):
+def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transze, nadplaty, wakacje, tylko_marza=False):
 
 
     #daty_splaty = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
     daty_splaty = []
-    wakacje= ['2022-08', '2022-09','2022-10','2022-11', '2023-02','2023-05','2023-08','2023-11']
+    #wakacje= ['2022-08', '2022-09','2022-10','2022-11', '2023-02','2023-05','2023-08','2023-11']
+
+    nasze_daty_splaty = [(dt.datetime.strptime('2021-11-18', '%Y-%m-%d') + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(6)] + \
+    [(dt.datetime.strptime('2022-05-04', '%Y-%m-%d') + relativedelta(months=i)).strftime('%Y-%m-%d')  for i in range(3)] + \
+    [(dt.datetime.strptime('2022-08-29', '%Y-%m-%d') + relativedelta(months=i)).strftime('%Y-%m-%d')  for i in range(360)] 
+
+    print(f"nasze daty splaty {nasze_daty_splaty}")
 
     grosze =  decimal.Decimal('.01')
 
@@ -209,7 +215,8 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
     N=0
     wakacje_in_progress=False
     while N!=okresy:
-        dzien_splaty =  start_date + relativedelta(months=n)
+        #dzien_splaty =  start_date + relativedelta(months=n)
+        dzien_splaty = dt.datetime.strptime(nasze_daty_splaty[n], '%Y-%m-%d')
         # check if dzien_splaty is not same month and day as wakacje
         if not (dzien_splaty.strftime('%Y-%m') in wakacje):
             N+=1

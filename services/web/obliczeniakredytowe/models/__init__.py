@@ -135,3 +135,19 @@ class Wibor(db.Model):
                 'wartosc': float(self.wartosc),
                 'rodzaj':self.rodzaj}
     
+
+
+class Wakacje(db.Model):
+    __tablename__ = 'wakacje'
+
+    id = db.Column(db.Integer, primary_key=True) 
+    kredyt_id  = db.Column(db.Integer, db.ForeignKey("kredyt.id"), nullable=False)
+    miesiac = db.Column(db.DateTime, nullable=False)
+
+    def __repr__(self):
+        return f"{self.kredyt_id} - {self.miesiac}"
+    
+    def as_dict(self):
+       return {'id': self.id,
+               'miesiac': dt.datetime.strftime(self.miesiac, '%Y-%m'),
+               'kredyt_id':self.kredyt_id}
