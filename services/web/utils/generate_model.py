@@ -182,12 +182,19 @@ class Wibor:
 
 
 
-def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transze, nadplaty, tylko_marza=False):
+def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transze, nadplaty, wakacje, dni_splaty, tylko_marza=False):
+
 
 
     #daty_splaty = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
     daty_splaty = []
-    wakacje= ['2022-08', '2022-09','2022-10','2022-11', '2023-02','2023-05','2023-08','2023-11']
+    #wakacje= ['2022-08', '2022-09','2022-10','2022-11', '2023-02','2023-05','2023-08','2023-11']
+
+    # nasze_daty_splaty = [(dt.datetime.strptime('2021-11-18', '%Y-%m-%d') + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(6)] + \
+    # [(dt.datetime.strptime('2022-05-04', '%Y-%m-%d') + relativedelta(months=i)).strftime('%Y-%m-%d')  for i in range(3)] + \
+    # [(dt.datetime.strptime('2022-08-29', '%Y-%m-%d') + relativedelta(months=i)).strftime('%Y-%m-%d')  for i in range(360)] 
+
+    # print(f"nasze daty splaty {nasze_daty_splaty}")
 
     grosze =  decimal.Decimal('.01')
 
@@ -208,8 +215,43 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
     n=1
     N=0
     wakacje_in_progress=False
+    miesiac_start_date = start_date.strftime('%Y-%m')
+    aktualny_dzien_splaty = start_date
+    aktualny_dzien_splaty_dzien = dt.datetime.strftime(start_date, '%d')
+    for s in dni_splaty:
+        if miesiac_start_date==s[0:7] and dt.datetime.strptime(s, '%Y-%m-%d')>start_date:
+            aktualny_dzien_splaty = dt.datetime.strptime(s, '%Y-%m-%d')
+            aktualny_dzien_splaty_dzien = dt.datetime.strftime(aktualny_dzien_splaty, '%d')
+            break
+
     while N!=okresy:
-        dzien_splaty =  start_date + relativedelta(months=n)
+        # potrzebny nam miesiac
+        dzien_splaty =  aktualny_dzien_splaty + relativedelta(months=1)
+ 
+        # month of dzien_splaty
+        miesiac = dt.datetime.strftime(dzien_splaty, '%m')
+        # rok of dzien_splaty
+        rok = dt.datetime.strftime(dzien_splaty, '%Y')
+
+        # sprobujmy utworzyc nowa date splaty
+        try:
+            str_dzien = f"{rok}-{miesiac}-{aktualny_dzien_splaty_dzien}"
+            print(f"str dzien: {str_dzien}")
+            dzien_splaty = dt.datetime.strptime(str_dzien, '%Y-%m-%d')
+        except:
+            # zostajemy przy aktualnej dacie splaty
+            pass
+
+        miesiac_dnia_splaty = dzien_splaty.strftime('%Y-%m')
+        for s in dni_splaty:
+            if miesiac_dnia_splaty==s[0:7]:
+                dzien_splaty = dt.datetime.strptime(s, '%Y-%m-%d')
+                aktualny_dzien_splaty_dzien = dt.datetime.strftime(dzien_splaty, '%d')
+                break
+        
+      
+
+        #dzien_splaty = dt.datetime.strptime(nasze_daty_splaty[n], '%Y-%m-%d')
         # check if dzien_splaty is not same month and day as wakacje
         if not (dzien_splaty.strftime('%Y-%m') in wakacje):
             N+=1
@@ -222,6 +264,7 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
             wakacje_in_progress=True
             #opr_wib.append({"dzien":dzien_splaty.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(0).quantize(grosze))})
             opr_arr.append({"dzien":dzien_splaty.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor.getWibor(dzien_splaty)).quantize(grosze)), "rodzaj": "splata", 'typ': "W"})
+        aktualny_dzien_splaty = dzien_splaty
         n+=1
 
         

@@ -1,7 +1,7 @@
 
 from flask import Blueprint, render_template, flash, redirect, url_for, request, send_file, sessions, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
-from ..models import User, Dom, Zapytanie, InflacjaMM, Kredyt, Nadplata
+from ..models import User, Dom, Zapytanie, InflacjaMM, Kredyt, Nadplata, Wakacje, DniSplaty
 from obliczeniakredytowe import db
 from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, validators
 from dateutil.relativedelta import relativedelta
@@ -61,6 +61,30 @@ def usun_kredyt(kredyt_id=None, usun=False):
     
     return redirect(url_for('dom.pokaz_kredyty'))
 
+@dom.route('/usun_wakacje/<kredyt_id>/<wakacje_id>', methods=['GET', 'POST'])
+def usun_wakacje(kredyt_id=None, wakacje_id=None):
+
+    print(kredyt_id)
+    Wakacje.query.filter_by(id=wakacje_id).delete()
+    db.session.commit()
+    
+    flash('wakacje usunięte')
+
+    return redirect(url_for('dom.kredyt', kredyt_id=kredyt_id))
+
+
+@dom.route('/usun_dzien_splaty/<kredyt_id>/<dzien_id>', methods=['GET', 'POST'])
+def usun_dzien_splaty(kredyt_id=None, dzien_id=None):
+
+    print( f"kredyt id :{kredyt_id}, dzien splatyid: {dzien_id}")
+    
+    DniSplaty.query.filter_by(id=dzien_id).delete()
+    db.session.commit()
+    
+    flash('dzien splaty usuniety')
+
+    return redirect(url_for('dom.kredyt', kredyt_id=kredyt_id))
+
 @dom.route('/kredyt', methods=['GET', 'POST'])
 @dom.route('/kredyt/<kredyt_id>', methods=['GET', 'POST'])
 @dom.route('/kredyt/<kredyt_id>/<nadplata_id>/<usun>', methods=['GET', 'POST'])
@@ -76,8 +100,11 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
         # zbierz dane kredytu
         kr = Kredyt.query.filter_by(id=kredyt_id).first().as_dict()
         kr['nadplaty'] =  [n.as_dict() for n in Nadplata.query.filter_by(kredyt_id=kredyt_id)]
+        kr['wakacje'] = [n.as_dict() for n in Wakacje.query.filter_by(kredyt_id=kredyt_id)]
+        kr['dnisplaty'] = [n.as_dict() for n in DniSplaty.query.filter_by(kredyt_id=kredyt_id)]
         
-        print(kr)
+        print(kr['dnisplaty'])
+
         dane = json.dumps(kr)
         edycja = True
 
@@ -97,6 +124,8 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
         
         flash('nadplata usunięta')
         return redirect(url_for('dom.kredyt', kredyt_id=kredyt_id))
+    
+
 
     if request.method == 'POST':
 
@@ -119,6 +148,44 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
                 flash(f"nadplata dodana", 'ok')
             except:
                 flash("cos poszlo nie tak przy dodawaniu. Sprawdź kwotę i format daty", 'error')
+
+            return redirect(url_for('dom.kredyt', kredyt_id=kredyt_id))
+        
+        if 'miesiac_wakacji' in request.form:
+
+            print(request.form)
+            kredyt_id = request.form['id']
+
+            miesiac_wakacji = request.form['miesiac_wakacji']
+
+
+            
+            try:
+                wk = Wakacje(miesiac=dt.datetime.strptime(miesiac_wakacji, '%m/%Y'), kredyt_id=kredyt_id)
+                db.session.add(wk)
+                db.session.commit()
+                flash(f"wakacje dodane", 'ok')
+            except:
+                flash("cos poszlo nie tak przy dodawaniu. format daty", 'error')
+
+            return redirect(url_for('dom.kredyt', kredyt_id=kredyt_id))
+        
+        if 'dzien_splaty' in request.form:
+
+            print(request.form)
+            kredyt_id = request.form['id']
+
+            dzien_splaty = request.form['dzien_splaty']
+
+
+            
+            try:
+                ds = DniSplaty(dzien_splaty=dt.datetime.strptime(dzien_splaty, '%d/%m/%Y'), kredyt_id=kredyt_id)
+                db.session.add(ds)
+                db.session.commit()
+                flash(f"dzien splaty dodany", 'ok')
+            except:
+                flash("cos poszlo nie tak przy dodawaniu. format daty", 'error')
 
             return redirect(url_for('dom.kredyt', kredyt_id=kredyt_id))
         else:
@@ -195,6 +262,8 @@ def obliczkredyt(kredyt_id=None):
 
     kr = Kredyt.query.filter_by(id=kredyt_id).first().as_dict()
     kr['nadplaty'] =  [n.as_dict() for n in Nadplata.query.filter_by(kredyt_id=kredyt_id)]
+    kr['wakacje'] =  [n.as_dict() for n in Wakacje.query.filter_by(kredyt_id=kredyt_id)]
+    kr['dnisplaty'] = [n.as_dict() for n in DniSplaty.query.filter_by(kredyt_id=kredyt_id)]
         
     # if request.method == 'POST':
     #     kapital = request.form['kapital']
@@ -231,6 +300,10 @@ def obliczkredyt(kredyt_id=None):
 
     nadplaty = [{'dzien': n['data_nadplaty'], 'kwota': n['wartosc']} for n in kr['nadplaty']]
 
+    wakacje = [n['miesiac'] for n in kr['wakacje']]
+
+    dni_splaty = [n['dzien_splaty'] for n in kr['dnisplaty']]
+
 
 
 
@@ -240,6 +313,8 @@ def obliczkredyt(kredyt_id=None):
                                                    marza,
                                                    [],
                                                    nadplaty, 
+                                                   wakacje,
+                                                   dni_splaty,
                                                    False)
     
     inflacja = InflacjaMM.query.all()
@@ -304,8 +379,10 @@ def obliczkredyt(kredyt_id=None):
     nom_kpo = []
     nom_cena_kosztowa = []
     suma_kroczaca_kosztow = 0
-    for i in range(okresy):
-        dzien = start_date + relativedelta(months=i)
+    dzien = start_date + relativedelta(months=1)
+
+    while dzien <= dzien_ostatniej_raty:
+
         if dt.datetime.strftime(dzien, '%Y-%m') in koszty:
             suma_kroczaca_kosztow += koszty[dt.datetime.strftime(dzien, '%Y-%m')]
         # find rata by dzien
@@ -316,13 +393,11 @@ def obliczkredyt(kredyt_id=None):
         nom_kpo.append({'dzien': dt.datetime.strftime(dzien, '%Y-%m'), 'wartosc': last_kpo})
         nom_cena_kosztowa.append({'dzien': dzien, 'wartosc': last_kpo + suma_kroczaca_kosztow})
 
-        if dzien > dzien_ostatniej_raty:
-            raise Exception('dzien > dzien ostatniej raty')
+
+        dzien = dzien + relativedelta(months=1)
 
 
     #nom_kpo = [{'dzien': dt.datetime.strftime(k['dzien'], '%Y-%m'), 'wartosc': k['wartosc']} for k in kpo_list]
-    print(nom_cena_kosztowa)
-    print(len(nom_kpo))
 
     kmiesiac_list = []
     kmiesiac = kapital
@@ -355,8 +430,6 @@ def obliczkredyt(kredyt_id=None):
     real_kpo = inf.urealnij(kpo_list)
 
     real_cena_kosztowa = inf.urealnij(nom_cena_kosztowa)
-
-    print(real_cena_kosztowa)
 
     nom_cena_kosztowa = [{'dzien': dt.datetime.strftime(r['dzien'], '%Y-%m'), 'wartosc':r['wartosc']} for r in nom_cena_kosztowa]
     real_cena_kosztowa = [{'dzien': r['miesiac'], 'wartosc':r['wartosc']} for r in real_cena_kosztowa]
