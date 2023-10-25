@@ -1,7 +1,7 @@
 
 from flask import Blueprint, render_template, flash, redirect, url_for, request, send_file, sessions, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
-from ..models import User, Dom, Zapytanie, InflacjaMM, Kredyt, Nadplata, Wakacje
+from ..models import User, Dom, Zapytanie, InflacjaMM, Kredyt, Nadplata, Wakacje, DniSplaty
 from obliczeniakredytowe import db
 from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, validators
 from dateutil.relativedelta import relativedelta
@@ -64,11 +64,24 @@ def usun_kredyt(kredyt_id=None, usun=False):
 @dom.route('/usun_wakacje/<kredyt_id>/<wakacje_id>', methods=['GET', 'POST'])
 def usun_wakacje(kredyt_id=None, wakacje_id=None):
 
-    print( kredyt_id)
+    print(kredyt_id)
     Wakacje.query.filter_by(id=wakacje_id).delete()
     db.session.commit()
     
     flash('wakacje usunięte')
+
+    return redirect(url_for('dom.kredyt', kredyt_id=kredyt_id))
+
+
+@dom.route('/usun_dzien_splaty/<kredyt_id>/<dzien_id>', methods=['GET', 'POST'])
+def usun_dzien_splaty(kredyt_id=None, dzien_id=None):
+
+    print( f"kredyt id :{kredyt_id}, dzien splatyid: {dzien_id}")
+    
+    DniSplaty.query.filter_by(id=dzien_id).delete()
+    db.session.commit()
+    
+    flash('dzien splaty usuniety')
 
     return redirect(url_for('dom.kredyt', kredyt_id=kredyt_id))
 
@@ -88,8 +101,10 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
         kr = Kredyt.query.filter_by(id=kredyt_id).first().as_dict()
         kr['nadplaty'] =  [n.as_dict() for n in Nadplata.query.filter_by(kredyt_id=kredyt_id)]
         kr['wakacje'] = [n.as_dict() for n in Wakacje.query.filter_by(kredyt_id=kredyt_id)]
+        kr['dnisplaty'] = [n.as_dict() for n in DniSplaty.query.filter_by(kredyt_id=kredyt_id)]
         
-        print(kr)
+        print(kr['dnisplaty'])
+
         dane = json.dumps(kr)
         edycja = True
 
@@ -135,6 +150,7 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
                 flash("cos poszlo nie tak przy dodawaniu. Sprawdź kwotę i format daty", 'error')
 
             return redirect(url_for('dom.kredyt', kredyt_id=kredyt_id))
+        
         if 'miesiac_wakacji' in request.form:
 
             print(request.form)
@@ -149,6 +165,25 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
                 db.session.add(wk)
                 db.session.commit()
                 flash(f"wakacje dodane", 'ok')
+            except:
+                flash("cos poszlo nie tak przy dodawaniu. format daty", 'error')
+
+            return redirect(url_for('dom.kredyt', kredyt_id=kredyt_id))
+        
+        if 'dzien_splaty' in request.form:
+
+            print(request.form)
+            kredyt_id = request.form['id']
+
+            dzien_splaty = request.form['dzien_splaty']
+
+
+            
+            try:
+                ds = DniSplaty(dzien_splaty=dt.datetime.strptime(dzien_splaty, '%d/%m/%Y'), kredyt_id=kredyt_id)
+                db.session.add(ds)
+                db.session.commit()
+                flash(f"dzien splaty dodany", 'ok')
             except:
                 flash("cos poszlo nie tak przy dodawaniu. format daty", 'error')
 
@@ -228,6 +263,7 @@ def obliczkredyt(kredyt_id=None):
     kr = Kredyt.query.filter_by(id=kredyt_id).first().as_dict()
     kr['nadplaty'] =  [n.as_dict() for n in Nadplata.query.filter_by(kredyt_id=kredyt_id)]
     kr['wakacje'] =  [n.as_dict() for n in Wakacje.query.filter_by(kredyt_id=kredyt_id)]
+    kr['dnisplaty'] = [n.as_dict() for n in DniSplaty.query.filter_by(kredyt_id=kredyt_id)]
         
     # if request.method == 'POST':
     #     kapital = request.form['kapital']
@@ -266,6 +302,8 @@ def obliczkredyt(kredyt_id=None):
 
     wakacje = [n['miesiac'] for n in kr['wakacje']]
 
+    dni_splaty = [n['dzien_splaty'] for n in kr['dnisplaty']]
+
 
 
 
@@ -276,6 +314,7 @@ def obliczkredyt(kredyt_id=None):
                                                    [],
                                                    nadplaty, 
                                                    wakacje,
+                                                   dni_splaty,
                                                    False)
     
     inflacja = InflacjaMM.query.all()

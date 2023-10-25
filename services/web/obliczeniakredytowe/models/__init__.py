@@ -151,3 +151,18 @@ class Wakacje(db.Model):
        return {'id': self.id,
                'miesiac': dt.datetime.strftime(self.miesiac, '%Y-%m'),
                'kredyt_id':self.kredyt_id}
+    
+class DniSplaty(db.Model):
+    __tablename__ = 'dni_splaty'
+
+    id = db.Column(db.Integer, primary_key=True) 
+    kredyt_id  = db.Column(db.Integer, db.ForeignKey("kredyt.id"), nullable=False)
+    dzien_splaty = db.Column(db.DateTime, nullable=False)
+
+    def __repr__(self):
+        return f"{self.kredyt_id} - {self.dzien_splaty}"
+    
+    def as_dict(self):
+       return {'id': self.id,
+               'dzien_splaty': dt.datetime.strftime(self.dzien_splaty, '%Y-%m-%d'),
+               'kredyt_id':self.kredyt_id}
