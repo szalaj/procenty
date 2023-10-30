@@ -20,7 +20,9 @@
 
 </div>
 
+<section>
 <div class="container">
+  <h2>Dane podstawowe</h2>
 
   <form id="kredyt-form" action="{{ url_for('dom.kredyt') }}" method="POST">
 
@@ -96,7 +98,7 @@
       </div>
     </div>
 
-    <div class="field">
+    <div class="field is-narrow">
       <div class="control">
         <button type="submit" class="button is-primary" id="idGuzik">
           Dodaj
@@ -109,265 +111,275 @@
 
 
   </form>
-  </section>
+
 </div>
-  {% if dane %}
+</section>
 
+{% if dane %}
+<section><div class="container"><h1>&nbsp</h1></div></section>
 
-
+<section>
 <div class="container">
-  <section>
-    <h1>Nadpłaty</h1>
 
-    <form id="nadplata-form" action="{{ url_for('dom.kredyt') }}" method="POST">
+  <div class="columns">
+    <div class="column is-one-third">
 
-      <div class="field is-horizontal">
-        <div class="field-body">
-          <div class="field">
-            <label class="label">Wartość</label>
-            <div class="control">
-              <input class="input" type="text" placeholder="Ile?" name="wartosc_nadplaty" id="idNadplataWartosc">
+
+          <h2>Nadpłaty</h2>
+
+          <form id="nadplata-form" action="{{ url_for('dom.kredyt') }}" method="POST">
+
+            <div class="field is-horizontal">
+              <div class="field-body">
+                <div class="field">
+                  <label class="label">Wartość</label>
+                  <div class="control">
+                    <input class="input" type="text" placeholder="Ile?" name="wartosc_nadplaty" id="idNadplataWartosc">
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label">Data</label>
+                  <div class="control">
+                    <input class="input" type="text" placeholder="DD/MM/YYYY" name="data_nadplaty" id="idDataNadplaty">
+                  </div>
+                </div>
+
+
+
+
+              </div>
+
             </div>
-          </div>
 
-          <div class="field">
-            <label class="label">Data</label>
-            <div class="control">
-              <input class="input" type="text" placeholder="DD/MM/YYYY" name="data_nadplaty" id="idDataNadplaty">
+            <div class="field">
+              <div class="control">
+                <button type="submit" class="button is-primary" id="idGuzik">
+                  Dodaj
+                </button>
+              </div>
             </div>
-          </div>
+
+          </form>
 
 
 
 
-        </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th><abbr title="Position">Wartość</abbr></th>
+                <th>Data</th>
+                <th>Usuń</th>
+              </tr>
+            </thead>
+            <tbody id="nadplaty">
+
+
+            </tbody>
+          </table>
+
+
+    </div>
+    <div class="column is-one-third">
+
+          <h2>Wakacje kredytowe</h2>
+
+          <form id="wakacje-form" action="{{ url_for('dom.kredyt') }}" method="POST">
+
+            <div class="field is-horizontal">
+              <div class="field-body">
+
+
+                <div class="field">
+                  <label class="label">Miesiąc</label>
+                  <div class="control">
+                    <input class="input" type="text" placeholder="MM/YYYY" name="miesiac_wakacji" id="idMiesiacWakacji">
+                  </div>
+                </div>
+
+
+
+
+              </div>
+
+            </div>
+
+            <div class="field">
+              <div class="control">
+                <button type="submit" class="button is-primary" id="idGuzikWakacje">
+                  Dodaj
+                </button>
+              </div>
+            </div>
+
+          </form>
+
+
+
+
+          <table class="table">
+            <thead>
+              <tr>
+
+                <th>Miesiąc</th>
+                <th>Usuń</th>
+              </tr>
+            </thead>
+            <tbody id="wakacje">
+
+
+            </tbody>
+          </table>
 
       </div>
 
-      <div class="field">
-        <div class="control">
-          <button type="submit" class="button is-primary" id="idGuzik">
-            Dodaj
-          </button>
-        </div>
-      </div>
 
-    </form>
+    <div class="column is-one-third">
 
 
+          <h2>Dni spłaty</h2>
+
+          <form id="dnisplaty-form" action="{{ url_for('dom.kredyt') }}" method="POST">
+
+            <div class="field is-horizontal">
+              <div class="field-body">
 
 
-    <table class="table">
-      <thead>
-        <tr>
-          <th><abbr title="Position">Wartość</abbr></th>
-          <th>Data</th>
-          <th>Usuń</th>
-        </tr>
-      </thead>
-      <tbody id="nadplaty">
+                <div class="field">
+                  <label class="label">Dzień spłaty</label>
+                  <div class="control">
+                    <input class="input" type="text" placeholder="DD/MM/YYYY" name="dzien_splaty" id="idDzienSplaty">
+                  </div>
+                </div>
 
 
-      </tbody>
-    </table>
-  </section>
+
+
+              </div>
+
+            </div>
+
+            <div class="field">
+              <div class="control">
+                <button type="submit" class="button is-primary" id="idGuzikDzienSplaty">
+                  Dodaj
+                </button>
+              </div>
+            </div>
+
+          </form>
+
+
+
+
+          <table class="table">
+            <thead>
+              <tr>
+
+                <th>Dzień spłaty</th>
+                <th>Usuń</th>
+              </tr>
+            </thead>
+            <tbody id="dziensplaty">
+
+
+            </tbody>
+          </table>
+
+    </div>
+  </div>
+
 </div>
+</section>
+{% endif %}
 
-<div class="container">
-  <section>
-    <h1>Wakacje kredytowe</h1>
+{% if edycja %}
+<script type="module">
 
-    <form id="wakacje-form" action="{{ url_for('dom.kredyt') }}" method="POST">
+  const dane = JSON.parse('{{dane |safe}}');
 
-      <div class="field is-horizontal">
-        <div class="field-body">
+  console.log(dane)
 
+  document.getElementById("idKapital").value = dane['wartosc'];
 
-          <div class="field">
-            <label class="label">Miesiąc</label>
-            <div class="control">
-              <input class="input" type="text" placeholder="MM/YYYY" name="miesiac_wakacji" id="idMiesiacWakacji">
-            </div>
-          </div>
+  const date = d3.timeParse("%Y-%m-%d")(dane['data_uruchomienia'])
 
 
+  let datestring = ("0" + date.getDate()).slice(-2) + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" + date.getFullYear();
 
 
-        </div>
+  document.getElementById("idData").value = datestring;
 
-      </div>
+  document.getElementById("idOkresy").value = dane['okresy'];
+  document.getElementById("idMarza").value = dane['marza'];
+  document.getElementById("idRodzajWiboru").value = dane['rodzaj_wiboru'];
+  document.getElementById("idRodzajRat").value = dane['rodzaj_rat'];
 
-      <div class="field">
-        <div class="control">
-          <button type="submit" class="button is-primary" id="idGuzikWakacje">
-            Dodaj
-          </button>
-        </div>
-      </div>
+  document.getElementById("idGuzik").firstChild.data = 'Zapisz';
 
-    </form>
+  let form = document.getElementById('kredyt-form');
+  let input = document.createElement("input");
+  input.setAttribute("type", "hidden");
+  input.setAttribute("name", "id");
+  input.setAttribute("value", dane['id']);
+  form.appendChild(input);
 
+  console.log('edycja')
 
+  let form2 = document.getElementById('nadplata-form');
+  let input2 = document.createElement("input");
+  input2.setAttribute("type", "hidden");
+  input2.setAttribute("name", "id");
+  input2.setAttribute("value", dane['id']);
+  form2.appendChild(input2);
 
 
-    <table class="table">
-      <thead>
-        <tr>
-   
-          <th>Miesiąc</th>
-          <th>Usuń</th>
-        </tr>
-      </thead>
-      <tbody id = "wakacje">
+  let table = d3.select("tbody#nadplaty")
+    .selectAll("tr").data(dane['nadplaty'])
+    .enter().append("tr")
 
 
-      </tbody>
-    </table>
-  </section>
-</div>
+  table.append('td')
+    .text(function (d) { return d.wartosc; })
 
+  table.append('td')
+    .text(function (d) { return d.data_nadplaty; })
 
 
-<div class="container">
-  <section>
-    <h1>Dni spłaty</h1>
+  table.append('td')
+    .html(d => "<a href='{{ url_for('dom.kredyt', kredyt_id=0, nadplata_id=99999999, usun=True) }}'>usun</a>".replace("0", dane['id']).replace('99999999', d.id))
 
-    <form id="dnisplaty-form" action="{{ url_for('dom.kredyt') }}" method="POST">
+  let form_wakacje = document.getElementById('wakacje-form');
+  let input_wakacje = document.createElement("input");
+  input_wakacje.setAttribute("type", "hidden");
+  input_wakacje.setAttribute("name", "id");
+  input_wakacje.setAttribute("value", dane['id']);
+  form_wakacje.appendChild(input_wakacje);
 
-      <div class="field is-horizontal">
-        <div class="field-body">
+  let form2_wakacje = document.getElementById('wakacje-form');
+  let input2_wakacje = document.createElement("input");
+  input2_wakacje.setAttribute("type", "hidden");
+  input2_wakacje.setAttribute("name", "id");
+  input2_wakacje.setAttribute("value", dane['id']);
+  form2_wakacje.appendChild(input2_wakacje);
 
 
-          <div class="field">
-            <label class="label">Dzień spłaty</label>
-            <div class="control">
-              <input class="input" type="text" placeholder="DD/MM/YYYY" name="dzien_splaty" id="idDzienSplaty">
-            </div>
-          </div>
+  let table_wakacje = d3.select("tbody#wakacje")
+    .selectAll("tr").data(dane['wakacje'])
+    .enter().append("tr")
 
 
+  table_wakacje.append('td')
+    .text(function (d) { return d.miesiac; })
 
 
-        </div>
+  table_wakacje.append('td')
+    .html(d => "<a href='{{ url_for('dom.usun_wakacje', kredyt_id=0, wakacje_id=99999999) }}'>usun</a>".replace("0", dane['id']).replace('99999999', d.id))
 
-      </div>
 
-      <div class="field">
-        <div class="control">
-          <button type="submit" class="button is-primary" id="idGuzikDzienSplaty">
-            Dodaj
-          </button>
-        </div>
-      </div>
 
-    </form>
-
-
-
-
-    <table class="table">
-      <thead>
-        <tr>
-   
-          <th>Dzień spłaty</th>
-          <th>Usuń</th>
-        </tr>
-      </thead>
-      <tbody id = "dziensplaty">
-
-
-      </tbody>
-    </table>
-  </section>
-</div>
-    {% endif %}
-
-    {% if edycja %}
-    <script type="module">
-
-      const dane = JSON.parse('{{dane |safe}}');
-
-      console.log(dane)
-
-      document.getElementById("idKapital").value = dane['wartosc'];
-
-      const date = d3.timeParse("%Y-%m-%d")(dane['data_uruchomienia'])
-
-
-      let datestring = ("0" + date.getDate()).slice(-2) + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" + date.getFullYear();
-
-
-      document.getElementById("idData").value = datestring;
-
-      document.getElementById("idOkresy").value = dane['okresy'];
-      document.getElementById("idMarza").value = dane['marza'];
-      document.getElementById("idRodzajWiboru").value = dane['rodzaj_wiboru'];
-      document.getElementById("idRodzajRat").value = dane['rodzaj_rat'];
-
-      document.getElementById("idGuzik").firstChild.data = 'Edytuj';
-
-      let form = document.getElementById('kredyt-form');
-      let input = document.createElement("input");
-      input.setAttribute("type", "hidden");
-      input.setAttribute("name", "id");
-      input.setAttribute("value", dane['id']);
-      form.appendChild(input);
-
-      console.log('edycja')
-
-      let form2 = document.getElementById('nadplata-form');
-      let input2 = document.createElement("input");
-      input2.setAttribute("type", "hidden");
-      input2.setAttribute("name", "id");
-      input2.setAttribute("value", dane['id']);
-      form2.appendChild(input2);
-
-
-      let table = d3.select("tbody#nadplaty")
-        .selectAll("tr").data(dane['nadplaty'])
-        .enter().append("tr")
-
-
-      table.append('td')
-        .text(function (d) { return d.wartosc; })
-
-      table.append('td')
-        .text(function (d) { return d.data_nadplaty; })
-
-
-      table.append('td')
-        .html(d => "<a href='{{ url_for('dom.kredyt', kredyt_id=0, nadplata_id=99999999, usun=True) }}'>usun</a>".replace("0", dane['id']).replace('99999999', d.id))
-
-        let form_wakacje = document.getElementById('wakacje-form');
-      let input_wakacje = document.createElement("input");
-      input_wakacje.setAttribute("type", "hidden");
-      input_wakacje.setAttribute("name", "id");
-      input_wakacje.setAttribute("value", dane['id']);
-      form_wakacje.appendChild(input_wakacje);
-
-      let form2_wakacje = document.getElementById('wakacje-form');
-      let input2_wakacje = document.createElement("input");
-      input2_wakacje.setAttribute("type", "hidden");
-      input2_wakacje.setAttribute("name", "id");
-      input2_wakacje.setAttribute("value", dane['id']);
-      form2_wakacje.appendChild(input2_wakacje);
-
-
-      let table_wakacje = d3.select("tbody#wakacje")
-        .selectAll("tr").data(dane['wakacje'])
-        .enter().append("tr")
-
-
-        table_wakacje.append('td')
-        .text(function (d) { return d.miesiac; })
-
-
-        table_wakacje.append('td')
-        .html(d => "<a href='{{ url_for('dom.usun_wakacje', kredyt_id=0, wakacje_id=99999999) }}'>usun</a>".replace("0", dane['id']).replace('99999999', d.id))
-
-
-
-        console.log('edycja')
+  console.log('edycja')
 
 
   let form_dnisplaty = document.getElementById('dnisplaty-form');
@@ -390,16 +402,16 @@
     .enter().append("tr")
 
 
-    table_dnisplaty.append('td')
+  table_dnisplaty.append('td')
     .text(function (d) { return d.dzien_splaty; })
 
 
-    table_dnisplaty.append('td')
+  table_dnisplaty.append('td')
     .html(d => "<a href='{{ url_for('dom.usun_dzien_splaty', kredyt_id=0, dzien_id=99999999) }}'>usun</a>".replace("0", dane['id']).replace('99999999', d.id))
 
 
 
-    </script>
-    {% endif %}
+</script>
+{% endif %}
 
-    {% endblock %}
+{% endblock %}
