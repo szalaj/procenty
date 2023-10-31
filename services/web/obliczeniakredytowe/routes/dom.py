@@ -222,7 +222,7 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
                     except:
                         flash("cos poszlo nie tak przy edycji", 'error')
 
-                    return redirect(url_for('dom.pokaz_kredyty'))
+                    return redirect(url_for('dom.obliczkredyt', kredyt_id=kr_id))
                 else:
 
                     try:

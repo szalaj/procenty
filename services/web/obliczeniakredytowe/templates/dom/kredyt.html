@@ -20,278 +20,297 @@
 
 </div>
 
-<section>
-<div class="container">
-  <h2>Dane podstawowe</h2>
+{% if edycja %}
+<div class="block">
+  <div class="container">
 
-  <form id="kredyt-form" action="{{ url_for('dom.kredyt') }}" method="POST">
-
-    <div class="field is-horizontal">
-      <div class="field-body">
-        <div class="field is-narrow">
-          <label class="label">Wartość</label>
-          <div class="control">
-            <input class="input" type="text" placeholder="Ile?" name="kapital" id="idKapital">
-          </div>
-        </div>
-
-        <div class="field is-narrow">
-          <label class="label">Data uruchomienia</label>
-          <div class="control">
-            <input class="input" type="text" placeholder="DD/MM/YYYY" name="dataStart" id="idData">
-          </div>
-        </div>
-
-
+    <div class="notification">
+      <div class="columns is-vcentered">
+        <div class="column is-narrow"><span id='guzik_cofnij'></span></div>
+        <div class="column is-narrow">Powrót do wyników obliczeń dla kredytu.</div>
 
       </div>
+
+
     </div>
 
-    <div class="field is-horizontal">
-      <div class="field-body">
-        <div class="field is-narrow">
-          <label class="label">Liczba rat miesięcznych</label>
-          <div class="control">
-            <input class="input" type="text" placeholder="okresy" name="okresy" id="idOkresy">
-          </div>
-        </div>
-
-        <div class="field is-narrow">
-          <label class="label">Marża</label>
-          <div class="control">
-            <input class="input" type="text" placeholder="marża" name="marza" id="idMarza">
-          </div>
-        </div>
-
-
-      </div>
-    </div>
-
-    <div class="field is-horizontal">
-      <div class="field-body">
-
-        <div class="field is-narrow">
-          <label class="label">Rodzaj wiboru</label>
-          <div class="control">
-            <div class="select is-fullwidth">
-              <select id="idRodzajWiboru" name="rodzajWiboru">
-                <option value="3M" selected>Wibor 3M</option>
-                <option value="6M">Wibor 6M</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="field is-narrow">
-          <label class="label">Rodzaj rat</label>
-          <div class="control">
-            <div class="select is-fullwidth">
-              <select id="idRodzajRat" name="rodzajRat">
-                <option value="stale" selected>stałe</option>
-                <option value="malejace">malejące</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-
-      </div>
-    </div>
-
-    <div class="field is-narrow">
-      <div class="control">
-        <button type="submit" class="button is-primary" id="idGuzik">
-          Dodaj
-        </button>
-      </div>
-    </div>
-
-
-
-
-
-  </form>
-
+  </div>
 </div>
-</section>
+{% endif %}
+
+
+<div class="block">
+  <div class="container">
+    <h2>Dane podstawowe</h2>
+
+    <form id="kredyt-form" action="{{ url_for('dom.kredyt') }}" method="POST">
+
+      <div class="field is-horizontal">
+        <div class="field-body">
+          <div class="field is-narrow">
+            <label class="label">Wartość</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="Ile?" name="kapital" id="idKapital">
+            </div>
+          </div>
+
+          <div class="field is-narrow">
+            <label class="label">Data uruchomienia</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="DD/MM/YYYY" name="dataStart" id="idData">
+            </div>
+          </div>
+
+
+
+        </div>
+      </div>
+
+      <div class="field is-horizontal">
+        <div class="field-body">
+          <div class="field is-narrow">
+            <label class="label">Liczba rat miesięcznych</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="okresy" name="okresy" id="idOkresy">
+            </div>
+          </div>
+
+          <div class="field is-narrow">
+            <label class="label">Marża</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="marża" name="marza" id="idMarza">
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
+      <div class="field is-horizontal">
+        <div class="field-body">
+
+          <div class="field is-narrow">
+            <label class="label">Rodzaj wiboru</label>
+            <div class="control">
+              <div class="select is-fullwidth">
+                <select id="idRodzajWiboru" name="rodzajWiboru">
+                  <option value="3M" selected>Wibor 3M</option>
+                  <option value="6M">Wibor 6M</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="field is-narrow">
+            <label class="label">Rodzaj rat</label>
+            <div class="control">
+              <div class="select is-fullwidth">
+                <select id="idRodzajRat" name="rodzajRat">
+                  <option value="stale" selected>stałe</option>
+                  <option value="malejace">malejące</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
+      <div class="field is-narrow">
+        <div class="control">
+          <button type="submit" class="button is-primary" id="idGuzik">
+            Dodaj
+          </button>
+        </div>
+      </div>
+
+
+
+
+
+    </form>
+
+  </div>
+</div>
 
 {% if dane %}
-<section><div class="container"><h1>&nbsp</h1></div></section>
-
-<section>
-<div class="container">
-
-  <div class="columns">
-    <div class="column is-one-third">
 
 
-          <h2>Nadpłaty</h2>
+<div class="block">
+  <div class="container">
 
-          <form id="nadplata-form" action="{{ url_for('dom.kredyt') }}" method="POST">
+    <div class="columns">
+      <div class="column is-one-third">
 
-            <div class="field is-horizontal">
-              <div class="field-body">
-                <div class="field">
-                  <label class="label">Wartość</label>
-                  <div class="control">
-                    <input class="input" type="text" placeholder="Ile?" name="wartosc_nadplaty" id="idNadplataWartosc">
-                  </div>
+
+        <h2>Nadpłaty</h2>
+
+        <form id="nadplata-form" action="{{ url_for('dom.kredyt') }}" method="POST">
+
+          <div class="field is-horizontal">
+            <div class="field-body">
+              <div class="field">
+                <label class="label">Wartość</label>
+                <div class="control">
+                  <input class="input" type="text" placeholder="Ile?" name="wartosc_nadplaty" id="idNadplataWartosc">
                 </div>
+              </div>
 
-                <div class="field">
-                  <label class="label">Data</label>
-                  <div class="control">
-                    <input class="input" type="text" placeholder="DD/MM/YYYY" name="data_nadplaty" id="idDataNadplaty">
-                  </div>
+              <div class="field">
+                <label class="label">Data</label>
+                <div class="control">
+                  <input class="input" type="text" placeholder="DD/MM/YYYY" name="data_nadplaty" id="idDataNadplaty">
                 </div>
-
-
-
-
               </div>
+
+
+
 
             </div>
 
-            <div class="field">
-              <div class="control">
-                <button type="submit" class="button is-primary" id="idGuzik">
-                  Dodaj
-                </button>
-              </div>
+          </div>
+
+          <div class="field">
+            <div class="control">
+              <button type="submit" class="button is-primary" id="idGuzik">
+                Dodaj
+              </button>
             </div>
+          </div>
 
-          </form>
-
-
-
-
-          <table class="table">
-            <thead>
-              <tr>
-                <th><abbr title="Position">Wartość</abbr></th>
-                <th>Data</th>
-                <th>Usuń</th>
-              </tr>
-            </thead>
-            <tbody id="nadplaty">
+        </form>
 
 
-            </tbody>
-          </table>
 
 
-    </div>
-    <div class="column is-one-third">
+        <table class="table">
+          <thead>
+            <tr>
+              <th><abbr title="Position">Wartość</abbr></th>
+              <th>Data</th>
+              <th>Usuń</th>
+            </tr>
+          </thead>
+          <tbody id="nadplaty">
 
-          <h2>Wakacje kredytowe</h2>
 
-          <form id="wakacje-form" action="{{ url_for('dom.kredyt') }}" method="POST">
-
-            <div class="field is-horizontal">
-              <div class="field-body">
+          </tbody>
+        </table>
 
 
-                <div class="field">
-                  <label class="label">Miesiąc</label>
-                  <div class="control">
-                    <input class="input" type="text" placeholder="MM/YYYY" name="miesiac_wakacji" id="idMiesiacWakacji">
-                  </div>
+      </div>
+      <div class="column is-one-third">
+
+        <h2>Wakacje kredytowe</h2>
+
+        <form id="wakacje-form" action="{{ url_for('dom.kredyt') }}" method="POST">
+
+          <div class="field is-horizontal">
+            <div class="field-body">
+
+
+              <div class="field">
+                <label class="label">Miesiąc</label>
+                <div class="control">
+                  <input class="input" type="text" placeholder="MM/YYYY" name="miesiac_wakacji" id="idMiesiacWakacji">
                 </div>
-
-
-
-
               </div>
+
+
+
 
             </div>
 
-            <div class="field">
-              <div class="control">
-                <button type="submit" class="button is-primary" id="idGuzikWakacje">
-                  Dodaj
-                </button>
-              </div>
+          </div>
+
+          <div class="field">
+            <div class="control">
+              <button type="submit" class="button is-primary" id="idGuzikWakacje">
+                Dodaj
+              </button>
             </div>
+          </div>
 
-          </form>
-
-
-
-
-          <table class="table">
-            <thead>
-              <tr>
-
-                <th>Miesiąc</th>
-                <th>Usuń</th>
-              </tr>
-            </thead>
-            <tbody id="wakacje">
+        </form>
 
 
-            </tbody>
-          </table>
+
+
+        <table class="table">
+          <thead>
+            <tr>
+
+              <th>Miesiąc</th>
+              <th>Usuń</th>
+            </tr>
+          </thead>
+          <tbody id="wakacje">
+
+
+          </tbody>
+        </table>
 
       </div>
 
 
-    <div class="column is-one-third">
+      <div class="column is-one-third">
 
 
-          <h2>Dni spłaty</h2>
+        <h2>Dni spłaty</h2>
 
-          <form id="dnisplaty-form" action="{{ url_for('dom.kredyt') }}" method="POST">
+        <form id="dnisplaty-form" action="{{ url_for('dom.kredyt') }}" method="POST">
 
-            <div class="field is-horizontal">
-              <div class="field-body">
+          <div class="field is-horizontal">
+            <div class="field-body">
 
 
-                <div class="field">
-                  <label class="label">Dzień spłaty</label>
-                  <div class="control">
-                    <input class="input" type="text" placeholder="DD/MM/YYYY" name="dzien_splaty" id="idDzienSplaty">
-                  </div>
+              <div class="field">
+                <label class="label">Dzień spłaty</label>
+                <div class="control">
+                  <input class="input" type="text" placeholder="DD/MM/YYYY" name="dzien_splaty" id="idDzienSplaty">
                 </div>
-
-
-
-
               </div>
+
+
+
 
             </div>
 
-            <div class="field">
-              <div class="control">
-                <button type="submit" class="button is-primary" id="idGuzikDzienSplaty">
-                  Dodaj
-                </button>
-              </div>
+          </div>
+
+          <div class="field">
+            <div class="control">
+              <button type="submit" class="button is-primary" id="idGuzikDzienSplaty">
+                Dodaj
+              </button>
             </div>
+          </div>
 
-          </form>
-
-
-
-
-          <table class="table">
-            <thead>
-              <tr>
-
-                <th>Dzień spłaty</th>
-                <th>Usuń</th>
-              </tr>
-            </thead>
-            <tbody id="dziensplaty">
+        </form>
 
 
-            </tbody>
-          </table>
 
+
+        <table class="table">
+          <thead>
+            <tr>
+
+              <th>Dzień spłaty</th>
+              <th>Usuń</th>
+            </tr>
+          </thead>
+          <tbody id="dziensplaty">
+
+
+          </tbody>
+        </table>
+
+      </div>
     </div>
-  </div>
 
+  </div>
 </div>
-</section>
 {% endif %}
 
 {% if edycja %}
@@ -307,6 +326,14 @@
 
 
   let datestring = ("0" + date.getDate()).slice(-2) + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" + date.getFullYear();
+
+
+  d3.select('#guzik_cofnij')
+    .append('button')
+    .attr('class', 'button is-primary')
+    .attr('id', d => 'kredyt-cofjnij').text('Powrót')
+    .attr('onclick', d => "window.location.href='{{ url_for('dom.obliczkredyt', kredyt_id=0) }}'".replace("0", dane['id']))
+
 
 
   document.getElementById("idData").value = datestring;
