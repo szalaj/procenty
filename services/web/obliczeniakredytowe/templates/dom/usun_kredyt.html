@@ -26,8 +26,8 @@
         <h1 class="title">Czy na pewno chcesz usunąć kredyt?</h1>
       
     
-        <button class="button is-primary" onclick="window.location.href='{{ url_for('dom.usun_kredyt', kredyt_id=kredyt_id, usun=True) }}'">TAK</button>
-        <button class="button is-primary" onclick="window.location.href='{{ url_for('dom.obliczkredyt', kredyt_id=kredyt_id) }}'">NIE</button>
+        <button class="button is-danger" onclick="window.location.href='{{ url_for('dom.usun_kredyt', kredyt_id=kredyt_id, usun=True) }}'">TAK</button>
+        <button class="button" onclick="window.location.href='{{ url_for('dom.obliczkredyt', kredyt_id=kredyt_id) }}'">NIE</button>
 
   </div>
 

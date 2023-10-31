@@ -41,7 +41,7 @@
   </div>
 
   </div>
-
+</div>
   <script type="module">
 
     const kredyty = JSON.parse('{{kredyty|safe}}');
@@ -66,7 +66,7 @@
     wiersz.append("td")
       .append('button')
       .attr('class', 'button is-primary is-pulled-right')
-      .attr('id', d => 'kredyt-' + d.id).text(d => 'Pokaż')
+      .attr('id', d => 'kredyt-' + d.id).text(d => 'Wybierz')
       .attr('onclick', d => "window.location.href='{{ url_for('dom.obliczkredyt', kredyt_id=0) }}'".replace("0", d.id))
 
 
