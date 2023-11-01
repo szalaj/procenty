@@ -1,6 +1,7 @@
 import datetime as dt
 from dateutil.relativedelta import relativedelta
 import pandas as pd
+from pandas.tseries.offsets import BDay
 import decimal
 from dataclasses import dataclass
 from scipy.interpolate import interp1d
@@ -207,7 +208,9 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
     if not tylko_marza:
         for i in range(0, int(okresy/wibor.okres)+1):
                 wibor_day =  start_date + relativedelta(months=3*i)
-                wibor_value = wibor.getWibor(wibor_day)
+
+                wibor_value = wibor.getWibor(wibor_day - BDay(2))
+                #print(f"day: {wibor_day}, value: {wibor_value}")
                 opr_wib.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_value).quantize(grosze))})
                 opr_arr.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_value).quantize(grosze)), "rodzaj": "wibor", 'typ': ""})
 
@@ -236,7 +239,7 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
         # sprobujmy utworzyc nowa date splaty
         try:
             str_dzien = f"{rok}-{miesiac}-{aktualny_dzien_splaty_dzien}"
-            print(f"str dzien: {str_dzien}")
+            #print(f"str dzien: {str_dzien}")
             dzien_splaty = dt.datetime.strptime(str_dzien, '%Y-%m-%d')
         except:
             # zostajemy przy aktualnej dacie splaty
