@@ -183,7 +183,8 @@ class Wibor:
 
 
 
-def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transze, nadplaty, wakacje, dni_splaty, tylko_marza=False):
+def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transze, nadplaty, wakacje, dni_splaty,
+                               ubezpieczenie_pomostowe_do, ubezpieczenie_pomostowe_stopa, tylko_marza=False):
 
 
 
@@ -202,14 +203,27 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
     # 1. dane zwyklego oprocentowania
     # 2. dane o splatach rat
     # 3. generator
-
+    pomost_done = False
+    old_wibor_value =0
+    wibor_value = 0
     opr_arr = []
     opr_wib = []
     if not tylko_marza:
         for i in range(0, int(okresy/wibor.okres)+1):
                 wibor_day =  start_date + relativedelta(months=3*i)
 
+                old_wibor_value = wibor_value
                 wibor_value = wibor.getWibor(wibor_day - BDay(2))
+                
+                print(dt.datetime.strptime(ubezpieczenie_pomostowe_do,'%Y-%m-%d'))
+                if ubezpieczenie_pomostowe_do and not pomost_done:
+                    if wibor_day < dt.datetime.strptime(ubezpieczenie_pomostowe_do,'%Y-%m-%d'):
+                        wibor_value += ubezpieczenie_pomostowe_stopa
+                    else:
+                        opr_wib.append({"dzien":ubezpieczenie_pomostowe_do, "proc": float(decimal.Decimal(marza+old_wibor_value).quantize(grosze))})
+                        opr_arr.append({"dzien":ubezpieczenie_pomostowe_do, "proc": float(decimal.Decimal(marza+old_wibor_value).quantize(grosze)), "rodzaj": "wibor", 'typ': ""})
+                        pomost_done = True
+
                 #print(f"day: {wibor_day}, value: {wibor_value}")
                 opr_wib.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_value).quantize(grosze))})
                 opr_arr.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_value).quantize(grosze)), "rodzaj": "wibor", 'typ': ""})

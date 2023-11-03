@@ -102,8 +102,7 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
         kr['nadplaty'] =  [n.as_dict() for n in Nadplata.query.filter_by(kredyt_id=kredyt_id)]
         kr['wakacje'] = [n.as_dict() for n in Wakacje.query.filter_by(kredyt_id=kredyt_id)]
         kr['dnisplaty'] = [n.as_dict() for n in DniSplaty.query.filter_by(kredyt_id=kredyt_id)]
-        
-        print(kr['dnisplaty'])
+
 
         dane = json.dumps(kr)
         edycja = True
@@ -202,6 +201,8 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
                 okresy = request.form['okresy']
                 rodzaj_wiboru = request.form['rodzajWiboru']
                 rodzaj_rat = request.form['rodzajRat']
+                ubezpieczenie_pomostowe_do = request.form['ub_pomostowe_do']
+                ubezpieczenie_pomostowe_stopa = request.form['stopa_ubezpieczenia']
 
                 if 'id' in request.form:
                     
@@ -216,6 +217,8 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
                         kr.okresy = okresy
                         kr.rodzaj_wiboru = rodzaj_wiboru
                         kr.rodzaj_rat = rodzaj_rat
+                        kr.ubezpieczenie_pomostowe_do = dt.datetime.strptime(ubezpieczenie_pomostowe_do, '%d/%m/%Y') if ubezpieczenie_pomostowe_do else None
+                        kr.ubezpieczenie_pomostowe_stopa = ubezpieczenie_pomostowe_stopa if ubezpieczenie_pomostowe_stopa else None
                         db.session.commit()
                         flash("zedytowano", 'ok')
                         
@@ -226,13 +229,16 @@ def kredyt(kredyt_id=None, nadplata_id=None, usun=False):
                 else:
 
                     try:
+
                         kr = Kredyt(uzytkownik=current_user.name,
                                     data_uruchomienia=dt.datetime.strptime(data_start, '%d/%m/%Y'),
                                     wartosc=kapital,
                                     marza=marza,
                                     okresy=okresy,
                                     rodzaj_wiboru=rodzaj_wiboru,
-                                    rodzaj_rat=rodzaj_rat)
+                                    rodzaj_rat=rodzaj_rat,
+                                    ubezpieczenie_pomostowe_do = dt.datetime.strptime(ubezpieczenie_pomostowe_do, '%d/%m/%Y') if ubezpieczenie_pomostowe_do else None,
+                                    ubezpieczenie_pomostowe_stopa = ubezpieczenie_pomostowe_stopa if ubezpieczenie_pomostowe_stopa else None)
                         db.session.add(kr)
                         db.session.commit()
                         flash(f"dodane {data_start}", 'ok')
@@ -284,6 +290,8 @@ def obliczkredyt(kredyt_id=None):
     okresy = kr['okresy']
     liczba_wakacji = 0
     rodzaj_wiboru = kr['rodzaj_wiboru']
+    ubezpieczenie_pomostowe_do = kr['ubezpieczenie_pomostowe_do']
+    ubezpieczenie_pomostowe_stopa = kr['ubezpieczenie_pomostowe_stopa']
 
     fin_data = {}
     fin_data['kapital'] = kapital
@@ -315,6 +323,8 @@ def obliczkredyt(kredyt_id=None):
                                                    nadplaty, 
                                                    wakacje,
                                                    dni_splaty,
+                                                   ubezpieczenie_pomostowe_do,
+                                                   ubezpieczenie_pomostowe_stopa,
                                                    False)
     
     inflacja = InflacjaMM.query.all()
