@@ -84,6 +84,8 @@ class Kredyt(db.Model):
     marza = db.Column(db.Float, nullable=False)
     rodzaj_wiboru = db.Column(db.String, nullable=False)
     rodzaj_rat = db.Column(db.String, nullable=False)
+    ubezpieczenie_pomostowe_do = db.Column(db.DateTime, nullable=True)
+    ubezpieczenie_pomostowe_stopa = db.Column(db.Numeric(14,2), nullable=True)
 
 
     def __repr__(self):
@@ -97,7 +99,10 @@ class Kredyt(db.Model):
                 'okresy':self.okresy,
                 'rodzaj_wiboru':self.rodzaj_wiboru,
                 'rodzaj_rat':self.rodzaj_rat,
-                'marza': float(self.marza)}
+                'marza': float(self.marza),
+                'ubezpieczenie_pomostowe_do': dt.datetime.strftime(self.ubezpieczenie_pomostowe_do, '%Y-%m-%d') if self.ubezpieczenie_pomostowe_do else None,
+                'ubezpieczenie_pomostowe_stopa': float(self.ubezpieczenie_pomostowe_stopa) if self.ubezpieczenie_pomostowe_stopa else None}
+
 
 class Nadplata(db.Model):
     __tablename__ = 'nadplata'

@@ -117,6 +117,28 @@
         </div>
       </div>
 
+      <div class="field is-horizontal">
+        <div class="field-body">
+
+          <div class="field is-narrow">
+            <label class="label">Ubezpieczenie pomostowe do dnia</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="DD/MM/RRRR" name="ub_pomostowe_do" id="idUbezpPomDo">
+            </div>
+          </div>
+
+          <div class="field is-narrow">
+            <label class="label">Wartość (stopa) ubezpieczenia</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="%" name="stopa_ubezpieczenia" id="idStopaUb">
+              
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
       <div class="field is-narrow">
         <div class="control">
           <button type="submit" class="button is-primary" id="idGuzik">
@@ -324,9 +346,12 @@
 
   const date = d3.timeParse("%Y-%m-%d")(dane['data_uruchomienia'])
 
+  const date_pomost = d3.timeParse("%Y-%m-%d")(dane['ubezpieczenie_pomostowe_do'])
 
   let datestring = ("0" + date.getDate()).slice(-2) + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" + date.getFullYear();
+  let date_str_pomost = ("0" + date_pomost.getDate()).slice(-2) + "/" + ("0" + (date_pomost.getMonth() + 1)).slice(-2) + "/" + date_pomost.getFullYear();
 
+  console.log(date_str_pomost)
 
   d3.select('#guzik_cofnij')
     .append('button')
@@ -334,7 +359,7 @@
     .attr('id', d => 'kredyt-cofjnij').text('Powrót')
     .attr('onclick', d => "window.location.href='{{ url_for('dom.obliczkredyt', kredyt_id=0) }}'".replace("0", dane['id']))
 
-
+  console.log(dane['ubezpieczenie_pomostowe_do'])
 
   document.getElementById("idData").value = datestring;
 
@@ -342,6 +367,11 @@
   document.getElementById("idMarza").value = dane['marza'];
   document.getElementById("idRodzajWiboru").value = dane['rodzaj_wiboru'];
   document.getElementById("idRodzajRat").value = dane['rodzaj_rat'];
+
+ 
+  document.getElementById("idUbezpPomDo").value = date_str_pomost;
+
+  document.getElementById("idStopaUb").value = dane['ubezpieczenie_pomostowe_stopa']
 
   document.getElementById("idGuzik").firstChild.data = 'Zapisz';
 
