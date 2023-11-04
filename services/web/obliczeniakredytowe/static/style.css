@@ -36,6 +36,12 @@
   line.kreska {
     fill: none;
     stroke-width: 2px;
+    stroke: rgb(255, 0, 0);
+  }
+
+  line.kreska-czerwona {
+    fill: none;
+    stroke-width: 2px;
     stroke: rgb(0, 0, 0);
   }
 
