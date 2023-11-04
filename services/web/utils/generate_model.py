@@ -181,9 +181,19 @@ class Wibor:
     def okres(self):
         return self._okres
 
+def is_business_day(date):
+    return bool(len(pd.bdate_range(date, date)))
+
+def next_business_day(date):
+    i = 0
+    while not is_business_day(date):
+        date = date + dt.timedelta(days=1)
+        if i > 100:
+            raise Exception('next_business_day not found')
+    return date
 
 
-def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transze, nadplaty, wakacje, dni_splaty,
+def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transze, nadplaty, wakacje, dni_zmiany_splaty,
                                ubezpieczenie_pomostowe_do, ubezpieczenie_pomostowe_stopa, tylko_marza=False):
 
 
@@ -235,7 +245,7 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
     miesiac_start_date = start_date.strftime('%Y-%m')
     aktualny_dzien_splaty = start_date
     aktualny_dzien_splaty_dzien = dt.datetime.strftime(start_date, '%d')
-    for s in dni_splaty:
+    for s in dni_zmiany_splaty:
         if miesiac_start_date==s[0:7] and dt.datetime.strptime(s, '%Y-%m-%d')>start_date:
             aktualny_dzien_splaty = dt.datetime.strptime(s, '%Y-%m-%d')
             aktualny_dzien_splaty_dzien = dt.datetime.strftime(aktualny_dzien_splaty, '%d')
@@ -260,27 +270,38 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
             pass
 
         miesiac_dnia_splaty = dzien_splaty.strftime('%Y-%m')
-        for s in dni_splaty:
+        for s in dni_zmiany_splaty:
             if miesiac_dnia_splaty==s[0:7]:
                 dzien_splaty = dt.datetime.strptime(s, '%Y-%m-%d')
                 aktualny_dzien_splaty_dzien = dt.datetime.strftime(dzien_splaty, '%d')
                 break
         
       
+        dzien_splaty_business_day = dzien_splaty
+        # check if dzien_splaty is business day
+        if not is_business_day(dzien_splaty_business_day):
+            dzien_splaty_business_day = next_business_day(dzien_splaty_business_day)
+
+
+        ########################################
+        ## WAKACJE KREYDTOWE
+        ########################################
 
         #dzien_splaty = dt.datetime.strptime(nasze_daty_splaty[n], '%Y-%m-%d')
         # check if dzien_splaty is not same month and day as wakacje
         if not (dzien_splaty.strftime('%Y-%m') in wakacje):
             N+=1
-            daty_splaty.append(dzien_splaty.strftime('%Y-%m-%d'))
+
+
+            daty_splaty.append(dzien_splaty_business_day.strftime('%Y-%m-%d'))
             if wakacje_in_progress:
                 wakacje_in_progress=False
                 #opr_wib.append({"dzien":dzien_splaty.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor.getWibor(dzien_splaty)).quantize(grosze))})
-                opr_arr.append({"dzien":dzien_splaty.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor.getWibor(dzien_splaty)).quantize(grosze)), "rodzaj": "splata", 'typ': ""})
+                opr_arr.append({"dzien":dzien_splaty_business_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor.getWibor(dzien_splaty_business_day)).quantize(grosze)), "rodzaj": "splata", 'typ': ""})
         else:
             wakacje_in_progress=True
             #opr_wib.append({"dzien":dzien_splaty.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(0).quantize(grosze))})
-            opr_arr.append({"dzien":dzien_splaty.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor.getWibor(dzien_splaty)).quantize(grosze)), "rodzaj": "splata", 'typ': "W"})
+            opr_arr.append({"dzien":dzien_splaty_business_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor.getWibor(dzien_splaty_business_day)).quantize(grosze)), "rodzaj": "splata", 'typ': "W"})
         aktualny_dzien_splaty = dzien_splaty
         n+=1
 
