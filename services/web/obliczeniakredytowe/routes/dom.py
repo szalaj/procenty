@@ -310,7 +310,7 @@ def obliczkredyt(kredyt_id=None):
 
     wakacje = [n['miesiac'] for n in kr['wakacje']]
 
-    dni_splaty = [n['dzien_splaty'] for n in kr['dnisplaty']]
+    dni_zmiany_splaty = [n['dzien_splaty'] for n in kr['dnisplaty']]
 
 
 
@@ -322,7 +322,7 @@ def obliczkredyt(kredyt_id=None):
                                                    [],
                                                    nadplaty, 
                                                    wakacje,
-                                                   dni_splaty,
+                                                   dni_zmiany_splaty,
                                                    ubezpieczenie_pomostowe_do,
                                                    ubezpieczenie_pomostowe_stopa,
                                                    False)
