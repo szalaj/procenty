@@ -36,6 +36,8 @@ class WiborInter:
 
         self.df.index = pd.to_datetime(self.df.index, format='%Y-%m-%d')
 
+        self.df['real'] = 'Y'
+
         self.df.sort_index(inplace=True)
 
  
@@ -47,6 +49,8 @@ class WiborInter:
 
 
         self.max_wibor_real = self.df.index.max()
+        print("max_wibor_real")
+        print(self.max_wibor_real)
 
 
 
@@ -80,6 +84,7 @@ class WiborInter:
 
     
             new_df = pd.DataFrame(self.points, columns=['data', 'wartosc'])
+            new_df['real'] = 'N'
             #new_df['Date'] = pd.to_datetime(new_df['Date'])
             new_df.set_index('data', inplace=True)
 
@@ -90,7 +95,10 @@ class WiborInter:
             dff = self.df[self.df.index <= self.data_koniec]
 
         dff = dff.sort_index()
-        self.json_data = [{'date': dt.datetime.strftime(index, '%Y-%m-%d'), 'value': value} for index, value in dff['wartosc'].items()]
+
+
+
+        self.json_data = [{'date': dt.datetime.strftime(index, '%Y-%m-%d'), 'value': value['wartosc'], 'real': value['real']} for index, value in dff.iterrows()]
 
 
     def getWibor(self, data) -> float:
@@ -112,7 +120,7 @@ class WiborInter:
         
         return wibor_value
 
-        
+    
 
     def _getWiborLastAvailable(self, data: str) -> float:
         try:
@@ -122,12 +130,20 @@ class WiborInter:
                 wibor_value = self.df[self.df.index < data.strftime('%Y-%m-%d')].iloc[-1][0]
             except:
                 raise Exception('wibor not available')
-                wibor_value = None
+   
         return wibor_value
     
+    def isWiborReal(self, data):
+        if data >= self.max_wibor_real:
+            return 'N'
+        return 'Y'    
+        
+        return wibor_value
     @property
     def okres(self):
         return self._okres
+    
+
 
 
 class Wibor:
@@ -173,7 +189,7 @@ class Wibor:
                 wibor_value = self.df[self.df.index < data.strftime('%Y-%m-%d')].iloc[-1][0]
             except:
                 raise Exception('wibor not available')
-                wibor_value = None
+                
         return wibor_value
 
     
@@ -215,28 +231,36 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
     # 3. generator
     pomost_done = False
     old_wibor_value =0
+    old_wibor_day_business_day = start_date
     wibor_value = 0
+    wibor_day_business_day = start_date
     opr_arr = []
     opr_wib = []
     if not tylko_marza:
         for i in range(0, int(okresy/wibor.okres)+1):
                 wibor_day =  start_date + relativedelta(months=3*i)
 
+
+                old_wibor_day_business_day = wibor_day_business_day
+                wibor_day_business_day = wibor_day - BDay(2)
+            
+
                 old_wibor_value = wibor_value
-                wibor_value = wibor.getWibor(wibor_day - BDay(2))
+
+                wibor_value = wibor.getWibor(wibor_day_business_day)
                 
-                print(dt.datetime.strptime(ubezpieczenie_pomostowe_do,'%Y-%m-%d'))
+
                 if ubezpieczenie_pomostowe_do and not pomost_done:
                     if wibor_day < dt.datetime.strptime(ubezpieczenie_pomostowe_do,'%Y-%m-%d'):
                         wibor_value += ubezpieczenie_pomostowe_stopa
                     else:
-                        opr_wib.append({"dzien":ubezpieczenie_pomostowe_do, "proc": float(decimal.Decimal(marza+old_wibor_value).quantize(grosze))})
-                        opr_arr.append({"dzien":ubezpieczenie_pomostowe_do, "proc": float(decimal.Decimal(marza+old_wibor_value).quantize(grosze)), "rodzaj": "wibor", 'typ': ""})
+                        opr_wib.append({"dzien":ubezpieczenie_pomostowe_do, "proc": float(decimal.Decimal(marza+old_wibor_value).quantize(grosze)), "real": wibor.isWiborReal(old_wibor_day_business_day)})
+                        opr_arr.append({"dzien":ubezpieczenie_pomostowe_do, "proc": float(decimal.Decimal(marza+old_wibor_value).quantize(grosze)), "real": wibor.isWiborReal(old_wibor_day_business_day), "rodzaj": "wibor", 'typ': ""})
                         pomost_done = True
 
                 #print(f"day: {wibor_day}, value: {wibor_value}")
-                opr_wib.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_value).quantize(grosze))})
-                opr_arr.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_value).quantize(grosze)), "rodzaj": "wibor", 'typ': ""})
+                opr_wib.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_value).quantize(grosze)), "real": wibor.isWiborReal(wibor_day_business_day)})
+                opr_arr.append({"dzien":wibor_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor_value).quantize(grosze)), "real": wibor.isWiborReal(wibor_day_business_day), "rodzaj": "wibor", 'typ': ""})
 
 
     n=1
@@ -297,11 +321,11 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
             if wakacje_in_progress:
                 wakacje_in_progress=False
                 #opr_wib.append({"dzien":dzien_splaty.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor.getWibor(dzien_splaty)).quantize(grosze))})
-                opr_arr.append({"dzien":dzien_splaty_business_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor.getWibor(dzien_splaty_business_day)).quantize(grosze)), "rodzaj": "splata", 'typ': ""})
+                opr_arr.append({"dzien":dzien_splaty_business_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor.getWibor(dzien_splaty_business_day)).quantize(grosze)), "real": wibor.isWiborReal(dzien_splaty_business_day),"rodzaj": "splata", 'typ': ""})
         else:
             wakacje_in_progress=True
             #opr_wib.append({"dzien":dzien_splaty.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(0).quantize(grosze))})
-            opr_arr.append({"dzien":dzien_splaty_business_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor.getWibor(dzien_splaty_business_day)).quantize(grosze)), "rodzaj": "splata", 'typ': "W"})
+            opr_arr.append({"dzien":dzien_splaty_business_day.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor.getWibor(dzien_splaty_business_day)).quantize(grosze)), "real": wibor.isWiborReal(dzien_splaty_business_day), "rodzaj": "splata", 'typ': "W"})
         aktualny_dzien_splaty = dzien_splaty
         n+=1
 
@@ -323,18 +347,18 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
     wakacje = False
     for r in opr_arr:
         if r['rodzaj']=='splata' and r['typ']=='W':
-            opr_wakacje.append({"dzien":r['dzien'], "proc": float(decimal.Decimal(0).quantize(grosze))})
+            opr_wakacje.append({"dzien":r['dzien'], "proc": float(decimal.Decimal(0).quantize(grosze)), "real": r['real']})
             wakacje = True
         else:
             if wakacje:
                 if r['rodzaj']=='splata' and r['typ']=="":
                     wibor_value = df[df['dzien']<r['dzien']]['proc'].iloc[-1]
                     
-                    opr_wakacje.append({"dzien":r['dzien'], "proc": wibor_value})
+                    opr_wakacje.append({"dzien":r['dzien'], "proc": wibor_value, "real": r['real']})
                     wakacje = False
 
             else:
-                opr_wakacje.append({"dzien":r['dzien'], "proc": r['proc']})
+                opr_wakacje.append({"dzien":r['dzien'], "proc": r['proc'], "real": r['real']})
 
 
     #print(opr_wakacje)
