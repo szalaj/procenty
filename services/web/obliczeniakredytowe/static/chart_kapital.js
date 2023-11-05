@@ -80,6 +80,10 @@ function create_chart_kapital(margin, width, height, nom_kpo, nom_cena_kosztowa,
       .y(function (d) { return yscale_kapital(d.K_po) })
     )
 
+
+    console.log('nom cena kosztowa')
+    console.log(nom_cena_kosztowa)
+
       //kapil nominal
       svg_kapital.append("path")
       .datum(nom_cena_kosztowa)

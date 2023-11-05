@@ -389,16 +389,24 @@ def obliczkredyt(kredyt_id=None):
     nom_kpo = []
     nom_cena_kosztowa = []
     suma_kroczaca_kosztow = 0
-    dzien = start_date + relativedelta(months=1)
+    dzien = start_date + relativedelta(months=0)
 
     while dzien <= dzien_ostatniej_raty:
 
         if dt.datetime.strftime(dzien, '%Y-%m') in koszty:
             suma_kroczaca_kosztow += koszty[dt.datetime.strftime(dzien, '%Y-%m')]
         # find rata by dzien
-        rata = [r for r in wynik['raty'] if r['dzien'][:7] == dt.datetime.strftime(dzien, '%Y-%m')]
-        if rata:
-            last_kpo = float(rata[0]['K_po'])
+        raty_miesiac = [r for r in wynik['raty'] if r['dzien'][:7] == dt.datetime.strftime(dzien, '%Y-%m')]
+
+        for rata in raty_miesiac:
+            last_kpo -= float(rata['kapital'])
+        
+        for n in wynik["nadplaty"]:
+            nadplata_miesiac = n['dzien'][0:7]
+            if nadplata_miesiac == dt.datetime.strftime(dzien, '%Y-%m'):
+                last_kpo -= float(n['kwota'])
+
+    
         
         nom_kpo.append({'dzien': dt.datetime.strftime(dzien, '%Y-%m'), 'wartosc': last_kpo})
         nom_cena_kosztowa.append({'dzien': dzien, 'wartosc': last_kpo + suma_kroczaca_kosztow})
@@ -444,6 +452,8 @@ def obliczkredyt(kredyt_id=None):
     nom_cena_kosztowa = [{'dzien': dt.datetime.strftime(r['dzien'], '%Y-%m'), 'wartosc':r['wartosc']} for r in nom_cena_kosztowa]
     real_cena_kosztowa = [{'dzien': r['miesiac'], 'wartosc':r['wartosc']} for r in real_cena_kosztowa]
     
+
+
 
     real_kmiesiac = inf.urealnij(kmiesiac_list)
 
@@ -531,9 +541,9 @@ def daty():
         check_day = check_day + pd.DateOffset(1)
     
         
-    print(iloscbl)
-    print(max_day_wibor)
-    print(max_day_wibor.dayofweek)
+    # print(iloscbl)
+    # print(max_day_wibor)
+    # print(max_day_wibor.dayofweek)
 
 
     return render_template('dom/daty.html', datki=json.loads(result))

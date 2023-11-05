@@ -270,7 +270,6 @@
     var cumsum_nom = 0
 
     nom_koszty.forEach(function (d) {
-      d.huj = d.dzien;
       d.miesiac = parseDate(d.dzien);
       d.wartosc = parseFloat(d.wartosc);
       cumsum_nom = cumsum_nom + d.wartosc;
