@@ -36,7 +36,25 @@
   line.kreska {
     fill: none;
     stroke-width: 2px;
-    stroke: rgb(0, 0, 0);
+    stroke: rgb(255, 0, 0);
+  }
+
+  line.kreska-czerwona {
+    fill: none;
+    stroke-width: 2px;
+    stroke: rgb(143, 3, 112);
+  }
+
+  line.kreska-real {
+    fill: none;
+    stroke-width: 4px;
+    stroke: rgb(2, 134, 68);
+  }
+
+  line.kreska-sym {
+    fill: none;
+    stroke-width: 2px;
+    stroke: rgb(143, 3, 112);
   }
 
   line.kreska-dot {
@@ -44,7 +62,7 @@
     stroke-width: 2px;
     stroke: rgb(57, 53, 83);
     border-style: dotted;
-    stroke-dasharray: 5;
+    stroke-dasharray: 1;
   }
   path.red {
     fill: none;
