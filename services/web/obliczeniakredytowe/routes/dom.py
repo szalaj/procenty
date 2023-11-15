@@ -15,6 +15,7 @@ from sqlalchemy import text as sql_text
 
 from utils.generate_model import Wibor
 from utils.inflacja import InflacjaMiesiac, Nieruchomosc
+from utils.rrso import RRSO
 
 import json
 
@@ -30,7 +31,7 @@ def favicon():
 @login_required
 def start():
 
-    return redirect(url_for('dom.pokaz_kredyty'))
+    return redirect(url_for('rrso.rrso_main'))
 
 
 @dom.route('/kredyt/usun/<kredyt_id>', methods=['GET', 'POST'])
@@ -270,19 +271,6 @@ def obliczkredyt(kredyt_id=None):
     kr['nadplaty'] =  [n.as_dict() for n in Nadplata.query.filter_by(kredyt_id=kredyt_id)]
     kr['wakacje'] =  [n.as_dict() for n in Wakacje.query.filter_by(kredyt_id=kredyt_id)]
     kr['dnisplaty'] = [n.as_dict() for n in DniSplaty.query.filter_by(kredyt_id=kredyt_id)]
-        
-    # if request.method == 'POST':
-    #     kapital = request.form['kapital']
-    # else:
-    #     kapital = 460000
-
-
-
-    # marza = 2.99
-    # rodzaj_wiboru = '3M'
-    # data_start = '04/11/2021'
-    # okresy = 360
-    # liczba_wakacji = 0
 
     kapital = kr['wartosc']
     marza = kr['marza']
@@ -311,8 +299,6 @@ def obliczkredyt(kredyt_id=None):
     wakacje = [n['miesiac'] for n in kr['wakacje']]
 
     dni_zmiany_splaty = [n['dzien_splaty'] for n in kr['dnisplaty']]
-
-
 
 
     dane_kredytu =  ut.generateFromWiborFileInter(w, kapital,
@@ -345,6 +331,8 @@ def obliczkredyt(kredyt_id=None):
     raty = {f"{n['dzien']}": n['rata'] for n in wynik["raty"]}
     nadplaty = {f"{n['dzien']}": n['kwota'] for n in wynik["nadplaty"]}
 
+    rrso = RRSO(kapital, wynik['raty'], 0.05)
+    print(rrso.oblicz_rrso())
 
     # inne = [{'dzien':'2021-11-04', 'kwota': 40000}]
     inne = []
@@ -406,7 +394,7 @@ def obliczkredyt(kredyt_id=None):
             if nadplata_miesiac == dt.datetime.strftime(dzien, '%Y-%m'):
                 last_kpo -= float(n['kwota'])
 
-    
+
         
         nom_kpo.append({'dzien': dt.datetime.strftime(dzien, '%Y-%m'), 'wartosc': last_kpo})
         nom_cena_kosztowa.append({'dzien': dzien, 'wartosc': last_kpo + suma_kroczaca_kosztow})

@@ -87,7 +87,6 @@ class Kredyt:
 
         if self.rodzajRat=='stale':
             k = 12
-            #do_splaty = self.K + self.odsetki_naliczone
             do_splaty = self.K
             if self.p>0:
                 L = (do_splaty * self.p)

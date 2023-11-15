@@ -72,6 +72,9 @@ def init_app():
     from .routes.dom import dom as dom_blueprint
     app.register_blueprint(dom_blueprint)
 
+    from .routes.rrso import rrso as rrso_blueprint
+    app.register_blueprint(rrso_blueprint)
+
     return app
 
 
