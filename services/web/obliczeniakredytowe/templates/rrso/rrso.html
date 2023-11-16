@@ -12,600 +12,444 @@
 <title>Kredyty</title>
 
 <style>
-
-  body {
+    body {
         display: flex;
         min-height: 100vh;
         flex-direction: column;
-      }
-  #wrapper {
+    }
+
+    #wrapper {
         flex: 1;
-      }
-
-  
-.filler {
-  position: absolute;
-  left: 0;
-  right: 0;
-  border-bottom: 1px dashed #333;
-  height: 50%;
-}
-.naklejka {
-  background: white;
-  float: left;
-  margin-right: 20px;
-  padding-right: 4px;
-  position: relative;
-}
-
-.tekst {
-  background: white;
-  padding-left: 4px;
-  position: relative;
-}
+    }
 
 
+    .filler {
+        position: absolute;
+        left: 0;
+        right: 0;
+        border-bottom: 1px dashed #333;
+        height: 50%;
+    }
 
-.kontainer {
-  position: relative;
-  text-align: right;
-  white-space: nowrap;
-}
+    .naklejka {
+        background: white;
+        float: left;
+        margin-right: 20px;
+        padding-right: 4px;
+        position: relative;
+    }
+
+    .tekst {
+        background: white;
+        padding-left: 4px;
+        position: relative;
+    }
 
 
+
+    .kontainer {
+        position: relative;
+        text-align: right;
+        white-space: nowrap;
+    }
 </style>
 
 
 
 <nav class="navbar is-info" role="navigation" aria-label="main navigation" id="nav-bar">
-  <div class="navbar-brand">
-    <p class="navbar-item">
-      <img src="{{ url_for('static', filename='logo.png')}}" width="40" height="40">
-    </p>
+    <div class="navbar-brand">
+        <p class="navbar-item">
+            <img src="{{ url_for('static', filename='logo.png')}}" width="40" height="40">
+        </p>
 
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-
-
-
-  <div id="navbarBasicExample" class="navbar-menu">
-    <div class="navbar-start">
-    
-      <p class="navbar-item">
-        Kalkulator RRSO
-      </p>
-
-
-
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
     </div>
 
-    <div class="navbar-end">
-      <div class="navbar-item">
-        <div class="buttons">
-          {% if current_user.is_authenticated %}
-          <a class="button is-light" href="{{ url_for('admin_bp.logout') }}">
-            {{current_user.name}} - Wyloguj
-          </a>
-          {%- else %}
 
-          {% endif %}
+
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+
+            <p class="navbar-item">
+                Kalkulator RRSO
+            </p>
+
+
+
         </div>
-      </div>
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    {% if current_user.is_authenticated %}
+                    <a class="button is-light" href="{{ url_for('admin_bp.logout') }}">
+                        {{current_user.name}} - Wyloguj
+                    </a>
+                    {%- else %}
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </nav>
 
 
 <script>
 
-  document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
 
-    // Get all "navbar-burger" elements
-    const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+        // Get all "navbar-burger" elements
+        const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
 
-    // Add a click event on each of them
-    $navbarBurgers.forEach(el => {
-      el.addEventListener('click', () => {
+        // Add a click event on each of them
+        $navbarBurgers.forEach(el => {
+            el.addEventListener('click', () => {
 
-        // Get the target from the "data-target" attribute
-        const target = el.dataset.target;
-        const $target = document.getElementById(target);
+                // Get the target from the "data-target" attribute
+                const target = el.dataset.target;
+                const $target = document.getElementById(target);
 
-        // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-        el.classList.toggle('is-active');
-        $target.classList.toggle('is-active');
+                // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+                el.classList.toggle('is-active');
+                $target.classList.toggle('is-active');
 
-      });
+            });
+        });
+
     });
-
-  });
 </script>
 
 <div id="wrapper">
-  <section class="content">
+    <section class="content">
 
 
 
-<div class="content">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    {% if category == 'error' %}
-    <div class="alert">{{ message }}</div>
-    {% else %}
-    <div class="notification is-success">{{ message }}</div>
-    {% endif %}
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-  
-  </div>
-  
-  {% if edycja %}
-  <div class="block">
-    <div class="container">
-  
-      <div class="notification">
-        <div class="columns is-vcentered">
-          <div class="column is-narrow"><span id='guzik_cofnij'></span></div>
-          <div class="column is-narrow">Powrót do wyników obliczeń dla kredytu.</div>
-  
+        <div class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            {% if category == 'error' %}
+            <div class="alert">{{ message }}</div>
+            {% else %}
+            <div class="notification is-success">{{ message }}</div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
         </div>
-  
-  
-      </div>
-  
-    </div>
-  </div>
-  {% endif %}
-  
-  
-  <div class="block">
-    <div class="container">
-      <h2>Dane podstawowe</h2>
-  
-      <form id="kredyt-form" action="{{ url_for('dom.kredyt') }}" method="POST">
-  
-        <div class="field is-horizontal">
-          <div class="field-body">
-            <div class="field is-narrow">
-              <label class="label">Wartość</label>
-              <div class="control">
-                <input class="input" type="text" placeholder="Ile?" name="kapital" id="idKapital">
-              </div>
-            </div>
-  
-            <div class="field is-narrow">
-              <label class="label">Data uruchomienia</label>
-              <div class="control">
-                <input class="input" type="text" placeholder="DD/MM/YYYY" name="dataStart" id="idData">
-              </div>
-            </div>
-  
-  
-  
-          </div>
-        </div>
-  
-        <div class="field is-horizontal">
-          <div class="field-body">
-            <div class="field is-narrow">
-              <label class="label">Liczba rat miesięcznych</label>
-              <div class="control">
-                <input class="input" type="text" placeholder="okresy" name="okresy" id="idOkresy">
-              </div>
-            </div>
-  
-            <div class="field is-narrow">
-              <label class="label">Marża</label>
-              <div class="control">
-                <input class="input" type="text" placeholder="marża" name="marza" id="idMarza">
-              </div>
-            </div>
-  
-  
-          </div>
-        </div>
-  
-        <div class="field is-horizontal">
-          <div class="field-body">
-  
-            <div class="field is-narrow">
-              <label class="label">Rodzaj wiboru</label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <select id="idRodzajWiboru" name="rodzajWiboru">
-                    <option value="3M" selected>Wibor 3M</option>
-                    <option value="6M">Wibor 6M</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-  
-            <div class="field is-narrow">
-              <label class="label">Rodzaj rat</label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <select id="idRodzajRat" name="rodzajRat">
-                    <option value="stale" selected>stałe</option>
-                    <option value="malejace">malejące</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-  
-  
-          </div>
-        </div>
-  
-        <div class="field is-horizontal">
-          <div class="field-body">
-  
-            <div class="field is-narrow">
-              <label class="label">Ubezpieczenie pomostowe do dnia</label>
-              <div class="control">
-                <input class="input" type="text" placeholder="DD/MM/RRRR" name="ub_pomostowe_do" id="idUbezpPomDo">
-              </div>
-            </div>
-  
-            <div class="field is-narrow">
-              <label class="label">Wartość (stopa) ubezpieczenia</label>
-              <div class="control">
-                <input class="input" type="text" placeholder="%" name="stopa_ubezpieczenia" id="idStopaUb">
-                
-              </div>
-            </div>
-  
-  
-          </div>
-        </div>
-  
-        <div class="field is-narrow">
-          <div class="control">
-            <button type="submit" class="button is-primary" id="idGuzik">
-              Dodaj
-            </button>
-          </div>
-        </div>
-  
-  
-  
-  
-  
-      </form>
-  
-    </div>
-  </div>
-  
-  {% if dane %}
-  
-  
-  <div class="block">
-    <div class="container">
-  
-      <div class="columns">
-        <div class="column is-one-third">
-  
-  
-          <h2>Nadpłaty</h2>
-  
-          <form id="nadplata-form" action="{{ url_for('dom.kredyt') }}" method="POST">
-  
-            <div class="field is-horizontal">
-              <div class="field-body">
-                <div class="field">
-                  <label class="label">Wartość</label>
-                  <div class="control">
-                    <input class="input" type="text" placeholder="Ile?" name="wartosc_nadplaty" id="idNadplataWartosc">
-                  </div>
-                </div>
-  
-                <div class="field">
-                  <label class="label">Data</label>
-                  <div class="control">
-                    <input class="input" type="text" placeholder="DD/MM/YYYY" name="data_nadplaty" id="idDataNadplaty">
-                  </div>
-                </div>
-  
-  
-  
-  
-              </div>
-  
-            </div>
-  
-            <div class="field">
-              <div class="control">
-                <button type="submit" class="button is-primary" id="idGuzik">
-                  Dodaj
-                </button>
-              </div>
-            </div>
-  
-          </form>
-  
-  
-  
-  
-          <table class="table">
-            <thead>
-              <tr>
-                <th><abbr title="Position">Wartość</abbr></th>
-                <th>Data</th>
-                <th>Usuń</th>
-              </tr>
-            </thead>
-            <tbody id="nadplaty">
-  
-  
-            </tbody>
-          </table>
-  
-  
-        </div>
-        <div class="column is-one-third">
-  
-          <h2>Wakacje kredytowe</h2>
-  
-          <form id="wakacje-form" action="{{ url_for('dom.kredyt') }}" method="POST">
-  
-            <div class="field is-horizontal">
-              <div class="field-body">
-  
-  
-                <div class="field">
-                  <label class="label">Miesiąc</label>
-                  <div class="control">
-                    <input class="input" type="text" placeholder="MM/YYYY" name="miesiac_wakacji" id="idMiesiacWakacji">
-                  </div>
-                </div>
-  
-  
-  
-  
-              </div>
-  
-            </div>
-  
-            <div class="field">
-              <div class="control">
-                <button type="submit" class="button is-primary" id="idGuzikWakacje">
-                  Dodaj
-                </button>
-              </div>
-            </div>
-  
-          </form>
-  
-  
-  
-  
-          <table class="table">
-            <thead>
-              <tr>
-  
-                <th>Miesiąc</th>
-                <th>Usuń</th>
-              </tr>
-            </thead>
-            <tbody id="wakacje">
-  
-  
-            </tbody>
-          </table>
-  
-        </div>
-  
-  
-        <div class="column is-one-third">
-  
-  
-          <h2>Dni spłaty</h2>
-  
-          <form id="dnisplaty-form" action="{{ url_for('dom.kredyt') }}" method="POST">
-  
-            <div class="field is-horizontal">
-              <div class="field-body">
-  
-  
-                <div class="field">
-                  <label class="label">Dzień spłaty</label>
-                  <div class="control">
-                    <input class="input" type="text" placeholder="DD/MM/YYYY" name="dzien_splaty" id="idDzienSplaty">
-                  </div>
-                </div>
-  
-  
-  
-  
-              </div>
-  
-            </div>
-  
-            <div class="field">
-              <div class="control">
-                <button type="submit" class="button is-primary" id="idGuzikDzienSplaty">
-                  Dodaj
-                </button>
-              </div>
-            </div>
-  
-          </form>
-  
-  
-  
-  
-          <table class="table">
-            <thead>
-              <tr>
-  
-                <th>Dzień spłaty</th>
-                <th>Usuń</th>
-              </tr>
-            </thead>
-            <tbody id="dziensplaty">
-  
-  
-            </tbody>
-          </table>
-  
-        </div>
-      </div>
-  
-    </div>
-  </div>
-  {% endif %}
-  
-  {% if edycja %}
-  <script type="module">
-  
-    const dane = JSON.parse('{{dane |safe}}');
-  
-    console.log(dane)
-  
-    document.getElementById("idKapital").value = dane['wartosc'];
-  
-    const date = d3.timeParse("%Y-%m-%d")(dane['data_uruchomienia'])
-  
-    const date_pomost = d3.timeParse("%Y-%m-%d")(dane['ubezpieczenie_pomostowe_do'])
-  
-    let datestring = ("0" + date.getDate()).slice(-2) + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" + date.getFullYear();
-    let date_str_pomost = ("0" + date_pomost.getDate()).slice(-2) + "/" + ("0" + (date_pomost.getMonth() + 1)).slice(-2) + "/" + date_pomost.getFullYear();
-  
-    console.log(date_str_pomost)
-  
-    d3.select('#guzik_cofnij')
-      .append('button')
-      .attr('class', 'button is-primary')
-      .attr('id', d => 'kredyt-cofjnij').text('Powrót')
-      .attr('onclick', d => "window.location.href='{{ url_for('dom.obliczkredyt', kredyt_id=0) }}'".replace("0", dane['id']))
-  
-    console.log(dane['ubezpieczenie_pomostowe_do'])
-  
-    document.getElementById("idData").value = datestring;
-  
-    document.getElementById("idOkresy").value = dane['okresy'];
-    document.getElementById("idMarza").value = dane['marza'];
-    document.getElementById("idRodzajWiboru").value = dane['rodzaj_wiboru'];
-    document.getElementById("idRodzajRat").value = dane['rodzaj_rat'];
-  
+
+
+
+
+        <div class="block">
+            <div class="container">
+
+                <form id="kredyt-form" action="{{ url_for('rrso.rrso_main') }}" method="POST">
+
+                    <div class="field is-horizontal">
+                        <div class="field-body">
+
+                            <div class="field is-narrow">
+                                <label class="label">Data umowy</label>
+                                <div class="control">
+                                    <input class="input" type="text" placeholder="DD/MM/YYYY" name="data_umowy" required oninvalid="this.setCustomValidity('To pole nie może być puste.')" oninput="this.setCustomValidity('')">
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+                    <div class="field is-horizontal">
+                        <div class="field-body">
+
+                            <div class="field is-narrow">
+                                <label class="label">Całkowita kwota kredytu (PLN)</label>
+                                <div class="control">
+                                    <input class="input" type="text" placeholder="Kredyt (PLN)" name="calkowita_kwota">
+                                </div>
+                            </div>
+
+                            <div class="field is-narrow">
+                                <label class="label">Kwota udzielonego kredytu (PLN)</label>
+                                <div class="control">
+                                    <input class="input" type="text" placeholder="Kredyt + prowizja (PLN)" name="udzielona_kwota">
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+                    <div class="field is-horizontal">
+                        <div class="field-body">
+                            <div class="field is-narrow">
+                                <label class="label">Liczba rat miesięcznych</label>
+                                <div class="control">
+                                    <input class="input" type="text" placeholder="okresy" name="okresy">
+                                </div>
+                            </div>
+
+                            <div class="field is-narrow">
+                                <label class="label">Rodzaj rat</label>
+                                <div class="control">
+                                    <div class="select is-fullwidth">
+                                        <select id="idRodzajRat" name="rodzajRat">
+                                            <option value="stale" selected>stałe</option>
+                                            <option value="malejace">malejące</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
    
-    document.getElementById("idUbezpPomDo").value = date_str_pomost;
-  
-    document.getElementById("idStopaUb").value = dane['ubezpieczenie_pomostowe_stopa']
-  
-    document.getElementById("idGuzik").firstChild.data = 'Zapisz';
-  
-    let form = document.getElementById('kredyt-form');
-    let input = document.createElement("input");
-    input.setAttribute("type", "hidden");
-    input.setAttribute("name", "id");
-    input.setAttribute("value", dane['id']);
-    form.appendChild(input);
-  
-    console.log('edycja')
-  
-    let form2 = document.getElementById('nadplata-form');
-    let input2 = document.createElement("input");
-    input2.setAttribute("type", "hidden");
-    input2.setAttribute("name", "id");
-    input2.setAttribute("value", dane['id']);
-    form2.appendChild(input2);
-  
-  
-    let table = d3.select("tbody#nadplaty")
-      .selectAll("tr").data(dane['nadplaty'])
-      .enter().append("tr")
-  
-  
-    table.append('td')
-      .text(function (d) { return d.wartosc; })
-  
-    table.append('td')
-      .text(function (d) { return d.data_nadplaty; })
-  
-  
-    table.append('td')
-      .html(d => "<a href='{{ url_for('dom.kredyt', kredyt_id=0, nadplata_id=99999999, usun=True) }}'>usun</a>".replace("0", dane['id']).replace('99999999', d.id))
-  
-    let form_wakacje = document.getElementById('wakacje-form');
-    let input_wakacje = document.createElement("input");
-    input_wakacje.setAttribute("type", "hidden");
-    input_wakacje.setAttribute("name", "id");
-    input_wakacje.setAttribute("value", dane['id']);
-    form_wakacje.appendChild(input_wakacje);
-  
-    let form2_wakacje = document.getElementById('wakacje-form');
-    let input2_wakacje = document.createElement("input");
-    input2_wakacje.setAttribute("type", "hidden");
-    input2_wakacje.setAttribute("name", "id");
-    input2_wakacje.setAttribute("value", dane['id']);
-    form2_wakacje.appendChild(input2_wakacje);
-  
-  
-    let table_wakacje = d3.select("tbody#wakacje")
-      .selectAll("tr").data(dane['wakacje'])
-      .enter().append("tr")
-  
-  
-    table_wakacje.append('td')
-      .text(function (d) { return d.miesiac; })
-  
-  
-    table_wakacje.append('td')
-      .html(d => "<a href='{{ url_for('dom.usun_wakacje', kredyt_id=0, wakacje_id=99999999) }}'>usun</a>".replace("0", dane['id']).replace('99999999', d.id))
-  
-  
-  
-    console.log('edycja')
-  
-  
-    let form_dnisplaty = document.getElementById('dnisplaty-form');
-    let input_dnisplaty = document.createElement("input");
-    input_dnisplaty.setAttribute("type", "hidden");
-    input_dnisplaty.setAttribute("name", "id");
-    input_dnisplaty.setAttribute("value", dane['id']);
-    form_dnisplaty.appendChild(input_dnisplaty);
-  
-    let form2_dnisplaty = document.getElementById('dnisplaty-form');
-    let input2_dnisplaty = document.createElement("input");
-    input2_dnisplaty.setAttribute("type", "hidden");
-    input2_dnisplaty.setAttribute("name", "id");
-    input2_dnisplaty.setAttribute("value", dane['id']);
-    form2_dnisplaty.appendChild(input2_dnisplaty);
-  
-  
-    let table_dnisplaty = d3.select("tbody#dziensplaty")
-      .selectAll("tr").data(dane['dnisplaty'])
-      .enter().append("tr")
-  
-  
-    table_dnisplaty.append('td')
-      .text(function (d) { return d.dzien_splaty; })
-  
-  
-    table_dnisplaty.append('td')
-      .html(d => "<a href='{{ url_for('dom.usun_dzien_splaty', kredyt_id=0, dzien_id=99999999) }}'>usun</a>".replace("0", dane['id']).replace('99999999', d.id))
-  
-  
-  
-  </script>
 
-{% endif %}
+                        </div>
+                    </div>
 
-</section>
+                    <div class="field is-horizontal">
+                        <div class="field-body">
+
+                            <div class="field is-narrow">
+                                <label class="label">Oprocentowanie pożyczki</label>
+                                <div class="control">
+                                    <div class="select is-fullwidth">
+                                        <select name="oprocentowanie_pozyczki">
+                                            <option value="stale" selected>stałe</option>
+                                            <option value="zmienne">zmienne</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field is-narrow">
+                                <label class="label">Wysokość oprocentowania stałego (%)</label>
+                                <div class="control">
+                                    <input class="input" type="text" placeholder="stopa opr. stałego %" name="oprocentowanie_stale">
+                                </div>
+                            </div>
+
+                            <div class="field is-narrow">
+                                <label class="label">Rodzaj wiboru</label>
+                                <div class="control">
+                                    <div class="select is-fullwidth">
+                                        <select id="idRodzajWiboru" name="rodzajWiboru">
+                                            <option value="3M" selected>Wibor 3M</option>
+                                            <option value="6M">Wibor 6M</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="field is-horizontal">
+                        <div class="field-body">
+
+                    <div class="field is-narrow">
+                        <label class="label">Marża (%)</label>
+                        <div class="control">
+                            <input class="input" type="text" placeholder="marża (%)" name="marza">
+                        </div>
+                    </div>
+
+                    <div class="field is-narrow">
+                        <label class="label">Prowizja (%)</label>
+                        <div class="control">
+                            <input class="input" type="text" placeholder="prowizja (%)" name="prowizja">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+                    <div class="field is-horizontal">
+                        <div class="field-body">
+
+
+                            <div class="field is-narrow">
+                                <label class="label">Pozaodsetkowe koszty kredytu (PLN)</label>
+                                <div class="control">
+                                    <input class="input" type="text" placeholder="Ile? (PLN)" name="pozaodsetkowe_koszty">
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                    <div class="field is-narrow">
+                        <div class="control">
+                            <button type="submit" class="button is-primary" id="idGuzik">
+                                Oblicz
+                            </button>
+                        </div>
+                    </div>
+
+
+
+
+
+                </form>
+
+            </div>
+        </div>
+
+
+
+        {% if edycja %}
+        <script type="module">
+
+            const dane = JSON.parse('{{dane |safe}}');
+
+            console.log(dane)
+
+            document.getElementById("idKapital").value = dane['wartosc'];
+
+            const date = d3.timeParse("%Y-%m-%d")(dane['data_uruchomienia'])
+
+            const date_pomost = d3.timeParse("%Y-%m-%d")(dane['ubezpieczenie_pomostowe_do'])
+
+            let datestring = ("0" + date.getDate()).slice(-2) + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" + date.getFullYear();
+            let date_str_pomost = ("0" + date_pomost.getDate()).slice(-2) + "/" + ("0" + (date_pomost.getMonth() + 1)).slice(-2) + "/" + date_pomost.getFullYear();
+
+            console.log(date_str_pomost)
+
+            d3.select('#guzik_cofnij')
+                .append('button')
+                .attr('class', 'button is-primary')
+                .attr('id', d => 'kredyt-cofjnij').text('Powrót')
+                .attr('onclick', d => "window.location.href='{{ url_for('dom.obliczkredyt', kredyt_id=0) }}'".replace("0", dane['id']))
+
+            console.log(dane['ubezpieczenie_pomostowe_do'])
+
+            document.getElementById("idData").value = datestring;
+
+            document.getElementById("idOkresy").value = dane['okresy'];
+            document.getElementById("idMarza").value = dane['marza'];
+            document.getElementById("idRodzajWiboru").value = dane['rodzaj_wiboru'];
+            document.getElementById("idRodzajRat").value = dane['rodzaj_rat'];
+
+
+            document.getElementById("idUbezpPomDo").value = date_str_pomost;
+
+            document.getElementById("idStopaUb").value = dane['ubezpieczenie_pomostowe_stopa']
+
+            document.getElementById("idGuzik").firstChild.data = 'Zapisz';
+
+            let form = document.getElementById('kredyt-form');
+            let input = document.createElement("input");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("name", "id");
+            input.setAttribute("value", dane['id']);
+            form.appendChild(input);
+
+            console.log('edycja')
+
+            let form2 = document.getElementById('nadplata-form');
+            let input2 = document.createElement("input");
+            input2.setAttribute("type", "hidden");
+            input2.setAttribute("name", "id");
+            input2.setAttribute("value", dane['id']);
+            form2.appendChild(input2);
+
+
+            let table = d3.select("tbody#nadplaty")
+                .selectAll("tr").data(dane['nadplaty'])
+                .enter().append("tr")
+
+
+            table.append('td')
+                .text(function (d) { return d.wartosc; })
+
+            table.append('td')
+                .text(function (d) { return d.data_nadplaty; })
+
+
+            table.append('td')
+                .html(d => "<a href='{{ url_for('dom.kredyt', kredyt_id=0, nadplata_id=99999999, usun=True) }}'>usun</a>".replace("0", dane['id']).replace('99999999', d.id))
+
+            let form_wakacje = document.getElementById('wakacje-form');
+            let input_wakacje = document.createElement("input");
+            input_wakacje.setAttribute("type", "hidden");
+            input_wakacje.setAttribute("name", "id");
+            input_wakacje.setAttribute("value", dane['id']);
+            form_wakacje.appendChild(input_wakacje);
+
+            let form2_wakacje = document.getElementById('wakacje-form');
+            let input2_wakacje = document.createElement("input");
+            input2_wakacje.setAttribute("type", "hidden");
+            input2_wakacje.setAttribute("name", "id");
+            input2_wakacje.setAttribute("value", dane['id']);
+            form2_wakacje.appendChild(input2_wakacje);
+
+
+            let table_wakacje = d3.select("tbody#wakacje")
+                .selectAll("tr").data(dane['wakacje'])
+                .enter().append("tr")
+
+
+            table_wakacje.append('td')
+                .text(function (d) { return d.miesiac; })
+
+
+            table_wakacje.append('td')
+                .html(d => "<a href='{{ url_for('dom.usun_wakacje', kredyt_id=0, wakacje_id=99999999) }}'>usun</a>".replace("0", dane['id']).replace('99999999', d.id))
+
+
+
+            console.log('edycja')
+
+
+            let form_dnisplaty = document.getElementById('dnisplaty-form');
+            let input_dnisplaty = document.createElement("input");
+            input_dnisplaty.setAttribute("type", "hidden");
+            input_dnisplaty.setAttribute("name", "id");
+            input_dnisplaty.setAttribute("value", dane['id']);
+            form_dnisplaty.appendChild(input_dnisplaty);
+
+            let form2_dnisplaty = document.getElementById('dnisplaty-form');
+            let input2_dnisplaty = document.createElement("input");
+            input2_dnisplaty.setAttribute("type", "hidden");
+            input2_dnisplaty.setAttribute("name", "id");
+            input2_dnisplaty.setAttribute("value", dane['id']);
+            form2_dnisplaty.appendChild(input2_dnisplaty);
+
+
+            let table_dnisplaty = d3.select("tbody#dziensplaty")
+                .selectAll("tr").data(dane['dnisplaty'])
+                .enter().append("tr")
+
+
+            table_dnisplaty.append('td')
+                .text(function (d) { return d.dzien_splaty; })
+
+
+            table_dnisplaty.append('td')
+                .html(d => "<a href='{{ url_for('dom.usun_dzien_splaty', kredyt_id=0, dzien_id=99999999) }}'>usun</a>".replace("0", dane['id']).replace('99999999', d.id))
+
+
+
+        </script>
+
+        {% endif %}
+
+    </section>
 
 
 
 </div>
 <footer class="footer">
-  <div class="content has-text-centered">
+    <div class="content has-text-centered">
 
-      obliczenia kredytowe 2023
+        Kalkulator RRSO 2023
 
-  </div>
+    </div>
 </footer>

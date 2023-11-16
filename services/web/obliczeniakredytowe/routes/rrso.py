@@ -12,6 +12,5 @@ rrso = Blueprint('rrso', __name__)
 @rrso.route('/rrso', methods=['GET', 'POST'])
 @login_required
 def rrso_main():
-    print(current_app)
-    print(request)
+
     return render_template('rrso/rrso.html')
