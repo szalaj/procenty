@@ -158,7 +158,7 @@
                             <div class="field is-narrow">
                                 <label class="label">Data umowy</label>
                                 <div class="control">
-                                    <input class="input" type="text" placeholder="DD/MM/YYYY" name="data_umowy" required oninvalid="this.setCustomValidity('To pole nie może być puste.')" oninput="this.setCustomValidity('')">
+                                    <input class="input" type="text" placeholder="DD/MM/YYYY" name="data_umowy">
                                 </div>
                             </div>
 
@@ -202,7 +202,7 @@
                                 <label class="label">Rodzaj rat</label>
                                 <div class="control">
                                     <div class="select is-fullwidth">
-                                        <select id="idRodzajRat" name="rodzajRat">
+                                        <select name="rodzaj_rat">
                                             <option value="stale" selected>stałe</option>
                                             <option value="malejace">malejące</option>
                                         </select>
@@ -241,7 +241,7 @@
                                 <label class="label">Rodzaj wiboru</label>
                                 <div class="control">
                                     <div class="select is-fullwidth">
-                                        <select id="idRodzajWiboru" name="rodzajWiboru">
+                                        <select  name="rodzajWiboru" disabled>
                                             <option value="3M" selected>Wibor 3M</option>
                                             <option value="6M">Wibor 6M</option>
                                         </select>
@@ -302,144 +302,82 @@
             </div>
         </div>
 
-
-
-        {% if edycja %}
         <script type="module">
+            console.log('by name')
+            console.log(document.getElementsByName("oprocentowanie_pozyczki")[0].value)
 
-            const dane = JSON.parse('{{dane |safe}}');
+            document.getElementsByName("oprocentowanie_pozyczki")[0].addEventListener("change",
+                function(){
 
-            console.log(dane)
+                    if (this.value == 'zmienne') {
+                        document.getElementsByName("oprocentowanie_stale")[0].disabled = true;
+                        document.getElementsByName("rodzajWiboru")[0].disabled = false;
+      
+                    } else {
+                        document.getElementsByName("oprocentowanie_stale")[0].disabled = false;
+                        document.getElementsByName("rodzajWiboru")[0].disabled = true;
+            
+                    }
+                    console.log(this.value)
 
-            document.getElementById("idKapital").value = dane['wartosc'];
+                });
 
-            const date = d3.timeParse("%Y-%m-%d")(dane['data_uruchomienia'])
+            // read request object as json string
 
-            const date_pomost = d3.timeParse("%Y-%m-%d")(dane['ubezpieczenie_pomostowe_do'])
-
-            let datestring = ("0" + date.getDate()).slice(-2) + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" + date.getFullYear();
-            let date_str_pomost = ("0" + date_pomost.getDate()).slice(-2) + "/" + ("0" + (date_pomost.getMonth() + 1)).slice(-2) + "/" + date_pomost.getFullYear();
-
-            console.log(date_str_pomost)
-
-            d3.select('#guzik_cofnij')
-                .append('button')
-                .attr('class', 'button is-primary')
-                .attr('id', d => 'kredyt-cofjnij').text('Powrót')
-                .attr('onclick', d => "window.location.href='{{ url_for('dom.obliczkredyt', kredyt_id=0) }}'".replace("0", dane['id']))
-
-            console.log(dane['ubezpieczenie_pomostowe_do'])
-
-            document.getElementById("idData").value = datestring;
-
-            document.getElementById("idOkresy").value = dane['okresy'];
-            document.getElementById("idMarza").value = dane['marza'];
-            document.getElementById("idRodzajWiboru").value = dane['rodzaj_wiboru'];
-            document.getElementById("idRodzajRat").value = dane['rodzaj_rat'];
+            const dane = {{request.form | tojson | safe}};
 
 
-            document.getElementById("idUbezpPomDo").value = date_str_pomost;
+            // check if dane is not empty dict
+            
 
-            document.getElementById("idStopaUb").value = dane['ubezpieczenie_pomostowe_stopa']
+            if (Object.keys(dane).length > 0) {
 
-            document.getElementById("idGuzik").firstChild.data = 'Zapisz';
+                if (dane['oprocentowanie_pozyczki']== 'zmienne') {
+                        document.getElementsByName("oprocentowanie_stale")[0].disabled = true;
+                        document.getElementsByName("rodzajWiboru")[0].disabled = false;
+      
+                    } else {
+                        document.getElementsByName("oprocentowanie_stale")[0].disabled = false;
+                        document.getElementsByName("rodzajWiboru")[0].disabled = true;
+            
+                    }
+            
 
-            let form = document.getElementById('kredyt-form');
-            let input = document.createElement("input");
-            input.setAttribute("type", "hidden");
-            input.setAttribute("name", "id");
-            input.setAttribute("value", dane['id']);
-            form.appendChild(input);
+            document.getElementsByName("data_umowy")[0].value = dane['data_umowy'];
+            
+            document.getElementsByName("calkowita_kwota")[0].value = dane['calkowita_kwota'];
+            document.getElementsByName("udzielona_kwota")[0].value = dane['udzielona_kwota'];
 
-            console.log('edycja')
+            document.getElementsByName("okresy")[0].value = dane['okresy'];
+            document.getElementsByName("rodzaj_rat")[0].value = dane['rodzaj_rat'];
 
-            let form2 = document.getElementById('nadplata-form');
-            let input2 = document.createElement("input");
-            input2.setAttribute("type", "hidden");
-            input2.setAttribute("name", "id");
-            input2.setAttribute("value", dane['id']);
-            form2.appendChild(input2);
+            document.getElementsByName("oprocentowanie_pozyczki")[0].value = dane['oprocentowanie_pozyczki'];
+            
+            if ('oprocentowanie_stale' in dane) {
+                document.getElementsByName("oprocentowanie_stale")[0].value = dane['oprocentowanie_stale'];
+            } else {
+                document.getElementsByName("oprocentowanie_stale")[0].value = ''
+            }
 
+            if ('rodzajWiboru' in dane) {
+                document.getElementsByName("rodzajWiboru")[0].value = dane['rodzajWiboru'];
+            } else {
 
-            let table = d3.select("tbody#nadplaty")
-                .selectAll("tr").data(dane['nadplaty'])
-                .enter().append("tr")
+                document.getElementsByName("rodzajWiboru")[0].value = '3M';
+            }
+            
+     
 
+            document.getElementsByName("marza")[0].value = dane['marza'];
+            document.getElementsByName("prowizja")[0].value = dane['prowizja'];
+            document.getElementsByName("pozaodsetkowe_koszty")[0].value = dane['pozaodsetkowe_koszty'];
+            
 
-            table.append('td')
-                .text(function (d) { return d.wartosc; })
-
-            table.append('td')
-                .text(function (d) { return d.data_nadplaty; })
-
-
-            table.append('td')
-                .html(d => "<a href='{{ url_for('dom.kredyt', kredyt_id=0, nadplata_id=99999999, usun=True) }}'>usun</a>".replace("0", dane['id']).replace('99999999', d.id))
-
-            let form_wakacje = document.getElementById('wakacje-form');
-            let input_wakacje = document.createElement("input");
-            input_wakacje.setAttribute("type", "hidden");
-            input_wakacje.setAttribute("name", "id");
-            input_wakacje.setAttribute("value", dane['id']);
-            form_wakacje.appendChild(input_wakacje);
-
-            let form2_wakacje = document.getElementById('wakacje-form');
-            let input2_wakacje = document.createElement("input");
-            input2_wakacje.setAttribute("type", "hidden");
-            input2_wakacje.setAttribute("name", "id");
-            input2_wakacje.setAttribute("value", dane['id']);
-            form2_wakacje.appendChild(input2_wakacje);
-
-
-            let table_wakacje = d3.select("tbody#wakacje")
-                .selectAll("tr").data(dane['wakacje'])
-                .enter().append("tr")
-
-
-            table_wakacje.append('td')
-                .text(function (d) { return d.miesiac; })
-
-
-            table_wakacje.append('td')
-                .html(d => "<a href='{{ url_for('dom.usun_wakacje', kredyt_id=0, wakacje_id=99999999) }}'>usun</a>".replace("0", dane['id']).replace('99999999', d.id))
-
-
-
-            console.log('edycja')
-
-
-            let form_dnisplaty = document.getElementById('dnisplaty-form');
-            let input_dnisplaty = document.createElement("input");
-            input_dnisplaty.setAttribute("type", "hidden");
-            input_dnisplaty.setAttribute("name", "id");
-            input_dnisplaty.setAttribute("value", dane['id']);
-            form_dnisplaty.appendChild(input_dnisplaty);
-
-            let form2_dnisplaty = document.getElementById('dnisplaty-form');
-            let input2_dnisplaty = document.createElement("input");
-            input2_dnisplaty.setAttribute("type", "hidden");
-            input2_dnisplaty.setAttribute("name", "id");
-            input2_dnisplaty.setAttribute("value", dane['id']);
-            form2_dnisplaty.appendChild(input2_dnisplaty);
-
-
-            let table_dnisplaty = d3.select("tbody#dziensplaty")
-                .selectAll("tr").data(dane['dnisplaty'])
-                .enter().append("tr")
-
-
-            table_dnisplaty.append('td')
-                .text(function (d) { return d.dzien_splaty; })
-
-
-            table_dnisplaty.append('td')
-                .html(d => "<a href='{{ url_for('dom.usun_dzien_splaty', kredyt_id=0, dzien_id=99999999) }}'>usun</a>".replace("0", dane['id']).replace('99999999', d.id))
-
+            }
 
 
         </script>
 
-        {% endif %}
 
     </section>
 
