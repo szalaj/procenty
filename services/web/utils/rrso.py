@@ -32,7 +32,7 @@ class RRSO:
 
         i = 0
 
-        while abs(self.wyplata-rs)>0.01:
+        while abs(self.wyplata-rs)>0.0001:
             
             if self.wyplata>rs:
                 r_granica = rrso
