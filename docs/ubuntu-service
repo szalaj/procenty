@@ -85,3 +85,6 @@ sudo systemctl enable nginx
 IV. w razie potrzeby restartu
 
 sudo systemctl restart nginx
+
+
+"procapp.pem" ubuntu@ec2-3-93-97-242.compute-1.amazonaws.com
