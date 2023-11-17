@@ -49,9 +49,7 @@ class WiborInter:
 
 
         self.max_wibor_real = self.df.index.max()
-        print("max_wibor_real")
-        print(self.max_wibor_real)
-
+  
 
 
         if self.data_koniec > self.max_wibor_real:

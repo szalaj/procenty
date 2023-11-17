@@ -35,7 +35,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('dom.start'))
+    return redirect(url_for('rrso.rrso_main'))
 
 
 @admin_bp.route('/backup')
