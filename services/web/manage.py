@@ -7,7 +7,9 @@ if 0:
     os.environ['APPDB_PATH'] = "/home/ubuntu/data/" 
 else:
     # test mode with gunicorn
-    os.environ['APPDB_PATH'] = "/home/szalaj/procenty/services/db/" 
+    current_path = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.abspath(os.path.join(current_path, '../../db'))
+    os.environ['APPDB_PATH'] = db_path 
 
 app = init_app()
 
