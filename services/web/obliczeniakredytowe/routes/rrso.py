@@ -5,8 +5,10 @@ from flask_login import login_user, logout_user, login_required, current_user
 import datetime as dt
 import json
 from obliczeniakredytowe import db
+from dateutil.relativedelta import relativedelta
 
 import utils.rrso as rs
+import utils.proc as proc
 
 rrso = Blueprint('rrso', __name__)
 
@@ -116,16 +118,29 @@ def rrso_main():
                 wibor = 2.11
                 stopa = (wibor + marza) / 100.0
 
-            print(f"stopa : {stopa}")
+            prowizja = udzielona_kwota - calkowita_kwota
+            
             rata = rs.rata_rowna(calkowita_kwota, okresy, stopa)
-            print(rata)
+            
 
             rrso = rs.RRSO(calkowita_kwota, [{'rata':rata} for i in range(int(okresy))],marza).oblicz_rrso()
-            print(rrso)
+
+            rrso_prowizja = rs.RRSO(calkowita_kwota-prowizja, [{'rata':rata} for i in range(int(okresy))],marza).oblicz_rrso()
+            
+
+            # to data_umowy add 3 months
+            dni_splaty = [(data_umowy + relativedelta(months=i+1)).strftime('%Y-%m-%d') for i in range(int(okresy))]
+            dane_kredytu = {'start': data_umowy.strftime('%Y-%m-%d'), 'K':calkowita_kwota, 'p':oprocentowanie_stale, 'marza':marza, 'daty_splaty':dni_splaty}
+            kredyt = proc.create_kredyt(dane_kredytu,request.form['rodzaj_rat'])
 
             # create new variable and put stopa and rata into json variable
 
-            wynik_json = {'rrso': rrso, 'stopa': stopa, 'rata': rata}
+            wynik_json = {'rrso': round(rrso*100,4),
+                           'rrso_prowizja': round(rrso_prowizja*100,4),
+                           'stopa': round(stopa*100,4),
+                             'rata': rata,
+                             'prowizja': prowizja,
+                            'raty_calkowita': kredyt}
 
             # return dictionary wynik_json to html template as json
 
