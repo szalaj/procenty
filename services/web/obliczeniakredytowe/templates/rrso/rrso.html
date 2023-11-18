@@ -18,6 +18,11 @@
         flex-direction: column;
     }
 
+    .box {
+        background-color: rgb(247, 247, 247);
+    }
+
+
     #wrapper {
         flex: 1;
     }
@@ -32,7 +37,7 @@
     }
 
     .naklejka {
-        background: white;
+        background: rgb(247, 247, 247);
         float: left;
         margin-right: 20px;
         padding-right: 4px;
@@ -40,7 +45,7 @@
     }
 
     .tekst {
-        background: white;
+        background: rgb(247, 247, 247);
         padding-left: 4px;
         position: relative;
     }
@@ -268,133 +273,139 @@
 
     <section id="wynik" class="is-hidden">
         <div class="container">
+            <div class="box">
+                <div class="block">
 
-            <div class="block">
-                <div class="columns">
-                    <div class="column">
-                        <ul class="list-group list-group-flush">
-                            <li>
-                                <div class="kontainer">
-                                    <div class="filler"></div><span class="naklejka">Data umowy</span><span
-                                        class="tekst" id="data_umowy"></span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="kontainer">
-                                    <div class="filler"></div><span class="naklejka">Całkowita kwota kredytu</span><span
-                                        class="tekst" id="calkowita_kwota"></span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="kontainer">
-                                    <div class="filler"></div><span class="naklejka">Kwota udzielonego
-                                        kredytu</span><span class="tekst" id="kwota_udzielonego"></span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="kontainer">
-                                    <div class="filler"></div><span class="naklejka">Liczba rat</span><span
-                                        class="tekst" id="okresy"></span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="kontainer">
-                                    <div class="filler"></div><span class="naklejka">Rodzaj rat</span></span><span
-                                        class="tekst" id="rodzaj_rat"></span>
-                                </div>
-                            </li>
+                    <div class="columns">
+                        <div class="column">
+                            <ul class="list-group list-group-flush">
+                                <li>
+                                    <div class="kontainer">
+                                        <div class="filler"></div><span class="naklejka">Data umowy</span><span
+                                            class="tekst" id="data_umowy"></span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="kontainer">
+                                        <div class="filler"></div><span class="naklejka">Całkowita kwota
+                                            kredytu</span><span class="tekst" id="calkowita_kwota"></span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="kontainer">
+                                        <div class="filler"></div><span class="naklejka">Kwota udzielonego
+                                            kredytu</span><span class="tekst" id="kwota_udzielonego"></span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="kontainer">
+                                        <div class="filler"></div><span class="naklejka">Liczba rat</span><span
+                                            class="tekst" id="okresy"></span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="kontainer">
+                                        <div class="filler"></div><span class="naklejka">Rodzaj rat</span></span><span
+                                            class="tekst" id="rodzaj_rat"></span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="kontainer">
+                                        <div class="filler"></div><span class="naklejka">Prowizja</span><span
+                                            class="tekst" id="prowizja"></span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="column">
+                            <ul>
+                                <li>
+                                    <div class="kontainer">
+                                        <div class="filler"></div><span class="naklejka">Rodzaj
+                                            oprocentowania</span></span><span class="tekst"
+                                            id="rodzaj_oprocentowania"></span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="kontainer">
+                                        <div class="filler"></div><span class="naklejka">Wysokość oprocentowania
+                                            stałego</span></span><span class="tekst" id="oprocentowanie_stale"></span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="kontainer">
+                                        <div class="filler"></div><span class="naklejka">Rodzaj
+                                            wiboru</span></span><span class="tekst" id="rodzaj_wiboru"></span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="kontainer">
+                                        <div class="filler"></div><span class="naklejka">Marża</span></span><span
+                                            class="tekst" id="marza"></span>
+                                    </div>
+                                </li>
 
-                        </ul>
-                    </div>
-                    <div class="column">
-                        <ul>
-                            <li>
-                                <div class="kontainer">
-                                    <div class="filler"></div><span class="naklejka">Rodzaj
-                                        oprocentowania</span></span><span class="tekst"
-                                        id="rodzaj_oprocentowania"></span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="kontainer">
-                                    <div class="filler"></div><span class="naklejka">Wysokość oprocentowania
-                                        stałego</span></span><span class="tekst" id="oprocentowanie_stale"></span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="kontainer">
-                                    <div class="filler"></div><span class="naklejka">Rodzaj wiboru</span></span><span
-                                        class="tekst" id="rodzaj_wiboru"></span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="kontainer">
-                                    <div class="filler"></div><span class="naklejka">Marża</span></span><span
-                                        class="tekst" id="marza"></span>
-                                </div>
-                            </li>
-
-                            <li>
-                                <div class="kontainer">
-                                    <div class="filler"></div><span class="naklejka">Pozaodsetkowe koszty
-                                        kredytu</span></span><span class="tekst" id="pozaodsetkowe_koszty"></span>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-
-                </div>
-            </div>
-
-
-            <div class="block top-buffer">
-                <div class="columns">
-                    <div class="column">
-                        <ul class="list-group list-group-flush">
-                            <li>
-                                <div class="kontainer">
-                                    <div class="filler"></div><span class="naklejka">Prowizja</span><span
-                                        class="tekst" id="prowizja"></span>
-                                </div>
-                            </li>
-
-                        </ul>
-                    </div>
-                    <div class="column">
-                        <ul class="list-group list-group-flush">
-                            <li>
-                                <div class="kontainer">
-                                    <div class="filler"></div><span class="naklejka">Całkowite oprocentowanie</span><span
-                                        class="tekst" id="calkowite_oprocentowanie"></span>
-                                </div>
-                            </li>
-
-                        </ul>
+                                <li>
+                                    <div class="kontainer">
+                                        <div class="filler"></div><span class="naklejka">Pozaodsetkowe koszty
+                                            kredytu</span></span><span class="tekst" id="pozaodsetkowe_koszty"></span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="kontainer">
+                                        <div class="filler"></div><span class="naklejka">Całkowite
+                                            oprocentowanie</span><span class="tekst"
+                                            id="calkowite_oprocentowanie"></span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
 
                     </div>
-
                 </div>
             </div>
         </div>
-        <div class="container"><div class="block"></div></div>
-        <div class="container">
+        <div class="container mt-6">
+            <div class="block"></div>
+        </div>
+        <div class="container mt-6">
             <div class="block">
-                <nav class="level top-buffer">
-                    <div class="level-item has-text-centered">
-                        <div>
-                            <p class="heading">RRSO bez prowizji</p>
-                            <p class="title" id="rrso_bez_p"></p>
+                <div class="box">
+                    <nav class="level">
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">RRSO bez prowizji</p>
+                                <p class="title" id="rrso_bez_p"></p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="level-item has-text-centered">
-                        <div>
-                            <p class="heading">RRSO z prowizją</p>
-                            <p class="title" id="rrso_z_p"></p>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">RRSO z prowizją</p>
+                                <p class="title" id="rrso_z_p"></p>
+                            </div>
                         </div>
-                    </div>
-                </nav>
+                    </nav>
+                </div>
             </div>
         </div>
+
+        <div class="container mt-6">
+            <div class="block">
+                <table class="table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Nr raty</th>
+                            <th>Rata kapitałowa</th>
+                            <th>Rata odsetkowa</th>
+                            <th>Rata całkowita</th>
+
+                        </tr>
+                    </thead>
+
+                </table>
+            </div>
+        </div>
+
     </section>
 
 </div>
@@ -549,13 +560,34 @@
         d3.select("span#pozaodsetkowe_koszty").text(zloty(dane['pozaodsetkowe_koszty']));
 
         d3.select("span#prowizja").text(zloty(wynik['prowizja']));
-        d3.select("span#calkowite_oprocentowanie").text(wynik['stopa']+'%');
+        d3.select("span#calkowite_oprocentowanie").text(wynik['stopa'] + '%');
 
 
         d3.select("p#rrso_bez_p").text(wynik['rrso'] + '%');
         d3.select("p#rrso_z_p").text(wynik['rrso_prowizja'] + '%');
 
 
+        let tabela = d3.select("table")
+
+        let wiersz = tabela.append("tbody")
+            .selectAll("tr").data(wynik['raty_calkowita']['raty'])
+            .enter().append("tr")
+
+
+        wiersz.append("td")
+            .text(function (d) { return d.nr_raty })
+
+
+        wiersz.append("td")
+            .text(function (d) { return d.kapital })
+
+
+        wiersz.append("td")
+            .text(function (d) { return d.odsetki })
+
+
+        wiersz.append("td")
+            .text(function (d) { return d.rata })
 
 
     }
