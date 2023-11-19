@@ -194,6 +194,11 @@ class Wibor:
     @property
     def okres(self):
         return self._okres
+    
+
+    @property
+    def max_wibor_date(self):
+        return self.df.index.max()
 
 def is_business_day(date):
     return bool(len(pd.bdate_range(date, date)))

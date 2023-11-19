@@ -328,27 +328,21 @@
                                 </li>
                                 <li>
                                     <div class="kontainer">
-                                        <div class="filler"></div><span class="naklejka">Wysokość oprocentowania
-                                            stałego</span></span><span class="tekst" id="oprocentowanie_stale"></span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="kontainer">
                                         <div class="filler"></div><span class="naklejka">Rodzaj
                                             wiboru</span></span><span class="tekst" id="rodzaj_wiboru"></span>
                                     </div>
                                 </li>
                                 <li>
                                     <div class="kontainer">
-                                        <div class="filler"></div><span class="naklejka">Marża</span></span><span
-                                            class="tekst" id="marza"></span>
+                                        <div class="filler"></div><span class="naklejka">Wysokość oprocentowania
+                                            </span></span><span class="tekst" id="oprocentowanie_stale"></span>
                                     </div>
                                 </li>
 
                                 <li>
                                     <div class="kontainer">
-                                        <div class="filler"></div><span class="naklejka">Pozaodsetkowe koszty
-                                            kredytu</span></span><span class="tekst" id="pozaodsetkowe_koszty"></span>
+                                        <div class="filler"></div><span class="naklejka">Marża</span></span><span
+                                            class="tekst" id="marza"></span>
                                     </div>
                                 </li>
                                 <li>
@@ -358,6 +352,13 @@
                                             id="calkowite_oprocentowanie"></span>
                                     </div>
                                 </li>
+                                <li>
+                                    <div class="kontainer">
+                                        <div class="filler"></div><span class="naklejka">Pozaodsetkowe koszty
+                                            kredytu</span></span><span class="tekst" id="pozaodsetkowe_koszty"></span>
+                                    </div>
+                                </li>
+                                
                             </ul>
                         </div>
 
@@ -391,7 +392,30 @@
 
         <div class="container mt-6">
             <div class="block">
-                <table class="table is-fullwidth">
+                <div class="box">
+                    <nav class="level">
+
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">PKK</p>
+                                <p class="title" id="pkk"></p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Max PKK</p>
+                                <p class="title" id="mpkk_bez_p"></p>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container mt-6">
+            <div class="block"> 
+                <table class="table is-fullwidth is-hoverable">
                     <thead>
                         <tr>
                             <th>Nr raty</th>
@@ -545,7 +569,7 @@
         if ('oprocentowanie_stale' in dane) {
             d3.select("span#oprocentowanie_stale").text(dane['oprocentowanie_stale'] + '%')
         } else {
-            d3.select("span#oprocentowanie_stale").text('nie dotyczy')
+            d3.select("span#oprocentowanie_stale").text(wynik['wibor']+ '%')
         }
 
         if ('rodzaj_wiboru' in dane) {
@@ -565,6 +589,12 @@
 
         d3.select("p#rrso_bez_p").text(wynik['rrso'] + '%');
         d3.select("p#rrso_z_p").text(wynik['rrso_prowizja'] + '%');
+
+
+        d3.select("p#mpkk_bez_p").text(zloty(wynik['mpkk']));
+        d3.select("p#pkk").text(zloty(dane['pozaodsetkowe_koszty']));
+
+        
 
 
         let tabela = d3.select("table")

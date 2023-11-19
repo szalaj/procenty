@@ -9,6 +9,7 @@ from dateutil.relativedelta import relativedelta
 
 import utils.rrso as rs
 import utils.proc as proc
+from utils.generate_model import Wibor
 
 rrso = Blueprint('rrso', __name__)
 
@@ -22,11 +23,10 @@ def rrso_main():
 
     if request.method == 'POST':
 
-        print(request.form)
+        errors = False
 
         # data umowy
         data_umowy = request.form['data_umowy']
-        errors = False
 
         try:
             data_umowy = dt.datetime.strptime(data_umowy, '%d/%m/%Y')
@@ -106,21 +106,38 @@ def rrso_main():
         except:
             errors = True
             flash('Pozaodsetkowe koszty kredytu muszą być nie mniejsze niż 0', 'error')
+        
+        try:
+            if request.form['oprocentowanie_pozyczki'] == 'zmienne':
+                wib = Wibor(request.form['rodzaj_wiboru'])
+                max_wib = wib.max_wibor_date
+                print(f"max wib {max_wib}")
+
+                if data_umowy > max_wib:
+                    raise Exception
+                    
+        except:
+            errors = True
+            flash(f"Dane dla WIBOR {request.form['rodzaj_wiboru']} dostępne do {max_wib.strftime('%d/%m/%Y')}", 'error')
 
         if not errors:
 
-
+            wibor = None
             if 'oprocentowanie_stale' in request.form:
  
-                stopa = (oprocentowanie_stale + marza) / 100.0
+                stopa = oprocentowanie_stale + marza
             else:
                 # pobierz wibor z bazy danych
-                wibor = 2.11
-                stopa = (wibor + marza) / 100.0
+                wibor = wib.getWibor(data_umowy)
+
+                stopa = wibor + marza
 
             prowizja = udzielona_kwota - calkowita_kwota
+
+
+
             
-            rata = rs.rata_rowna(calkowita_kwota, okresy, stopa)
+            rata = rs.rata_rowna(udzielona_kwota, okresy, stopa/100.0)
             
 
             rrso = rs.RRSO(calkowita_kwota, [{'rata':rata} for i in range(int(okresy))],marza).oblicz_rrso()
@@ -130,16 +147,22 @@ def rrso_main():
 
             # to data_umowy add 3 months
             dni_splaty = [(data_umowy + relativedelta(months=i+1)).strftime('%Y-%m-%d') for i in range(int(okresy))]
-            dane_kredytu = {'start': data_umowy.strftime('%Y-%m-%d'), 'K':calkowita_kwota, 'p':oprocentowanie_stale, 'marza':marza, 'daty_splaty':dni_splaty}
+            dane_kredytu = {'start': data_umowy.strftime('%Y-%m-%d'), 'K':calkowita_kwota, 'p':stopa, 'marza':marza, 'daty_splaty':dni_splaty}
+
             kredyt = proc.create_kredyt(dane_kredytu,request.form['rodzaj_rat'])
 
-            # create new variable and put stopa and rata into json variable
+
+
+            # pozaodsetkowe koszty
+            mpkk = calkowita_kwota*0.1 + calkowita_kwota*(okresy*30.41666/365)*0.1
 
             wynik_json = {'rrso': round(rrso*100,4),
                            'rrso_prowizja': round(rrso_prowizja*100,4),
-                           'stopa': round(stopa*100,4),
-                             'rata': rata,
-                             'prowizja': prowizja,
+                           'stopa': round(stopa,4),
+                            'rata': rata,
+                            'wibor': wibor,
+                            'prowizja': prowizja,
+                            'mpkk': mpkk,
                             'raty_calkowita': kredyt}
 
             # return dictionary wynik_json to html template as json
