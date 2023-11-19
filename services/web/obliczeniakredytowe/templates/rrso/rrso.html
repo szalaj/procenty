@@ -178,7 +178,7 @@
                                 <div class="control">
                                     <div class="select is-fullwidth">
                                         <select name="rodzaj_rat">
-                                            <option value="stale" selected>stałe</option>
+                                            <option value="rowne" selected>równe</option>
                                             <option value="malejace">malejące</option>
                                         </select>
                                     </div>
@@ -412,6 +412,33 @@
             </div>
         </div>
 
+        <div class="container mt-6">
+            <div class="block">
+                <div class="box">
+                    <nav class="level">
+
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Do zwrotu - część kapitałowa</p>
+                                <p class="title" id="zwrot_kapital"></p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Do zwrotu - część odsetkowa</p>
+                                <p class="title" id="zwrot_odsetki"></p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Do zwrotu - razem</p>
+                                <p class="title" id="zwrot_razem"></p>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
 
         <div class="container mt-6">
             <div class="block"> 
@@ -419,10 +446,16 @@
                     <thead>
                         <tr>
                             <th>Nr raty</th>
+                            <th>Dzień</th>
                             <th>Rata kapitałowa</th>
                             <th>Rata odsetkowa</th>
                             <th>Rata całkowita</th>
-
+                            <th>Rata kapitałowa (prowizja)</th>
+                            <th>Rata odsetkowa (prowizja)</th>
+                            <th>Rata całkowita (prowizja)</th>
+                            <th>Do zwrotu - część kapitałowa raty</th>
+                            <th>Do zwrotu - część odsetkowa raty</th>
+                            <th>Do zwrotu</th>
                         </tr>
                     </thead>
 
@@ -541,8 +574,8 @@
         d3.select("span#kwota_udzielonego").text(zloty(dane['udzielona_kwota']))
         d3.select("span#okresy").text(dane['okresy'])
         d3.select("span#rodzaj_rat").text(function (d) {
-            if (dane['rodzaj_rat'] == 'stale') {
-                return 'stałe'
+            if (dane['rodzaj_rat'] == 'rowne') {
+                return 'równe'
             }
             else {
                 return 'malejące'
@@ -600,25 +633,125 @@
         let tabela = d3.select("table")
 
         let wiersz = tabela.append("tbody")
-            .selectAll("tr").data(wynik['raty_calkowita']['raty'])
+            .selectAll("tr").data(wynik['raty_porownanie'])
             .enter().append("tr")
 
 
         wiersz.append("td")
             .text(function (d) { return d.nr_raty })
 
-
         wiersz.append("td")
-            .text(function (d) { return d.kapital })
-
-
-        wiersz.append("td")
-            .text(function (d) { return d.odsetki })
+            .text(function (d) { return d.dzien })
 
 
         wiersz.append("td")
-            .text(function (d) { return d.rata })
+            .text(function (d) { return zloty(d.kapital) })
 
+
+        wiersz.append("td")
+            .text(function (d) { return zloty(d.odsetki) })
+
+
+        wiersz.append("td")
+            .text(function (d) { return zloty(d.rata) })
+
+        wiersz.append("td")
+            .text(function (d) { return zloty(d.kapital_prowizja) })
+
+
+        wiersz.append("td")
+            .text(function (d) { return zloty(d.odsetki_prowizja) })
+
+
+        wiersz.append("td")
+            .text(function (d) { return zloty(d.rata_prowizja) })
+
+        wiersz.append("td")
+            .text(function (d) { return zloty(d.do_zwrotu_kapital) })
+
+        wiersz.append("td")
+            .text(function (d) { return zloty(d.do_zwrotu_odsetki) })
+
+        wiersz.append("td")
+            .text(function (d) { return zloty(d.do_zwrotu) })
+
+        let wiersz_ostatni = tabela.select("tbody").append("tr").style("font-weight", "bold")
+
+        wiersz_ostatni.append("td")
+            .text('')
+
+
+
+            wiersz_ostatni.append("td")
+            .text('')
+
+                     // sum all elements 'kapital' in raty_porownanie array
+         let suma_kapitalow  = d3.sum(wynik['raty_porownanie'], d => d.kapital)       
+
+
+
+            wiersz_ostatni.append("td")
+            .text(zloty(suma_kapitalow))
+
+            let suma_odsetek  = d3.sum(wynik['raty_porownanie'], d => d.odsetki)       
+
+
+
+            wiersz_ostatni.append("td")
+            .text(zloty(suma_odsetek))
+
+            let suma_rat  = d3.sum(wynik['raty_porownanie'], d => d.rata)       
+
+
+            wiersz_ostatni.append("td")
+            .text(zloty(suma_rat))
+
+            let suma_kapitalowa_prowizja = d3.sum(wynik['raty_porownanie'], d => d.kapital_prowizja)       
+
+
+
+            wiersz_ostatni.append("td")
+            .text(zloty(suma_kapitalowa_prowizja))
+
+            let suma_odsetek_prowizja  = d3.sum(wynik['raty_porownanie'], d => d.odsetki_prowizja)       
+
+
+            wiersz_ostatni.append("td")
+            .text(zloty(suma_odsetek_prowizja))
+
+            let suma_rat_prowizja  = d3.sum(wynik['raty_porownanie'], d => d.rata_prowizja)       
+
+            wiersz_ostatni.append("td")
+            .text(zloty(suma_rat_prowizja))    
+
+
+            let suma_do_zwrotu_kapital = d3.sum(wynik['raty_porownanie'], d => d.do_zwrotu_kapital)       
+
+
+            wiersz_ostatni.append("td")
+            .text(zloty(suma_do_zwrotu_kapital))
+
+            let suma_do_zwrotu_odsetki = d3.sum(wynik['raty_porownanie'], d => d.do_zwrotu_odsetki)       
+
+
+            wiersz_ostatni.append("td")
+            .text(zloty(suma_do_zwrotu_odsetki))
+
+
+            let suma_do_zwrotu = d3.sum(wynik['raty_porownanie'], d => d.do_zwrotu)       
+  
+
+            wiersz_ostatni.append("td")
+            .text(zloty(suma_do_zwrotu))
+
+        // // for column do_zwrotu make background color green
+        // d3.selectAll("td:nth-child(6)").style("background-color", "rgb(220,220,220)");
+        // d3.selectAll("td:nth-child(7)").style("background-color", "rgb(220,220,220)");
+
+        d3.select("p#zwrot_kapital").text(zloty(suma_do_zwrotu_kapital));
+        d3.select("p#zwrot_odsetki").text(zloty(suma_do_zwrotu_odsetki));
+        d3.select("p#zwrot_razem").text(zloty(suma_do_zwrotu));
+        
 
     }
 

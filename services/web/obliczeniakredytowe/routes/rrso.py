@@ -136,34 +136,52 @@ def rrso_main():
 
 
 
-            
-            rata = rs.rata_rowna(udzielona_kwota, okresy, stopa/100.0)
-            
-
-            rrso = rs.RRSO(calkowita_kwota, [{'rata':rata} for i in range(int(okresy))],marza).oblicz_rrso()
-
-            rrso_prowizja = rs.RRSO(calkowita_kwota-prowizja, [{'rata':rata} for i in range(int(okresy))],marza).oblicz_rrso()
+            rata_calkowita_kwota = rs.rata_rowna(calkowita_kwota, okresy, stopa/100.0)
+            rata_udzielona_kwota = rs.rata_rowna(udzielona_kwota, okresy, stopa/100.0)
             
 
-            # to data_umowy add 3 months
+            rrso = rs.RRSO(calkowita_kwota, [{'rata':rata_calkowita_kwota} for i in range(int(okresy))], stopa).oblicz_rrso()
+            rrso_prowizja = rs.RRSO(calkowita_kwota, [{'rata':rata_udzielona_kwota} for i in range(int(okresy))], stopa).oblicz_rrso()
+            
+
+            # generuj raty
             dni_splaty = [(data_umowy + relativedelta(months=i+1)).strftime('%Y-%m-%d') for i in range(int(okresy))]
+
             dane_kredytu = {'start': data_umowy.strftime('%Y-%m-%d'), 'K':calkowita_kwota, 'p':stopa, 'marza':marza, 'daty_splaty':dni_splaty}
+            kredyt = proc.create_kredyt(dane_kredytu, request.form['rodzaj_rat'])
 
-            kredyt = proc.create_kredyt(dane_kredytu,request.form['rodzaj_rat'])
+            dane_kredytu_prowizja = {'start': data_umowy.strftime('%Y-%m-%d'), 'K':udzielona_kwota, 'p':stopa, 'marza':marza, 'daty_splaty':dni_splaty}
+            kredyt_prowizja = proc.create_kredyt(dane_kredytu_prowizja, request.form['rodzaj_rat'])
 
+            raty_porownanie = []
+            for i,r in enumerate(kredyt['raty']):
+                rr = {}
+                rr['nr_raty'] = r['nr_raty']
+                rr['dzien'] = r['dzien']
+                rr['kapital'] = r['kapital']
+                rr['odsetki'] = r['odsetki']
+                rr['rata'] = r['rata']
+                rr['kapital_prowizja'] = kredyt_prowizja['raty'][i]['kapital']
+                rr['odsetki_prowizja'] = kredyt_prowizja['raty'][i]['odsetki']
+                rr['rata_prowizja'] = kredyt_prowizja['raty'][i]['rata']
 
+                rr['do_zwrotu_kapital'] = str(round(float(kredyt_prowizja['raty'][i]['kapital']) - float(r['kapital']),2))
+                rr['do_zwrotu_odsetki'] = str(round(float(kredyt_prowizja['raty'][i]['odsetki']) - float(r['odsetki']),2))
+                rr['do_zwrotu'] = str(round(float(kredyt_prowizja['raty'][i]['rata']) - float(r['rata']),2))
+                raty_porownanie.append(rr)
 
             # pozaodsetkowe koszty
             mpkk = calkowita_kwota*0.1 + calkowita_kwota*(okresy*30.41666/365)*0.1
 
             wynik_json = {'rrso': round(rrso*100,4),
-                           'rrso_prowizja': round(rrso_prowizja*100,4),
-                           'stopa': round(stopa,4),
-                            'rata': rata,
-                            'wibor': wibor,
-                            'prowizja': prowizja,
-                            'mpkk': mpkk,
-                            'raty_calkowita': kredyt}
+                          'rrso_prowizja': round(rrso_prowizja*100,4),
+                          'stopa': round(stopa,4),
+                          'wibor': wibor,
+                          'prowizja': prowizja,
+                          'mpkk': mpkk,
+                          'raty_porownanie': raty_porownanie,                          
+                          'raty': kredyt,
+                          'raty_prowizja': kredyt_prowizja}
 
             # return dictionary wynik_json to html template as json
 

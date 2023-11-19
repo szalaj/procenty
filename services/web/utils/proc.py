@@ -85,7 +85,7 @@ class Kredyt:
 
     def oblicz_rate(self) -> Decimal:  
 
-        if self.rodzajRat=='stale':
+        if self.rodzajRat=='rowne':
             k = 12
             do_splaty = self.K
             if self.p>0:
