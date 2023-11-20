@@ -6,15 +6,14 @@ import decimal
 from dataclasses import dataclass
 from scipy.interpolate import interp1d
 import numpy as np
-from obliczeniakredytowe.models import User, Dom, Zapytanie,  Kredyt
-from obliczeniakredytowe.models import Wibor as WiborModel
-from obliczeniakredytowe import db
+
+
 from sqlalchemy import text as sql_text
 
 @dataclass
 class WiborInter:
     """interpolowanie wibour dla wartosci, ktorych jeszce nie znamy."""
-
+    db: object
     wibor_typ: str
     data_start: dt.datetime
     okresy: int
@@ -32,7 +31,7 @@ class WiborInter:
         # self.df = pd.read_csv('obliczeniakredytowe/static/{}'.format(file_name), usecols=[0,1], index_col=0)
         # self.df.index = pd.to_datetime(self.df.index, format='%Y-%m-%d')    
 
-        self.df = pd.read_sql(sql_text(f"SELECT data, wartosc FROM wibor WHERE rodzaj='{wib_rodzaj}'"), con=db.engine.connect(), index_col='data')
+        self.df = pd.read_sql(sql_text(f"SELECT data, wartosc FROM wibor WHERE rodzaj='{wib_rodzaj}'"), con=self.db.engine.connect(), index_col='data')
 
         self.df.index = pd.to_datetime(self.df.index, format='%Y-%m-%d')
 
@@ -146,7 +145,7 @@ class WiborInter:
 
 class Wibor:
 
-    def __init__(self, rodzajWiboru: str):
+    def __init__(self, rodzajWiboru: str, db):
 
         file_name=''
         if rodzajWiboru=='3M':

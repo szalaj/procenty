@@ -109,7 +109,7 @@ def rrso_main():
         
         try:
             if request.form['oprocentowanie_pozyczki'] == 'zmienne':
-                wib = Wibor(request.form['rodzaj_wiboru'])
+                wib = Wibor(request.form['rodzaj_wiboru'], db)
                 max_wib = wib.max_wibor_date
                 print(f"max wib {max_wib}")
 
