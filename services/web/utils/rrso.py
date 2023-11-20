@@ -26,8 +26,9 @@ class RRSO:
     def oblicz_rrso(self):
         rrso = self.rrso_0
         l_granica = 0
-        r_granica = 5
+        r_granica = 10
 
+        
         rs = self.right_side(rrso)
 
         i = 0
@@ -44,7 +45,7 @@ class RRSO:
             
             rs = self.right_side(rrso)
             i+=1
-            if i > 100:
+            if i > 1000:
                 raise Exception('Za dużo iteracji')
 
         print(f'iteracje: {i}')

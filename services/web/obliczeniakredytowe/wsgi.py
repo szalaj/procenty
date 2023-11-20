@@ -2,7 +2,13 @@
 from obliczeniakredytowe import init_app
 import os
 print(__name__)
-os.environ['APPDB_PATH'] = "/home/szalaj/procenty/services/db/" 
+
+# get current path
+current_path = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.abspath(os.path.join(current_path, '../../db'))
+os.environ['APPDB_PATH'] = db_path 
+#os.environ['APPDB_PATH'] = "/home/szalaj/procenty/services/db/" 
+
 app = init_app()
 
 if __name__ == "__main__":

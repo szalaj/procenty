@@ -289,7 +289,7 @@ def obliczkredyt(kredyt_id=None):
 
     prognoza = [('01/10/2029', 3.0), ('01/10/2040', 7.0), ('01/10/2044', 3.0), ('01/10/2160', 3.0)]
 
-    w = ut.WiborInter(rodzaj_wiboru, dt.datetime.strptime(data_start, '%Y-%m-%d'), okresy, liczba_wakacji, prognoza)
+    w = ut.WiborInter(db,rodzaj_wiboru, dt.datetime.strptime(data_start, '%Y-%m-%d'), okresy, liczba_wakacji, prognoza)
 
     start_date = dt.datetime.strptime(data_start, '%Y-%m-%d')
 
@@ -322,7 +322,7 @@ def obliczkredyt(kredyt_id=None):
 
     prognoza_inflacja = [('01/10/2020', 100.01),('01/10/2029', 100.2), ('01/10/2044', 100.2), ('01/10/2160', 100.2)]
 
-    wynik = proc.create_kredyt(dane_kredytu, 'stale')
+    wynik = proc.create_kredyt(dane_kredytu, 'rowne')
 
     dzien_ostatniej_raty = max([dt.datetime.strptime(d['dzien'],'%Y-%m-%d') for d in wynik['raty']])
 
@@ -484,7 +484,7 @@ def kiedywibor():
         start_date = dt.datetime.strptime(dzien, '%d/%m/%Y')
         okresy = 10
         miesiace = []
-        wibor = Wibor('3M')
+        wibor = Wibor(db,'3M')
         for i in range(okresy):
             dzien = start_date + relativedelta(months=3*i)
             dzienwibor = dzien - BDay(2)
