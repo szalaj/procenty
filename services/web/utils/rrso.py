@@ -1,6 +1,7 @@
 
 from dataclasses import dataclass
 import datetime as dt
+from dateutil.relativedelta import relativedelta
 
 @dataclass
 class RRSO:
@@ -98,4 +99,46 @@ def sprawdz_rate(K,k,N,p,R):
         K -= R-K*(p/k)
     return K
 
+def liczba_dni_w_roku(rok):
+    if rok % 4 == 0:
+        dni_rok = 366
+    else:
+        dni_rok = 365
+    
+    return dni_rok
 
+def mpkk(K, N, data_start):
+    # 28.12.2020 - 04.01.2021
+    # 29,30,31,1,2,3,4
+    # 3 + 4 = 7
+
+
+    data_koniec = data_start + relativedelta(months=N)
+
+    # get year out of data_start
+    rok_start = data_start.year
+    rok_koniec = data_koniec.year
+
+    if rok_start == rok_koniec:
+        dni_rok = liczba_dni_w_roku(rok_start)
+        dni = (data_koniec - data_start).days
+        print(f"ile dni {dni}")
+        mpkk = K * 0.1 + K * dni/dni_rok * 0.1
+    else:
+        wspolczynnik = 0
+        for rok in range(rok_start, rok_koniec+1):
+            # sprawdz czy rok startowy jest przestepny
+            if rok == rok_start:
+                dni_rok = liczba_dni_w_roku(rok)
+                dni = (dt.datetime(rok,12,31) - data_start).days
+                wspolczynnik = dni/dni_rok
+            elif rok == rok_koniec:
+                dni_rok = liczba_dni_w_roku(rok)
+                dni = (data_koniec - dt.datetime(rok-1,12,31)).days
+                wspolczynnik += dni/dni_rok
+            else:
+                wspolczynnik += 1
+
+        mpkk = K * 0.1 + K * wspolczynnik * 0.1
+
+    return mpkk

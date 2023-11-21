@@ -171,7 +171,11 @@ def rrso_main():
                 raty_porownanie.append(rr)
 
             # pozaodsetkowe koszty
-            mpkk = calkowita_kwota*0.1 + calkowita_kwota*(okresy*30.41666/365)*0.1
+            #mpkk = calkowita_kwota*0.1 + calkowita_kwota*(okresy*30.41666/365)*0.1
+
+            mpkk = rs.mpkk(calkowita_kwota, okresy, data_umowy)
+
+            #print(f"mpkk: {mpkk}, mpkk2: {mpkk2}")
 
             wynik_json = {'rrso': round(rrso*100,4),
                           'rrso_prowizja': round(rrso_prowizja*100,4),
