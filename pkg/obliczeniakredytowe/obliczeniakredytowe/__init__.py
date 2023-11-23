@@ -1,3 +1,6 @@
+"""ObliczeniaKredytowe package!"""
+
+__version__ = "0.1"
 
 from flask import Flask, redirect, url_for
 from flask_login import LoginManager
