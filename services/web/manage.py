@@ -1,6 +1,6 @@
 from flask.cli import FlaskGroup
 import os
-from obliczeniakredytowe import init_app
+import obliczeniakredytowe 
 
 
 if 0:
@@ -13,7 +13,7 @@ else:
     print(db_path)
     os.environ['APPDB_PATH'] = db_path 
 
-app = init_app()
+app = obliczeniakredytowe.init_app()
 
 cli = FlaskGroup(app)
 

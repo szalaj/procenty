@@ -5,7 +5,7 @@ print(__name__)
 
 # get current path
 current_path = os.path.dirname(os.path.abspath(__file__))
-db_path = os.path.abspath(os.path.join(current_path, '../../db'))
+db_path = os.path.abspath(os.path.join(current_path, '../db'))
 os.environ['APPDB_PATH'] = db_path 
 #os.environ['APPDB_PATH'] = "/home/szalaj/procenty/services/db/" 
 
