@@ -9,6 +9,7 @@ import csv
 import pandas as pd
 import json
 import datetime as dt
+from loguru import logger
 
 from werkzeug.exceptions import HTTPException
 
@@ -27,6 +28,7 @@ def login():
         if u:
             if u.check_password(haslo):
                 login_user(u)
+                logger.info(f"Użytkownik {uzytkownik} zalogowany")
                 return redirect(url_for('dom.start'))
 
     return render_template('admin/login.html')

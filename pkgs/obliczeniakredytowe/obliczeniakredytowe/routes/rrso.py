@@ -10,6 +10,7 @@ from dateutil.relativedelta import relativedelta
 import utils.rrso as rs
 import utils.proc as proc
 from utils.generate_model import Wibor
+from loguru import logger
 
 rrso = Blueprint('rrso', __name__)
 
@@ -188,8 +189,9 @@ def rrso_main():
                           'raty_prowizja': kredyt_prowizja}
 
             # return dictionary wynik_json to html template as json
-
-
+    if wynik_json:
+        uzytkownik = current_user
+        logger.info(f"{uzytkownik}, {wynik_json['rrso']}")
     return render_template('rrso/rrso.html', wynik_json=json.dumps(wynik_json))
 
 
