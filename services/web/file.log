@@ -5,3 +5,5 @@
 2023-11-25 12:40:28.638 CET | INFO     | Line  194 (rrso.py): <1 - gosc1>, 2.0184
 2023-11-25 12:47:32.397 CET | INFO     | Line  194 (rrso.py): <1 - gosc1>, 5.1162
 2023-11-25 12:48:47.395 CET | INFO     | Line  194 (rrso.py): <1 - gosc1>, 8.3
+2023-11-25 13:11:39.307 CET | INFO     | Line   31 (admin.py): Użytkownik user1 zalogowany
+2023-11-25 13:11:55.135 CET | INFO     | Line  194 (rrso.py): <3 - user1>, 2.0184
