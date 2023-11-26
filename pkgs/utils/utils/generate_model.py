@@ -154,6 +154,10 @@ class Wibor:
         elif rodzajWiboru=='6M':
             self._okres = 6
             wib_rodzaj = 'wibor6m'
+        elif rodzajWiboru=='stopa_ref':
+            self._okres = 1
+            wib_rodzaj = 'stopa_ref'
+   
 
         self.df = pd.read_sql(sql_text(f"SELECT data, wartosc FROM wibor WHERE rodzaj='{wib_rodzaj}'"), con=db.engine.connect(), index_col='data')
 

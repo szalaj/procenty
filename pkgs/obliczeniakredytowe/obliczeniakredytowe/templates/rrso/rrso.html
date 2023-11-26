@@ -10,7 +10,6 @@
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
 <title>Kredyty</title>
-
 <style>
     body {
         display: flex;
@@ -220,6 +219,7 @@
                                         <select name="rodzaj_wiboru" disabled>
                                             <option value="3M" selected>Wibor 3M</option>
                                             <option value="6M">Wibor 6M</option>
+                                            <option value="stopa_ref">Stopa ref. NBP</option>
                                         </select>
                                     </div>
                                 </div>
@@ -328,8 +328,8 @@
                                 </li>
                                 <li>
                                     <div class="kontainer">
-                                        <div class="filler"></div><span class="naklejka">Rodzaj
-                                            wiboru</span></span><span class="tekst" id="rodzaj_wiboru"></span>
+                                        <div class="filler"></div><span class="naklejka">Wskaźnik
+                                            </span></span><span class="tekst" id="rodzaj_wiboru"></span>
                                     </div>
                                 </li>
                                 <li>
@@ -606,7 +606,17 @@
         }
 
         if ('rodzaj_wiboru' in dane) {
-            d3.select("span#rodzaj_wiboru").text('WIBOR ' + dane['rodzaj_wiboru'])
+            // create 3 cases
+            if (dane['rodzaj_wiboru'] == 'stopa_ref') {
+                d3.select("span#rodzaj_wiboru").text('Stopa referencyjna NBP')
+            }
+            else if (dane['rodzaj_wiboru'] == '3M') {
+                d3.select("span#rodzaj_wiboru").text('WIBOR ' + dane['rodzaj_wiboru'])
+            }
+            else {
+                d3.select("span#rodzaj_wiboru").text('WIBOR ' + dane['rodzaj_wiboru'])
+            }
+       
         }
         else {
             d3.select("span#rodzaj_wiboru").text('nie dotyczy')

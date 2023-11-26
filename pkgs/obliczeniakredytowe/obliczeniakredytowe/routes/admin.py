@@ -10,6 +10,8 @@ import pandas as pd
 import json
 import datetime as dt
 from loguru import logger
+from dateutil.relativedelta import relativedelta
+import random
 
 from werkzeug.exceptions import HTTPException
 
@@ -125,3 +127,24 @@ def page_not_found(e):
     print('404')
     # note that we set the 404 status explicitly
     return render_template('admin/500_generic.html'), 404
+
+@admin_bp.route('/logger')
+@login_required
+def logger_vis():
+    # generate 100 points of data. x is time, y is random number
+
+    df = pd.read_sql(sql_text(f"SELECT data, wartosc FROM wibor WHERE rodzaj='stopa_ref'"), con=db.engine.connect(), index_col='data')
+    df.index = pd.to_datetime(df.index, format='%Y-%m-%d')
+    df['real'] = 'Y'
+    df.sort_index(inplace=True)
+
+    # from df create dictionary
+    points = [{'dzien':dt.datetime.strftime(d, '%Y-%m-%d'), 'y':y} for d,y in zip(df.index, df['wartosc'])]
+
+    # dzien = [(dt.datetime.now() + relativedelta(months=i+1)).strftime('%Y-%m-%d') for i in range(100)]
+    # y = [100*random.random() for i in range(100)]
+
+    # points = [{'dzien':dzien, 'y':y } for dzien, y in zip(dzien,y)]
+
+
+    return render_template('admin/logger.html', points=json.dumps(points))
