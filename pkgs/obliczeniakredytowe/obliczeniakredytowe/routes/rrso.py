@@ -119,7 +119,14 @@ def rrso_main():
                     
         except:
             errors = True
-            flash(f"Dane dla WIBOR {request.form['rodzaj_wiboru']} dostępne do {max_wib.strftime('%d/%m/%Y')}", 'error')
+            typ_wsk = request.form['rodzaj_wiboru']
+            if typ_wsk == '3M':
+                zaw = 'WIBOR 3M'
+            elif typ_wsk == '6M':
+                zaw = 'WIBOR 6M'
+            elif typ_wsk == 'stopa_ref':
+                zaw = 'Stopa referencyjna NBP'
+            flash(f"Dane dla wskaźnika {zaw} są dostępne do {max_wib.strftime('%d/%m/%Y')}", 'error')
 
         if not errors:
 

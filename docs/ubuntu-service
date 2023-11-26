@@ -23,7 +23,7 @@ After=network.target
 User=ubuntu
 Group=www-data
 WorkingDirectory=/home/ubuntu/procenty/services/web
-ExecStart=/home/ubuntu/venv/bin/gunicorn -b 0.0.0.0:8000 manage:app
+ExecStart=/home/ubuntu/env/bin/gunicorn -b 0.0.0.0:8000 manage:app
 Restart=always
 [Install]
 WantedBy=multi-user.target
@@ -36,7 +36,6 @@ IV.
 sudo systemctl daemon-reload
 
 sudo systemctl start flaskapp
-
 sudo systemctl enable flaskapp
 
 

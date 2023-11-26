@@ -54,9 +54,12 @@ def wibor():
 
     update_wibor('wibor6m', 'https://stooq.pl/q/d/l/?s=plopln6m&i=d')
 
+    update_wibor('stopa_ref', 'https://stooq.pl/q/d/l/?s=inrtpl.m&i=d')
+
+
 
     
-    return redirect(url_for('dom.pokaz_kredyty'))
+    return redirect(url_for('rrso.rrso_main'))
 
 
 

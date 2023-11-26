@@ -7,3 +7,13 @@
 2023-11-25 12:48:47.395 CET | INFO     | Line  194 (rrso.py): <1 - gosc1>, 8.3
 2023-11-25 13:11:39.307 CET | INFO     | Line   31 (admin.py): Użytkownik user1 zalogowany
 2023-11-25 13:11:55.135 CET | INFO     | Line  194 (rrso.py): <3 - user1>, 2.0184
+2023-11-25 23:38:51.803 CET | INFO     | Line   31 (admin.py): Użytkownik user1 zalogowany
+2023-11-26 08:40:27.672 CET | INFO     | Line   31 (admin.py): Użytkownik user1 zalogowany
+2023-11-26 22:05:24.596 CET | INFO     | Line  194 (rrso.py): <3 - user1>, 9.1094
+2023-11-26 22:05:52.089 CET | INFO     | Line  194 (rrso.py): <3 - user1>, 8.0314
+2023-11-26 22:09:40.794 CET | INFO     | Line  194 (rrso.py): <3 - user1>, 9.1096
+2023-11-26 22:09:55.860 CET | INFO     | Line  194 (rrso.py): <3 - user1>, 9.3264
+2023-11-26 22:10:02.510 CET | INFO     | Line  194 (rrso.py): <3 - user1>, 9.2722
+2023-11-26 22:10:11.972 CET | INFO     | Line  194 (rrso.py): <3 - user1>, 9.1096
+2023-11-26 22:10:24.877 CET | INFO     | Line  194 (rrso.py): <3 - user1>, 10.4713
+2023-11-26 22:10:37.773 CET | INFO     | Line  194 (rrso.py): <3 - user1>, 9.1096
