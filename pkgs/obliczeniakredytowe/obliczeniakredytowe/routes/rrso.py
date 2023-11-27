@@ -157,12 +157,12 @@ def rrso_main():
             dane_kredytu = {'start': data_umowy.strftime('%Y-%m-%d'), 'K':calkowita_kwota, 'p':stopa, 'marza':marza, 'daty_splaty':dni_splaty}
             kredyt = proc.create_kredyt(dane_kredytu, request.form['rodzaj_rat'])
 
-            dane_kredytu_prowizja = {'start': data_umowy.strftime('%Y-%m-%d'), 'K':calkowita_kwota, 'p':stopa, 'marza':marza, 'daty_splaty':dni_splaty}
+            dane_kredytu_prowizja = {'start': data_umowy.strftime('%Y-%m-%d'), 'K':udzielona_kwota, 'p':stopa, 'marza':marza, 'daty_splaty':dni_splaty}
             kredyt_prowizja = proc.create_kredyt(dane_kredytu_prowizja, request.form['rodzaj_rat'])
 
             # dodanie do pirwszej raty prowizji
-            kredyt_prowizja['raty'][0]['rata'] = str(float(kredyt_prowizja['raty'][0]['rata']) + prowizja)
-            kredyt_prowizja['raty'][0]['odsetki'] = str(float(kredyt_prowizja['raty'][0]['odsetki']) + prowizja)
+            kredyt['raty'][0]['rata'] = str(float(kredyt['raty'][0]['rata']) + prowizja)
+            kredyt['raty'][0]['kapital'] = str(float(kredyt['raty'][0]['kapital']) + prowizja)
 
             raty_porownanie = []
             for i,r in enumerate(kredyt['raty']):
