@@ -217,6 +217,7 @@
                                 <div class="control">
                                     <div class="select is-fullwidth">
                                         <select name="rodzaj_wiboru" disabled>
+                                            <option value="1M">Wibor 1M</option>
                                             <option value="3M" selected>Wibor 3M</option>
                                             <option value="6M">Wibor 6M</option>
                                             <option value="stopa_ref">Stopa ref. NBP</option>
@@ -375,13 +376,13 @@
                     <nav class="level">
                         <div class="level-item has-text-centered">
                             <div>
-                                <p class="heading">RRSO bez prowizji</p>
+                                <p class="heading">RRSO (Całkowita kwota kredytu tj. kwota wypłacona kredytobiorcy)</p>
                                 <p class="title" id="rrso_bez_p"></p>
                             </div>
                         </div>
                         <div class="level-item has-text-centered">
                             <div>
-                                <p class="heading">RRSO z prowizją</p>
+                                <p class="heading">RRSO (Kwota udzielonego kredytu tj. wypłacona i pobrane koszty kredytu)</p>
                                 <p class="title" id="rrso_z_p"></p>
                             </div>
                         </div>
@@ -397,13 +398,13 @@
 
                         <div class="level-item has-text-centered">
                             <div>
-                                <p class="heading">PKK</p>
+                                <p class="heading">Pozaodsetkowe Koszty Kredytu</p>
                                 <p class="title" id="pkk"></p>
                             </div>
                         </div>
                         <div class="level-item has-text-centered">
                             <div>
-                                <p class="heading">Max PKK</p>
+                                <p class="heading">Maksymalne Pozaodsetkowe Koszty Kredytu</p>
                                 <p class="title" id="mpkk_bez_p"></p>
                             </div>
                         </div>
@@ -419,13 +420,13 @@
 
                         <div class="level-item has-text-centered">
                             <div>
-                                <p class="heading">Do zwrotu - część kapitałowa</p>
+                                <p class="heading">Zawyżone saldo kredytu (tj. podstawy oprocentowania kredytu)</p>
                                 <p class="title" id="zwrot_kapital"></p>
                             </div>
                         </div>
                         <div class="level-item has-text-centered">
                             <div>
-                                <p class="heading">Do zwrotu - część odsetkowa</p>
+                                <p class="heading">Nielegalnie pobrane odsetki</p>
                                 <p class="title" id="zwrot_odsetki"></p>
                             </div>
                         </div>
@@ -445,17 +446,23 @@
                 <table class="table is-fullwidth is-hoverable">
                     <thead>
                         <tr>
+                            <th></th>
+                            <th></th>
+                            <th colspan="3" style='text-align:center;border-left: 1px solid lightgray;'>KREDYT ROZLICZANY OD CAŁKOWITEJ KWOTY KREDYTU</th>
+                            <th colspan="3" style='text-align:center;border-left: 1px solid lightgray;'>KREDYT ROZLICZANY OD UDZIELONEJ KWOTY KREDYTU</th>
+                            <th colspan="2" style='text-align:center;border-left: 1px solid lightgray; '>NIEPRAWIDŁOWOŚCI W ROZLICZANIU KREDYTU</th>
+                        </tr>
+                        <tr>
                             <th>Nr raty</th>
                             <th>Dzień</th>
-                            <th>Rata kapitałowa</th>
+                            <th style='border-left: 1px solid lightgray;'>Rata kapitałowa</th>
                             <th>Rata odsetkowa</th>
                             <th>Rata całkowita</th>
-                            <th>Rata kapitałowa (prowizja)</th>
-                            <th>Rata odsetkowa (prowizja)</th>
-                            <th>Rata całkowita (prowizja)</th>
-                            <th>Do zwrotu - część kapitałowa raty</th>
-                            <th>Do zwrotu - część odsetkowa raty</th>
-                            <th>Do zwrotu</th>
+                            <th style='border-left: 1px solid lightgray;'>Rata kapitałowa</th>
+                            <th>Rata odsetkowa</th>
+                            <th>Rata całkowita</th>
+                            <th style='border-left: 1px solid lightgray;'>Zawyżone saldo kapitału</th>
+                            <th>Nielegalnie pobrane odsetki</th>
                         </tr>
                     </thead>
 
@@ -610,9 +617,6 @@
             if (dane['rodzaj_wiboru'] == 'stopa_ref') {
                 d3.select("span#rodzaj_wiboru").text('Stopa referencyjna NBP')
             }
-            else if (dane['rodzaj_wiboru'] == '3M') {
-                d3.select("span#rodzaj_wiboru").text('WIBOR ' + dane['rodzaj_wiboru'])
-            }
             else {
                 d3.select("span#rodzaj_wiboru").text('WIBOR ' + dane['rodzaj_wiboru'])
             }
@@ -656,6 +660,7 @@
 
         wiersz.append("td")
             .text(function (d) { return zloty(d.kapital) })
+            .style('border-left', '1px solid lightgray');
 
 
         wiersz.append("td")
@@ -667,6 +672,7 @@
 
         wiersz.append("td")
             .text(function (d) { return zloty(d.kapital_prowizja) })
+            .style('border-left', '1px solid lightgray');
 
 
         wiersz.append("td")
@@ -678,12 +684,11 @@
 
         wiersz.append("td")
             .text(function (d) { return zloty(d.do_zwrotu_kapital) })
-
+            .style('border-left', '1px solid lightgray');
         wiersz.append("td")
             .text(function (d) { return zloty(d.do_zwrotu_odsetki) })
 
-        wiersz.append("td")
-            .text(function (d) { return zloty(d.do_zwrotu) })
+
 
         let wiersz_ostatni = tabela.select("tbody").append("tr").style("font-weight", "bold")
 
@@ -702,6 +707,7 @@
 
             wiersz_ostatni.append("td")
             .text(zloty(suma_kapitalow))
+            .style('border-left', '1px solid lightgray');
 
             let suma_odsetek  = d3.sum(wynik['raty_porownanie'], d => d.odsetki)       
 
@@ -722,6 +728,7 @@
 
             wiersz_ostatni.append("td")
             .text(zloty(suma_kapitalowa_prowizja))
+            .style('border-left', '1px solid lightgray');
 
             let suma_odsetek_prowizja  = d3.sum(wynik['raty_porownanie'], d => d.odsetki_prowizja)       
 
@@ -740,6 +747,7 @@
 
             wiersz_ostatni.append("td")
             .text(zloty(suma_do_zwrotu_kapital))
+            .style('border-left', '1px solid lightgray');
 
             let suma_do_zwrotu_odsetki = d3.sum(wynik['raty_porownanie'], d => d.do_zwrotu_odsetki)       
 
@@ -751,8 +759,6 @@
             let suma_do_zwrotu = d3.sum(wynik['raty_porownanie'], d => d.do_zwrotu)       
   
 
-            wiersz_ostatni.append("td")
-            .text(zloty(suma_do_zwrotu))
 
         // // for column do_zwrotu make background color green
         // d3.selectAll("td:nth-child(6)").style("background-color", "rgb(220,220,220)");

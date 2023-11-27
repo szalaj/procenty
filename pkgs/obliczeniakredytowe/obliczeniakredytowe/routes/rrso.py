@@ -124,6 +124,8 @@ def rrso_main():
                 zaw = 'WIBOR 3M'
             elif typ_wsk == '6M':
                 zaw = 'WIBOR 6M'
+            elif typ_wsk == '1M':
+                zaw = 'WIBOR 1M'
             elif typ_wsk == 'stopa_ref':
                 zaw = 'Stopa referencyjna NBP'
             flash(f"Dane dla wskaźnika {zaw} są dostępne do {max_wib.strftime('%d/%m/%Y')}", 'error')
@@ -148,9 +150,6 @@ def rrso_main():
             rata_udzielona_kwota = rs.rata_rowna(udzielona_kwota, okresy, stopa/100.0)
             
 
-            rrso = rs.RRSO(calkowita_kwota, [{'rata':rata_calkowita_kwota} for i in range(int(okresy))], stopa).oblicz_rrso()
-            rrso_prowizja = rs.RRSO(calkowita_kwota, [{'rata':rata_udzielona_kwota} for i in range(int(okresy))], stopa).oblicz_rrso()
-            
 
             # generuj raty
             dni_splaty = [(data_umowy + relativedelta(months=i+1)).strftime('%Y-%m-%d') for i in range(int(okresy))]
@@ -158,28 +157,45 @@ def rrso_main():
             dane_kredytu = {'start': data_umowy.strftime('%Y-%m-%d'), 'K':calkowita_kwota, 'p':stopa, 'marza':marza, 'daty_splaty':dni_splaty}
             kredyt = proc.create_kredyt(dane_kredytu, request.form['rodzaj_rat'])
 
-            dane_kredytu_prowizja = {'start': data_umowy.strftime('%Y-%m-%d'), 'K':udzielona_kwota, 'p':stopa, 'marza':marza, 'daty_splaty':dni_splaty}
+            dane_kredytu_prowizja = {'start': data_umowy.strftime('%Y-%m-%d'), 'K':calkowita_kwota, 'p':stopa, 'marza':marza, 'daty_splaty':dni_splaty}
             kredyt_prowizja = proc.create_kredyt(dane_kredytu_prowizja, request.form['rodzaj_rat'])
+
+            # dodanie do pirwszej raty prowizji
+            kredyt_prowizja['raty'][0]['rata'] = str(float(kredyt_prowizja['raty'][0]['rata']) + prowizja)
+            kredyt_prowizja['raty'][0]['odsetki'] = str(float(kredyt_prowizja['raty'][0]['odsetki']) + prowizja)
 
             raty_porownanie = []
             for i,r in enumerate(kredyt['raty']):
                 rr = {}
+                
                 rr['nr_raty'] = r['nr_raty']
                 rr['dzien'] = r['dzien']
                 rr['kapital'] = r['kapital']
                 rr['odsetki'] = r['odsetki']
+    
+                   
                 rr['rata'] = r['rata']
                 rr['kapital_prowizja'] = kredyt_prowizja['raty'][i]['kapital']
+
                 rr['odsetki_prowizja'] = kredyt_prowizja['raty'][i]['odsetki']
                 rr['rata_prowizja'] = kredyt_prowizja['raty'][i]['rata']
+                                            
+             
 
                 rr['do_zwrotu_kapital'] = str(round(float(kredyt_prowizja['raty'][i]['kapital']) - float(r['kapital']),2))
-                rr['do_zwrotu_odsetki'] = str(round(float(kredyt_prowizja['raty'][i]['odsetki']) - float(r['odsetki']),2))
-                rr['do_zwrotu'] = str(round(float(kredyt_prowizja['raty'][i]['rata']) - float(r['rata']),2))
+                rr['do_zwrotu_odsetki'] = str(round(float(rr['odsetki_prowizja']) - float(r['odsetki']),2))
+                rr['do_zwrotu'] = str(round(float(rr['rata_prowizja']) - float(r['rata']),2))
                 raty_porownanie.append(rr)
 
             # pozaodsetkowe koszty
             #mpkk = calkowita_kwota*0.1 + calkowita_kwota*(okresy*30.41666/365)*0.1
+
+            # rrso2 = rs.RRSO(calkowita_kwota, [{'rata':rata_calkowita_kwota} for i in range(int(okresy))], stopa).oblicz_rrso()
+            # rrso_prowizja2 = rs.RRSO(calkowita_kwota, [{'rata':rata_udzielona_kwota} for i in range(int(okresy))], stopa).oblicz_rrso()
+            
+            rrso = rs.RRSO(calkowita_kwota, kredyt['raty'], stopa).oblicz_rrso()
+            rrso_prowizja = rs.RRSO(calkowita_kwota, kredyt_prowizja['raty'], stopa).oblicz_rrso()
+            
 
             mpkk = rs.mpkk(calkowita_kwota, okresy, data_umowy)
 

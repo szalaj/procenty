@@ -54,6 +54,8 @@ def wibor():
 
     update_wibor('wibor6m', 'https://stooq.pl/q/d/l/?s=plopln6m&i=d')
 
+    update_wibor('wibor1m', 'https://stooq.pl/q/d/l/?s=plopln1m&i=d')
+
     update_wibor('stopa_ref', 'https://stooq.pl/q/d/l/?s=inrtpl.m&i=d')
 
 

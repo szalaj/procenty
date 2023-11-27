@@ -151,6 +151,9 @@ class Wibor:
         if rodzajWiboru=='3M':
             self._okres = 3
             wib_rodzaj = 'wibor3m'
+        if rodzajWiboru=='1M':
+            self._okres = 1
+            wib_rodzaj = 'wibor1m'
         elif rodzajWiboru=='6M':
             self._okres = 6
             wib_rodzaj = 'wibor6m'
