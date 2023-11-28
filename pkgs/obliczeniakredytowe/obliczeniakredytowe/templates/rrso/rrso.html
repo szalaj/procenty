@@ -448,7 +448,7 @@
                         <tr>
                             <th></th>
                             <th></th>
-                            <th colspan="3" style='text-align:center;border-left: 1px solid lightgray;'>KREDYT ROZLICZANY OD CAŁKOWITEJ KWOTY KREDYTU</th>
+                            <th colspan="4" style='text-align:center;border-left: 1px solid lightgray;'>KREDYT ROZLICZANY OD CAŁKOWITEJ KWOTY KREDYTU</th>
                             <th colspan="3" style='text-align:center;border-left: 1px solid lightgray;'>KREDYT ROZLICZANY OD UDZIELONEJ KWOTY KREDYTU</th>
                             <th colspan="2" style='text-align:center;border-left: 1px solid lightgray; '>NIEPRAWIDŁOWOŚCI W ROZLICZANIU KREDYTU</th>
                         </tr>
@@ -457,6 +457,7 @@
                             <th>Dzień</th>
                             <th style='border-left: 1px solid lightgray;'>Rata kapitałowa</th>
                             <th>Rata odsetkowa</th>
+                            <th>Kredytowane koszty</th>
                             <th>Rata całkowita</th>
                             <th style='border-left: 1px solid lightgray;'>Rata kapitałowa</th>
                             <th>Rata odsetkowa</th>
@@ -666,6 +667,8 @@
         wiersz.append("td")
             .text(function (d) { return zloty(d.odsetki) })
 
+            wiersz.append("td")
+            .text(function (d) { return zloty(d.kredytowane_koszty) })
 
         wiersz.append("td")
             .text(function (d) { return zloty(d.rata) })
@@ -715,6 +718,11 @@
 
             wiersz_ostatni.append("td")
             .text(zloty(suma_odsetek))
+
+            let suma_kred_kosztow  = d3.sum(wynik['raty_porownanie'], d => d.kredytowane_koszty)    
+
+            wiersz_ostatni.append("td")
+            .text(zloty(suma_kred_kosztow))
 
             let suma_rat  = d3.sum(wynik['raty_porownanie'], d => d.rata)       
 

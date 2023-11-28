@@ -6,6 +6,7 @@ import datetime as dt
 import json
 from obliczeniakredytowe import db
 from dateutil.relativedelta import relativedelta
+from decimal import Decimal, ROUND_HALF_UP
 
 import utils.rrso as rs
 import utils.proc as proc
@@ -144,6 +145,9 @@ def rrso_main():
 
             prowizja = udzielona_kwota - calkowita_kwota
 
+            grosze =  Decimal('.01')
+
+            prowizja = Decimal(prowizja).quantize(grosze, ROUND_HALF_UP)
 
 
             rata_calkowita_kwota = rs.rata_rowna(calkowita_kwota, okresy, stopa/100.0)
@@ -160,9 +164,7 @@ def rrso_main():
             dane_kredytu_prowizja = {'start': data_umowy.strftime('%Y-%m-%d'), 'K':udzielona_kwota, 'p':stopa, 'marza':marza, 'daty_splaty':dni_splaty}
             kredyt_prowizja = proc.create_kredyt(dane_kredytu_prowizja, request.form['rodzaj_rat'])
 
-            # dodanie do pirwszej raty prowizji
-            kredyt['raty'][0]['rata'] = str(float(kredyt['raty'][0]['rata']) + prowizja)
-            kredyt['raty'][0]['kapital'] = str(float(kredyt['raty'][0]['kapital']) + prowizja)
+
 
             raty_porownanie = []
             for i,r in enumerate(kredyt['raty']):
@@ -172,14 +174,15 @@ def rrso_main():
                 rr['dzien'] = r['dzien']
                 rr['kapital'] = r['kapital']
                 rr['odsetki'] = r['odsetki']
-    
-                   
+                rr['kredytowane_koszty'] = str(prowizja/Decimal(okresy))
+
                 rr['rata'] = r['rata']
                 rr['kapital_prowizja'] = kredyt_prowizja['raty'][i]['kapital']
 
                 rr['odsetki_prowizja'] = kredyt_prowizja['raty'][i]['odsetki']
                 rr['rata_prowizja'] = kredyt_prowizja['raty'][i]['rata']
                                             
+
              
 
                 rr['do_zwrotu_kapital'] = str(round(float(kredyt_prowizja['raty'][i]['kapital']) - float(r['kapital']),2))
@@ -205,7 +208,7 @@ def rrso_main():
                           'rrso_prowizja': round(rrso_prowizja*100,4),
                           'stopa': round(stopa,4),
                           'wibor': wibor,
-                          'prowizja': prowizja,
+                          'prowizja': str(prowizja),
                           'mpkk': mpkk,
                           'raty_porownanie': raty_porownanie,                          
                           'raty': kredyt,
