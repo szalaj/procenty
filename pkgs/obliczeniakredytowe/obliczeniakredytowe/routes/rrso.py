@@ -7,6 +7,7 @@ import json
 from obliczeniakredytowe import db
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal, ROUND_HALF_UP
+import re
 
 import utils.rrso as rs
 import utils.proc as proc
@@ -25,6 +26,8 @@ def rrso_main():
 
     if request.method == 'POST':
 
+        rf = request.form.to_dict()
+
         errors = False
 
         # data umowy
@@ -40,7 +43,9 @@ def rrso_main():
         calkowita_kwota = request.form['calkowita_kwota']
 
         try:
+            calkowita_kwota = calkowita_kwota.replace(',','.')
             calkowita_kwota = float(calkowita_kwota)
+            rf['calkowita_kwota'] = calkowita_kwota
             if calkowita_kwota <= 0:
                 raise Exception
         except:
@@ -51,7 +56,9 @@ def rrso_main():
         udzielona_kwota = request.form['udzielona_kwota']
 
         try:
+            udzielona_kwota = udzielona_kwota.replace(',','.')
             udzielona_kwota = float(udzielona_kwota)
+            rf['udzielona_kwota'] = udzielona_kwota
             if udzielona_kwota <= 0:
                 raise Exception
         except:
@@ -77,9 +84,12 @@ def rrso_main():
         # Oprocentowanie stale
         if 'oprocentowanie_stale' in request.form:
             oprocentowanie_stale = request.form['oprocentowanie_stale']
-
+            
             try:
+                oprocentowanie_stale = re.search("^[\d\.\,\s]+(?=%?$)",oprocentowanie_stale).group()
+                oprocentowanie_stale = oprocentowanie_stale.replace(',','.')
                 oprocentowanie_stale = float(oprocentowanie_stale)
+                rf['oprocentowanie_stale'] = oprocentowanie_stale
                 if oprocentowanie_stale <= 0:
                     raise Exception
             except:
@@ -87,22 +97,36 @@ def rrso_main():
                 flash('Oprocentowanie stałe musi być większe od 0', 'error')
 
         # marza
+        
+
         marza = request.form['marza']
 
+      
+
+        
+                    
+            
+
         try:
-            marza = float(marza)
+            marza_temp = re.search("^[\d\.\,\s]+(?=%?$)",marza).group()
+            marza_temp = marza_temp.replace(',','.')
+            marza = float(marza_temp)
+            rf['marza'] = marza
+            
             if marza < 0:
                 raise Exception
         except:
             errors = True
             flash('Marża musi być nie mniejsza niż 0', 'error')
 
-
+        
         # pozaodsetkowe_koszty
         pozaodsetkowe_koszty = request.form['pozaodsetkowe_koszty']
 
         try:
+            pozaodsetkowe_koszty = pozaodsetkowe_koszty.replace(',','.')
             pozaodsetkowe_koszty = float(pozaodsetkowe_koszty)
+            rf['pozaodsetkowe_koszty'] = pozaodsetkowe_koszty
             if pozaodsetkowe_koszty < 0:
                 raise Exception
         except:
@@ -130,6 +154,8 @@ def rrso_main():
             elif typ_wsk == 'stopa_ref':
                 zaw = 'Stopa referencyjna NBP'
             flash(f"Dane dla wskaźnika {zaw} są dostępne do {max_wib.strftime('%d/%m/%Y')}", 'error')
+
+        request.form = rf
 
         if not errors:
 
