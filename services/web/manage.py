@@ -4,18 +4,20 @@ import obliczeniakredytowe
 from loguru import logger
 import sys
 
-if 0:
-    os.environ['APPDB_PATH'] = "/home/ubuntu/data/" 
-    os.environ['LOG_PATH'] = "/home/ubuntu/data/" 
-else:
-    print('starcik lokal')
-    # test mode with gunicorn
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.abspath(os.path.join(current_path, '../db'))
-    print(db_path)
-    os.environ['APPDB_PATH'] = db_path 
-    os.environ['LOG_PATH'] = current_path   
+# if 0:
+#     os.environ['APPDB_PATH'] = "/home/ubuntu/data/" 
+#     os.environ['LOG_PATH'] = "/home/ubuntu/data/" 
+# else:
+#     print('starcik lokal')
+#     # test mode with gunicorn
+#     current_path = os.path.dirname(os.path.abspath(__file__))
+#     db_path = os.path.abspath(os.path.join(current_path, '../db'))
+#     print(db_path)
+#     os.environ['APPDB_PATH'] = db_path 
+#     os.environ['LOG_PATH'] = current_path   
 
+os.environ['APPDB_PATH'] = "/home/ubuntu/data/" 
+os.environ['LOG_PATH'] = "/home/ubuntu/data/" 
 
 log_level = "DEBUG"
 log_format = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS zz}</green> | <level>{level: <8}</level> | <yellow>Line {line: >4} ({file}):</yellow> <b>{message}</b>"
