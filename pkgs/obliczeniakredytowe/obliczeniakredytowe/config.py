@@ -1,10 +1,5 @@
 import os
 
-
-basedir = os.path.abspath(os.path.dirname(__file__))
-dbdir = os.path.abspath(os.path.join(basedir, '../../db/database.db'))
-
-
 class Config(object):
     STATIC_FOLDER = f"{os.getenv('APP_FOLDER')}/obliczeniakredytowe/static"
     MEDIA_FOLDER = f"{os.getenv('APP_FOLDER')}/obliczeniakredytowe/media"
