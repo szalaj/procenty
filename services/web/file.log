@@ -104,3 +104,5 @@
 2023-11-29 22:13:43.538 CET | INFO     | Line  246 (rrso.py): <3 - user1>, 2.3724
 2023-11-29 22:13:49.649 CET | INFO     | Line  246 (rrso.py): <3 - user1>, 2.3724
 2023-11-29 22:13:51.999 CET | INFO     | Line  246 (rrso.py): <3 - user1>, 2.3724
+2023-12-04 18:32:19.663 CET | INFO     | Line   33 (admin.py): Użytkownik user1 zalogowany
+2023-12-04 20:01:17.551 CET | INFO     | Line   33 (admin.py): Użytkownik user1 zalogowany
