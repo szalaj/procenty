@@ -142,11 +142,11 @@
   </body>
 
   <script type="module">
-    import { create_chart_koszty } from "{{url_for('static', filename='chart_koszty.js')}}";
-    import { create_chart_kapital } from "{{url_for('static', filename='chart_kapital.js')}}";
-    import { create_chart_wibor } from "{{url_for('static', filename='chart_wibor.js')}}";
-    import { create_chart_inflacja } from "{{url_for('static', filename='chart_inflacja.js')}}";
-    import { create_chart_nadplaty } from "{{url_for('static', filename='chart_nadplaty.js')}}";
+    import { create_chart_koszty } from "{{url_for('static', filename='chartslib/chart_koszty.js')}}";
+    import { create_chart_kapital } from "{{url_for('static', filename='chartslib/chart_kapital.js')}}";
+    import { create_chart_wibor } from "{{url_for('static', filename='chartslib/chart_wibor.js')}}";
+    import { create_chart_inflacja } from "{{url_for('static', filename='chartslib/chart_inflacja.js')}}";
+    import { create_chart_nadplaty } from "{{url_for('static', filename='chartslib/chart_nadplaty.js')}}";
 
     var dane1 = JSON.parse('{{wynik|safe}}');
     var inflacja = JSON.parse('{{inflacja|safe}}');
