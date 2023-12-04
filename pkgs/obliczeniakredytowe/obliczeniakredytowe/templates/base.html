@@ -2,11 +2,10 @@
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="{{url_for('static', filename='d3.js')}}"></script>
 
+<script src="{{ url_for('static', filename='node_modules/d3/dist/d3.js')}}"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='node_modules/bulma/css/bulma.min.css')}}">
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
 <title>Kredyty</title>
