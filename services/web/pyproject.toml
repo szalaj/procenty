@@ -64,6 +64,7 @@ werkzeug = "2.2.3"
 wtforms = "3.0.1"
 zipp = "3.6.0"
 loguru = "^0.7.2"
+flask-migrate = "^4.0.5"
 
 
 [build-system]

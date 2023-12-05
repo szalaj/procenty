@@ -1,8 +1,9 @@
 # file used for developing
-from obliczeniakredytowe import init_app
+from obliczeniakredytowe import init_app, db
 import os
 import sys
 from loguru import logger
+from flask_migrate import Migrate
 
 
 print(f"run file _{__name__}")
