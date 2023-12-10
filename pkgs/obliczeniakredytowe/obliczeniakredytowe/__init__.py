@@ -26,7 +26,8 @@ def init_app():
     app.register_error_handler(500, page_not_found)
 
     db.init_app(app)
-    migrate.init_app(app, db)
+    migrate.init_app(app, db, directory=app.config['MIGRATIONS_DIR'])
+
     
     login_manager = LoginManager()
     login_manager.init_app(app)

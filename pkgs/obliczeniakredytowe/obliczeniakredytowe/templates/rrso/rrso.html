@@ -143,6 +143,13 @@
                             </div>
 
                             <div class="field is-narrow">
+                                <label class="label">Data zamrożenia</label>
+                                <div class="control">
+                                    <input class="input" type="text" placeholder="DD/MM/YYYY" name="data_zamrozenia">
+                                </div>
+                            </div>
+
+                            <div class="field is-narrow">
                                 <label class="label">Całkowita kwota kredytu</label>
                                 <div class="control">
                                     <input class="input" type="text" placeholder="Kredyt (PLN)" name="calkowita_kwota">
@@ -287,6 +294,12 @@
                                 </li>
                                 <li>
                                     <div class="kontainer">
+                                        <div class="filler"></div><span class="naklejka">Data zamrożenia</span><span
+                                            class="tekst" id="data_zamrozenia"></span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="kontainer">
                                         <div class="filler"></div><span class="naklejka">Całkowita kwota
                                             kredytu</span><span class="tekst" id="calkowita_kwota"></span>
                                     </div>
@@ -419,14 +432,14 @@
 
                         <div class="level-item has-text-centered">
                             <div>
-                                <p class="heading">Zawyżone saldo kredytu (tj. podstawy oprocentowania kredytu)</p>
-                                <p class="title" id="zwrot_kapital"></p>
+                                <p class="heading">Uiszczone odsetki oraz koszty</p>
+                                <p class="title" id="zwrot_niewieksze"></p>
                             </div>
                         </div>
                         <div class="level-item has-text-centered">
                             <div>
-                                <p class="heading">Nielegalnie pobrane odsetki</p>
-                                <p class="title" id="zwrot_odsetki"></p>
+                                <p class="heading">Koszty kredytu do zapłaty </p>
+                                <p class="title" id="zwrot_wieksze"></p>
                             </div>
                         </div>
                         <div class="level-item has-text-centered">
@@ -447,6 +460,7 @@
                         <tr>
                             <th></th>
                             <th></th>
+                            <th></th>
                             <th colspan="4" style='text-align:center;border-left: 1px solid lightgray;'>KREDYT ROZLICZANY OD CAŁKOWITEJ KWOTY KREDYTU</th>
                             <th colspan="3" style='text-align:center;border-left: 1px solid lightgray;'>KREDYT ROZLICZANY OD UDZIELONEJ KWOTY KREDYTU</th>
                             <th colspan="2" style='text-align:center;border-left: 1px solid lightgray; '>NIEPRAWIDŁOWOŚCI W ROZLICZANIU KREDYTU</th>
@@ -454,6 +468,7 @@
                         <tr>
                             <th>Nr raty</th>
                             <th>Dzień</th>
+                            <th style='border-left: 1px solid lightgray;'>Pozaodsetkowe koszty</th>
                             <th style='border-left: 1px solid lightgray;'>Rata kapitałowa</th>
                             <th>Rata odsetkowa</th>
                             <th>Kredytowane koszty</th>
@@ -526,6 +541,7 @@
 
 
         document.getElementsByName("data_umowy")[0].value = dane['data_umowy'];
+        document.getElementsByName("data_zamrozenia")[0].value = dane['data_zamrozenia'];
 
         document.getElementsByName("calkowita_kwota")[0].value = dane['calkowita_kwota'];
         document.getElementsByName("udzielona_kwota")[0].value = dane['udzielona_kwota'];
@@ -577,6 +593,7 @@
 
 
         d3.select("span#data_umowy").text(dane['data_umowy'])
+        d3.select("span#data_zamrozenia").text(dane['data_zamrozenia'])
         d3.select("span#calkowita_kwota").text(zloty(dane['calkowita_kwota']))
         d3.select("span#kwota_udzielonego").text(zloty(dane['udzielona_kwota']))
         d3.select("span#okresy").text(dane['okresy'])
@@ -653,10 +670,28 @@
 
         wiersz.append("td")
             .text(function (d) { return d.nr_raty })
+            .style('background-color', function(d) {
+
+                const zd = dane['data_zamrozenia'].split('/')
+               
+                if (Date.parse(d.dzien) <= Date.parse(zd[2] + '-' + zd[1] + '-' + zd[0])) {
+                    return 'yellow'
+                } else {
+                    return 'orange'
+                }
+                
+            })
+
+//             .style('background-color', function (d, i) {
+//     return 'rgba(' + colors[i].r + ',' + colors[i].g + ',' + colors[i].b + ',' + alpha(d) + ')';
+// })
 
         wiersz.append("td")
             .text(function (d) { return d.dzien })
 
+        wiersz.append("td")
+            .text(function (d) { return zloty(d.pozaodsetkowe_koszty) })
+            .style('border-left', '1px solid lightgray');
 
         wiersz.append("td")
             .text(function (d) { return zloty(d.kapital) })
@@ -701,6 +736,14 @@
 
             wiersz_ostatni.append("td")
             .text('')
+
+
+        let suma_pozaodsetkowe_koszty  = d3.sum(wynik['raty_porownanie'], d => d.pozaodsetkowe_koszty)   
+
+
+        wiersz_ostatni.append("td")
+            .text(zloty(suma_pozaodsetkowe_koszty))
+            .style('border-left', '1px solid lightgray');
 
                      // sum all elements 'kapital' in raty_porownanie array
          let suma_kapitalow  = d3.sum(wynik['raty_porownanie'], d => d.kapital)       
@@ -763,17 +806,30 @@
             .text(zloty(suma_do_zwrotu_odsetki))
 
 
-            let suma_do_zwrotu = d3.sum(wynik['raty_porownanie'], d => d.do_zwrotu)       
-  
 
+            const zd = dane['data_zamrozenia'].split('/')
+               
+            const data_zamrozenia_tmstp = Date.parse(zd[2] + '-' + zd[1] + '-' + zd[0]);
+
+            console.log(data_zamrozenia_tmstp)
+            // filter from wynik['raty_porownanie'] only elements where dzien_raty is less than data zamrozenia
+            // and sum all elements 'do_zwrotu' in raty_porownanie array
+
+            let elementy_niewieksze = wynik['raty_porownanie'].filter(function(d) { return Date.parse(d.dzien)<=data_zamrozenia_tmstp })
+            
+            let suma_do_zwrotu_niewieksze = d3.sum(elementy_niewieksze, d => d.pozaodsetkowe_koszty) +  d3.sum(elementy_niewieksze, d => d.odsetki)
+
+            let elementy_wieksze = wynik['raty_porownanie'].filter(function(d) { return Date.parse(d.dzien)>data_zamrozenia_tmstp })
+            
+            let suma_do_zwrotu_wieksze = d3.sum(elementy_wieksze, d => d.pozaodsetkowe_koszty) +  d3.sum(elementy_wieksze, d => d.odsetki)
 
         // // for column do_zwrotu make background color green
         // d3.selectAll("td:nth-child(6)").style("background-color", "rgb(220,220,220)");
         // d3.selectAll("td:nth-child(7)").style("background-color", "rgb(220,220,220)");
 
-        d3.select("p#zwrot_kapital").text(zloty(suma_do_zwrotu_kapital));
-        d3.select("p#zwrot_odsetki").text(zloty(suma_do_zwrotu_odsetki));
-        d3.select("p#zwrot_razem").text(zloty(suma_do_zwrotu));
+        d3.select("p#zwrot_niewieksze").text(zloty(suma_do_zwrotu_niewieksze));
+        d3.select("p#zwrot_wieksze").text(zloty(suma_do_zwrotu_wieksze));
+        d3.select("p#zwrot_razem").text(zloty(suma_do_zwrotu_niewieksze+suma_do_zwrotu_wieksze));
         
 
     }
