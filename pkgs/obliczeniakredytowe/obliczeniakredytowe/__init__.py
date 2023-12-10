@@ -6,12 +6,14 @@ from flask import Flask, redirect, url_for
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_apscheduler import APScheduler
+from flask_migrate import Migrate
 
 import requests
 
 
 
 db = SQLAlchemy()
+migrate = Migrate()
 
 def init_app():
  
@@ -24,6 +26,8 @@ def init_app():
     app.register_error_handler(500, page_not_found)
 
     db.init_app(app)
+    migrate.init_app(app, db, directory=app.config['MIGRATIONS_DIR'])
+
     
     login_manager = LoginManager()
     login_manager.init_app(app)

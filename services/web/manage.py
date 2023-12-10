@@ -19,6 +19,9 @@ import sys
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.abspath(os.path.join(current_path, '../db'))
+
+os.environ['APP_FOLDER'] = os.path.abspath(os.path.join(current_path, '../../pkgs/obliczeniakredytowe'))
+
 os.environ['APPDB_PATH'] = db_path 
 # os.environ['APPDB_PATH'] = "/home/ubuntu/data/" 
 os.environ['LOG_PATH'] = "/home/ubuntu/data/" 

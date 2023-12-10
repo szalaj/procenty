@@ -39,8 +39,22 @@ def rrso_main():
             errors = True
             flash('Niepoprawny format daty podpisania umowy. Poprawny format DD/MM/RRRR, np. 02/10/2021', 'error')
 
+        data_zamrozenia = request.form['data_zamrozenia']
+
+        try:
+            data_zamrozenia = dt.datetime.strptime(data_zamrozenia, '%d/%m/%Y')
+        except:
+            errors = True
+            flash('Niepoprawny format daty zamrożenia. Poprawny format DD/MM/RRRR, np. 02/10/2021', 'error')
+
+        if not errors and data_zamrozenia <= data_umowy:
+            errors = True
+            flash('Dzień zamrożenia musi być późniejszy niż dzień podpisania umowy.', 'error')
+
+
         # calkowita kwota kredytu
         calkowita_kwota = request.form['calkowita_kwota']
+
 
         try:
             calkowita_kwota = calkowita_kwota.replace(',','.')
@@ -191,6 +205,14 @@ def rrso_main():
             kredyt_prowizja = proc.create_kredyt(dane_kredytu_prowizja, request.form['rodzaj_rat'])
 
 
+            pozaodsetkowe_koszty = Decimal(pozaodsetkowe_koszty).quantize(grosze, ROUND_HALF_UP)
+
+            pozaodsetkowe_koszty_proporcjonalnie = (pozaodsetkowe_koszty/Decimal(okresy)).quantize(grosze, ROUND_HALF_UP)
+
+            if okresy > 1:
+                ostatnie_pozaodsetkowe_koszty = pozaodsetkowe_koszty - pozaodsetkowe_koszty_proporcjonalnie*Decimal(okresy-1)
+
+            print(f"pozaodsetkowe_koszty: {pozaodsetkowe_koszty}, pozaodsetkowe_koszty_proporcjonalnie: {pozaodsetkowe_koszty_proporcjonalnie}, ostatnie_pozaodsetkowe_koszty: {ostatnie_pozaodsetkowe_koszty}")    
 
             raty_porownanie = []
             for i,r in enumerate(kredyt['raty']):
@@ -198,6 +220,13 @@ def rrso_main():
                 
                 rr['nr_raty'] = r['nr_raty']
                 rr['dzien'] = r['dzien']
+
+                if i == len(kredyt['raty'])-1:
+                    rr['pozaodsetkowe_koszty'] = str(ostatnie_pozaodsetkowe_koszty)
+                else:
+                    rr['pozaodsetkowe_koszty'] = str(pozaodsetkowe_koszty_proporcjonalnie)
+
+
                 rr['kapital'] = r['kapital']
                 rr['odsetki'] = r['odsetki']
                 rr['kredytowane_koszty'] = str(prowizja/Decimal(okresy))

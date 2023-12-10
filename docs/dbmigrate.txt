@@ -1,0 +1,39 @@
+
+
+
+~/procenty/services/web$ flask --app devserver db init
+
+Jesli baza danych jest już używana to zobacz:
+https://stackoverflow.com/questions/59490965/using-flask-migration-in-development-and-deployment
+
+stworz nową bazę
+-  :~/procenty/services/web$ sqlite3 ../db/database2.sql "VACUUM"
+- podmien 'SQLALCHEMY_DATABASE_URI' na nową bazę czystą
+- stworz pierwsza migrację
+- podmien SQLALCHEMY_DATABASE_URI na starą bazę
+- flask --app devserver db stamp head
+
+
+
+Jesli zobaczysz taki błąd 
+run file _devserver
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.runtime.migration] Running stamp_revision  -> 42f9e4c74db6
+
+to :
+    - zaloguj sie do bazy ~/procenty/services/web$ sqlite3 ../db/database.db
+    - wyczysc tabele alembic (cala, albo ktoras rewizje) -> delete from alembic_version;
+
+
+W kolejnych migracja używaj 
+
+:~/procenty/services/web$ flask --app devserver db migrate -m "opis" 
+
+migrate robi się na bazie (env) DEV. dla PROD tylko UPGRADE
+
+potem
+
+
+:~/procenty/services/web$ flask --app devserver db upgrade
+
