@@ -1,5 +1,0 @@
-
-1. zmiany wskaznika wibor
-2. liczenie odsetek przez weekend, kiedy dzien pierwszy dzien roboczy wypada w poniedzialek
-3. przedluzanie ksiegowania nadplat. odsetki sa liczone od dnia zlecienia nadplaty czy ksiegowania.?
-
