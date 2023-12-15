@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "utils"
+name = "procenty"
 version = "0.1.0"
 description = ""
 authors = ["szalaj <mszalajski@gmail.com>"]
