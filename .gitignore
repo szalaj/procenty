@@ -9,3 +9,4 @@ node_modules/
 file.log
 env
 env/
+.pytest_cache
