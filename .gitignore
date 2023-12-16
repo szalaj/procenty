@@ -7,3 +7,6 @@ __pycache__/
 backup/
 node_modules/
 file.log
+env
+env/
+.pytest_cache
