@@ -1,13 +1,13 @@
 # procenty
 
-moduł ułatwiający, miejmy nadzieję, obliczenia finansowe
+- symulacja kredytu mieszkaniowego
+- symulacja wymiany handlowej
+- symulacja kreacji pieniądza
 
-# zawartość
+# Model
 
-do tej pory moduł zawiera:
+Istnieje zbiór konsumentów C. Konsumenci wymieniają się dobrami. Jednym z dobrem jest pieniądz. Oprócz konsumentów istnieje również Rząd - G oraz Bank - B.
 
-- rachunek czasu 
-- lokaty
-- ratalna spłata długu
+## Zasoby
 
-
+W gospodarce istnieją zasoby początkowe. Ich struktura określa możliwe ścieżki rozwoju.
