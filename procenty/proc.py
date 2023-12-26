@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from enum import auto, Enum
 import decimal
 from decimal import Decimal, ROUND_HALF_UP
+from procenty.miary import Odleglosc
 
 class Rodzaj(Enum):
     SPLATA = 3
@@ -62,6 +63,7 @@ class Kredyt:
 
     def zapisz_stan(self, dzien_raty):
 
+
         grosze =  decimal.Decimal('.01')
 
         data = {
@@ -105,12 +107,12 @@ class Kredyt:
 
     def zmien_oprocentowanie(self, dzien_zmiany:dt.datetime, nowe_p:Decimal):
 
-        # nalicz odsetki do dnia zmiany raty
-        o_dni = (dzien_zmiany - self.dzien_odsetki).days
 
-        opr = Decimal((o_dni/365))*self.p
+        o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_zmiany.strftime('%Y-%m-%d'), 'a')
 
-        opr_marza = Decimal((o_dni/365))*self.marza
+        opr = o_d.mnoznik*self.p
+
+        opr_marza = o_d.mnoznik*self.marza
 
         self.odsetki_naliczone = self.odsetki_naliczone +  opr*self.K
         self.odsetki_naliczone_marza = self.odsetki_naliczone_marza +  opr_marza*self.K
@@ -122,10 +124,11 @@ class Kredyt:
 
     def zrob_nadplate(self, dzien_nadplaty:dt.datetime, kwota:Decimal):
 
-        o_dni = (dzien_nadplaty - self.dzien_odsetki).days
+        o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_nadplaty.strftime('%Y-%m-%d'), 'a')
 
-        opr = Decimal((o_dni/365))*self.p
-        opr_marza = Decimal((o_dni/365))*self.marza
+        opr = o_d.mnoznik*self.p
+
+        opr_marza = o_d.mnoznik*self.marza
 
         self.odsetki_naliczone = self.odsetki_naliczone +  opr*self.K
 
@@ -146,10 +149,11 @@ class Kredyt:
 
     def zrob_transze(self, dzien_transzy:dt.datetime, kwota:Decimal):
 
-        o_dni = (dzien_transzy - self.dzien_odsetki).days
+        o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_transzy.strftime('%Y-%m-%d'), 'a')
 
-        opr = Decimal((o_dni/365))*self.p
-        opr_marza = Decimal((o_dni/365))*self.marza
+        opr = o_d.mnoznik*self.p
+
+        opr_marza = o_d.mnoznik*self.marza
 
         self.odsetki_naliczone = self.odsetki_naliczone +  opr*self.K
         self.odsetki_naliczone_marza = self.odsetki_naliczone_marza +  opr_marza*self.K
@@ -164,10 +168,11 @@ class Kredyt:
 
         grosze =  decimal.Decimal('.01')
 
-        o_dni = (dzien_raty - self.dzien_odsetki).days
+        o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_raty.strftime('%Y-%m-%d'), 'a')
 
-        opr = Decimal((o_dni/365))*self.p
-        opr_marza = Decimal((o_dni/365))*self.marza
+        opr = o_d.mnoznik*self.p
+
+        opr_marza = o_d.mnoznik*self.marza
 
         if self.K > 0:
             self.I = self.oblicz_rate().quantize(grosze, ROUND_HALF_UP)
