@@ -1,0 +1,19 @@
+The lock file does not exist. Locking.
+Updating dependencies
+Resolving dependencies...
+
+  RuntimeError
+
+  The lock file is not compatible with the current version of Poetry.
+  Upgrade Poetry to be able to read the lock file or, alternatively, regenerate the lock file with the `poetry lock` command.
+
+  at /usr/lib/python3/dist-packages/poetry/packages/locker.py:481 in _get_lock_data
+      477│                 "Upgrade Poetry to ensure the lock file is read properly or, alternatively, "
+      478│                 "regenerate the lock file with the `poetry lock` command."
+      479│             )
+      480│         elif not lock_version_allowed:
+    → 481│             raise RuntimeError(
+      482│                 "The lock file is not compatible with the current version of Poetry.\n"
+      483│                 "Upgrade Poetry to be able to read the lock file or, alternatively, "
+      484│                 "regenerate the lock file with the `poetry lock` command."
+      485│             )

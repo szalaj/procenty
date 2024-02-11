@@ -10,3 +10,5 @@ file.log
 envproc
 envproc/
 .pytest_cache
+poetry.lock
+env/
