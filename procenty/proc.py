@@ -178,6 +178,7 @@ class Kredyt:
             self.I = self.oblicz_rate().quantize(grosze, ROUND_HALF_UP)
         else:
             self.I = Decimal(0).quantize(grosze, ROUND_HALF_UP)
+            self.K = Decimal(0).quantize(grosze, ROUND_HALF_UP)
 
         self.odsetki_naliczone = (self.odsetki_naliczone + opr*self.K).quantize(grosze, ROUND_HALF_UP)
         self.odsetki_naliczone_marza = self.odsetki_naliczone_marza + opr_marza*self.K
@@ -217,7 +218,8 @@ class Kredyt:
             elif zdarzenie.rodzaj == Rodzaj.TRANSZA:
                 self.zrob_transze(zdarzenie.data, zdarzenie.wartosc)
             
-            if self.K == Decimal(0):
+
+            if abs(self.K)<10**-4:
                 break
 
         return {"raty": self.wynik, "nadplaty": self.wynik_nadplaty, "kapital_na_koniec": str(self.K.quantize(decimal.Decimal('0.01')))}
