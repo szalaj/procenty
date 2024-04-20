@@ -13,6 +13,7 @@ class Rodzaj(Enum):
     SPLATA = 3
     OPROCENTOWANIE = 4
     NADPLATA = 2
+    SPLATA_CALKOWITA = 6
     TRANSZA = 1
     WAKACJE = 5
 
@@ -162,6 +163,29 @@ class Kredyt:
 
         self.dzien_odsetki = dzien_transzy
 
+    def zrob_splate_calkowita(self, dzien_splaty:dt.datetime):
+        grosze =  decimal.Decimal('.01')
+
+        o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_splaty.strftime('%Y-%m-%d'), 'a')
+
+        opr = o_d.mnoznik*self.p
+
+        opr_marza = o_d.mnoznik*self.marza
+
+        self.odsetki_naliczone = (self.odsetki_naliczone + opr*self.K).quantize(grosze, ROUND_HALF_UP)
+
+        self.odsetki_naliczone_marza = self.odsetki_naliczone_marza +  opr_marza*self.K
+
+
+        self.I = self.K - self.odsetki_naliczone
+  
+        self.licznik_rat += 1
+        self.zapisz_stan(dzien_splaty)
+
+        self.K = Decimal(0).quantize(grosze, ROUND_HALF_UP)
+
+        self.dzien_odsetki = dzien_splaty
+
 
 
     def splata_raty(self, dzien_raty:dt.datetime):
@@ -212,6 +236,8 @@ class Kredyt:
                 self.zmien_oprocentowanie(zdarzenie.data, zdarzenie.wartosc)
             elif zdarzenie.rodzaj == Rodzaj.SPLATA:
                 self.splata_raty(zdarzenie.data)
+            elif zdarzenie.rodzaj == Rodzaj.SPLATA_CALKOWITA:
+                self.zrob_splate_calkowita(zdarzenie.data)
             elif zdarzenie.rodzaj == Rodzaj.NADPLATA:
                 self.zrob_nadplate(zdarzenie.data, zdarzenie.wartosc)
             elif zdarzenie.rodzaj == Rodzaj.TRANSZA:
@@ -252,7 +278,10 @@ def create_kredyt(dane_kredytu, rodzajRat):
 
     if 'nadplaty' in dane:
         for nadplata in dane['nadplaty']:
-            kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(nadplata['dzien'], '%Y-%m-%d'), Rodzaj.NADPLATA, Decimal(nadplata['kwota'])))
+            if nadplata['calkowita'] == True:
+                kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(nadplata['dzien'], '%Y-%m-%d'), Rodzaj.SPLATA_CALKOWITA, Decimal(nadplata['kwota'])))
+            else:
+                kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(nadplata['dzien'], '%Y-%m-%d'), Rodzaj.NADPLATA, Decimal(nadplata['kwota'])))
             
     if 'transze' in dane:
         for transza in dane['transze']:
