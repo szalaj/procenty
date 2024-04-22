@@ -219,7 +219,7 @@ def next_business_day(date):
 
 
 def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transze, nadplaty, wakacje, dni_zmiany_splaty,
-                               ubezpieczenie_pomostowe_do, ubezpieczenie_pomostowe_stopa, tylko_marza=False):
+                               ubezpieczenie_pomostowe_do, ubezpieczenie_pomostowe_stopa, wibor_value_start, tylko_marza=False):
 
 
 
@@ -249,15 +249,19 @@ def generateFromWiborFileInter(wibor, kapital, okresy, start_date, marza, transz
         for i in range(0, int(okresy/wibor.okres)+1):
                 wibor_day =  start_date + relativedelta(months=3*i)
 
-
                 old_wibor_day_business_day = wibor_day_business_day
                 wibor_day_business_day = wibor_day - BDay(2)
             
 
                 old_wibor_value = wibor_value
 
+                # check if wibor_value_start is not None
+
                 wibor_value = wibor.getWibor(wibor_day_business_day)
-                
+
+                if wibor_value_start is not None and i == 0:
+                    wibor_value = wibor_value_start
+
 
                 if ubezpieczenie_pomostowe_do and not pomost_done:
                     if wibor_day < dt.datetime.strptime(ubezpieczenie_pomostowe_do,'%Y-%m-%d'):
