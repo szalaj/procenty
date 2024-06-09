@@ -42,7 +42,8 @@ class RRSO:
             rs = self.right_side(rrso)
             i+=1
             if i > 1000:
-                raise Exception('Za dużo iteracji')
+                #raise Exception('Za dużo iteracji')
+                return "N/A"
 
         print(f'iteracje: {i}')
         return rrso
