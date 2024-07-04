@@ -1,13 +1,18 @@
 # procenty
 
-- symulacja kredytu mieszkaniowego
-- symulacja wymiany handlowej
-- symulacja kreacji pieniądza
+- symulacja kreacji i cyrkulacji pieniądza
+- symulacja różnych typów kredytu
+- prosta księgowość
 
-# Model
+# Symulacja kreacji pieniądza
 
-Istnieje zbiór konsumentów C. Konsumenci wymieniają się dobrami. Jednym z dobrem jest pieniądz. Oprócz konsumentów istnieje również Rząd - G oraz Bank - B.
+## Model 1. 
 
-## Zasoby
+Istnieje Bank Centralny - `BC`. Bank Centralny jako jedyna instytucja ma prawo tworzyć pieniądz "z niczego". To znaczy, że na rachunku `BC` można wykreować niezbilansowane aktywo. Teoretycznie `BC` może w ten sposób wykreować nieskończoną ilość pieniędzy. Ale tego nie robi.
 
-W gospodarce istnieją zasoby początkowe. Ich struktura określa możliwe ścieżki rozwoju.
+
+# Symulacja kredytu
+
+## Symulacja kredytu mieszkaniowego
+
+## Symulacja kredytu konsumcyjnego

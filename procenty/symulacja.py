@@ -6,6 +6,14 @@ from dataclasses import dataclass
 @dataclass
 class BankCentralny:
     stopa_ref: float
+    weksle: list
+
+@dataclass
+class Weksel:
+    stopa: float
+    wartosc: float
+    okres: int
+    okres_start: int
 
 @dataclass
 class Bank:
@@ -180,3 +188,13 @@ def symulacja(liczba_krokow=10):
         wynik.append({'P': Pis, 'M':M})
 
     return wynik
+
+
+if __name__ == '__main__':
+    # print(symulacja(10))
+    b = BankCentralny(0.1, [])
+    for i in range(100):
+        weksel = Weksel(0.1, 1000, 10, i)
+        b.weksle.append(weksel)
+
+    print(b.weksle)
