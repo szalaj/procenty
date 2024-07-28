@@ -4,6 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["szalaj <mszalajski@gmail.com>"]
 readme = "README.md"
+packages = [{include="*", from="src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -12,7 +13,6 @@ scipy = "^1.11.4"
 pytest = "^7.4.3"
 pendulum = "^2.1.2"
 pandas = "^2.2.2"
-
 
 [build-system]
 requires = ["poetry-core"]
