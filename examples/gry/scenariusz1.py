@@ -5,7 +5,7 @@
 # 4. Jeśli zostałem zabity lub jestem jedynym żywym, zakończ. Jeśli nie, wróć do 2.
 
 
-from procenty.symulacja.panstwo import Panstwo
+from procenty.symulacja import Panstwo
 
 
 if __name__ == '__main__':

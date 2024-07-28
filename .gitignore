@@ -12,3 +12,4 @@ envproc/
 .pytest_cache
 poetry.lock
 env/
+poetry.lock
