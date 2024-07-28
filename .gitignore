@@ -13,3 +13,4 @@ envproc/
 poetry.lock
 env/
 poetry.lock
+dist/
