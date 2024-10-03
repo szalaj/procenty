@@ -79,7 +79,7 @@ class InflacjaMiesiac:
 
             min_date = min(dates)
 
-            print(f"min_date: {min_date}, data start: {self.data_start}, data koniec: {self.data_koniec}")
+            # print(f"min_date: {min_date}, data start: {self.data_start}, data koniec: {self.data_koniec}")
 
             # Convert dates to numerical values representing time or elapsed time
             timestamps = np.array([(date-min_date).total_seconds() for date in dates])

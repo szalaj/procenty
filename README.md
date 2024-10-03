@@ -8,3 +8,7 @@
 stworzenie grafu o kształcie prostokąta
 
 https://networkx.org/documentation/stable/reference/generated/networkx.generators.lattice.grid_2d_graph.html
+
+stworzeniu grafu składającego się z heksów
+
+https://networkx.org/documentation/stable/reference/generated/networkx.generators.lattice.hexagonal_lattice_graph.html

@@ -6,14 +6,19 @@
 
 
 from procenty.symulacja import Panstwo
-
+from tabulate import tabulate
 
 if __name__ == '__main__':
     polska = Panstwo(28, 100,200,300)
     niemcy = Panstwo(80, 200,300,100)
     polska.polacz(niemcy)
 
-    if polska.sila > niemcy.sila:
-        print("Polska wygrała")
-    else:
-        print("Niemcy wygrały")
+
+
+    # if polska.sila > niemcy.sila:
+    #     print("Polska wygrała")
+    # else:
+    #     print("Niemcy wygrały")
+
+    table=[[polska.ludnosc, niemcy.ludnosc],[polska.sila,niemcy.sila]]
+    print(tabulate(table))

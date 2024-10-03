@@ -45,7 +45,6 @@ class RRSO:
                 #raise Exception('Za dużo iteracji')
                 return "N/A"
 
-        print(f'iteracje: {i}')
         return rrso
     
 
@@ -93,7 +92,7 @@ def mpkk(K, N, data_start):
     if rok_start == rok_koniec:
         dni_rok = liczba_dni_w_roku(rok_start)
         dni = (data_koniec - data_start).days
-        print(f"ile dni {dni}")
+        # print(f"ile dni {dni}")
         mpkk = K * 0.1 + K * dni/dni_rok * 0.1
     else:
         wspolczynnik = 0
