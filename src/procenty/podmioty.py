@@ -20,10 +20,7 @@ class Menadzer:
         self._max_period_przeplyw = None
         
         self.g = nx.MultiDiGraph()
-        
-    def dodaj_polaczenie(self, podmiot1, podmiot2, typ):
-        self.g.add_edge(podmiot1, podmiot2, typ=typ)
-        
+
     def dodaj_przeplyw(self, podmiot1, podmiot2, typ, czas, kwota):
         try:
             czas = pd.to_datetime(czas)
