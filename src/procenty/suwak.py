@@ -1,6 +1,6 @@
 import yaml
 import sys
-import logging
+from loguru import logger
 import getopt
 import datetime as dt
 from dataclasses import dataclass
@@ -8,37 +8,21 @@ from enum import auto, Enum
 import decimal
 from decimal import Decimal, ROUND_HALF_UP
 from procenty.miary import Odleglosc
+from procenty.proc import Kredyt, Rodzaj
 
-class Rodzaj(Enum):
-    SPLATA = 3
-    OPROCENTOWANIE = 4
-    NADPLATA = 2
-    SPLATA_CALKOWITA = 6
-    TRANSZA = 1
-    WAKACJE = 5
 
 @dataclass
-class Zdarzenie:
-    data:dt.datetime
-    rodzaj:Rodzaj
-    wartosc:object
-    def __lt__(self, other):
+class KredytSuwak:
+    def __init__(self,kredyt:Kredyt, p:float):
 
-        return str(self.data) + str(self.rodzaj.value) < str(other.data) + str(other.rodzaj.value)
-
-class Kredyt:
-    def __init__(self,K:Decimal, N:int, p:Decimal, marza:Decimal, start:dt.datetime, rodzajRat:str):
-        print("co wy chcecie?")
-        grosze =  decimal.Decimal('.01')
-
-        self.K = K.quantize(grosze, ROUND_HALF_UP)
-        self.N = N
+        self.K = kredyt.K
+        self.N = kredyt.N
         self.p = p
-        self.marza = marza
-        self.start = start
-        self.rodzajRat = rodzajRat
+        self.marza = kredyt.marza
+        self.start = kredyt.start
+        self.rodzajRat = kredyt.rodzajRat
 
-        self.dzien_odsetki = start
+        self.dzien_odsetki = kredyt.start
         self.zdarzenia = []
     
         self.odsetki_naliczone = 0
@@ -50,10 +34,7 @@ class Kredyt:
         self.wynik = []
         self.wynik_nadplaty = []
 
-
-    def __repr__(self) -> str:
-        return "kredyt : {}".format(self.K)
-
+            
     def wyswietl(self, dzien_raty):
 
         grosze =  decimal.Decimal('.01')
@@ -229,7 +210,23 @@ class Kredyt:
         self.dzien_odsetki = dzien_raty
         self.N -= 1
 
-    def symuluj(self):
+        # sprawdz czy mozna zrobic nadplate
+        
+        for rata in self.raty_kred:
+            if rata['nr_raty'] == self.licznik_rat:
+                rata_k = Decimal(rata['rata'])
+                rata_i = self.I
+                logger.info(f"{self.licznik_rat}: rata kredyt: {rata_k}, rata i: {rata_i}")
+                if rata_k > rata_i:
+                    nadplata_k = Decimal(rata_k - rata_i)
+                    logger.info(f"nadplata: {nadplata_k}")
+                    self.zrob_nadplate(dzien_raty, nadplata_k)
+                                                             
+
+    def symuluj(self, raty_kred:list):
+
+
+        self.raty_kred:list = raty_kred
 
         for zdarzenie in sorted(self.zdarzenia):
             #print(zdarzenie)
@@ -248,6 +245,8 @@ class Kredyt:
                 break
 
         return {"raty": self.wynik, "nadplaty": self.wynik_nadplaty, "kapital_na_koniec": str(self.K.quantize(decimal.Decimal('0.01')))}
+
+
 
     def zapisz_do_pliku(self, nazwa_pliku):
 

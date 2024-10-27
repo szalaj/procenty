@@ -80,6 +80,7 @@ class Kredyt:
         }
 
         self.wynik.append(data)
+        logging.info(self.licznik_rat)
 
 
         return 1
@@ -227,11 +228,16 @@ class Kredyt:
 
         self.dzien_odsetki = dzien_raty
         self.N -= 1
+        
+    def kopiuj_zdarzenia_splaty(self)->list:
+        return [zdarzenie for zdarzenie in self.zdarzenia if zdarzenie.rodzaj == Rodzaj.SPLATA]
 
     def symuluj(self):
+        
 
         for zdarzenie in sorted(self.zdarzenia):
-            #print(zdarzenie)
+
+
             if zdarzenie.rodzaj == Rodzaj.OPROCENTOWANIE:
                 self.zmien_oprocentowanie(zdarzenie.data, zdarzenie.wartosc)
             elif zdarzenie.rodzaj == Rodzaj.SPLATA:
