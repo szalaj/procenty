@@ -1,6 +1,6 @@
 import yaml
 import sys
-import logging
+from loguru import logger
 import getopt
 import datetime as dt
 from dataclasses import dataclass
@@ -8,36 +8,21 @@ from enum import auto, Enum
 import decimal
 from decimal import Decimal, ROUND_HALF_UP
 from procenty.miary import Odleglosc
+from procenty.proc import Kredyt, Rodzaj
 
-class Rodzaj(Enum):
-    SPLATA = 3
-    OPROCENTOWANIE = 4
-    NADPLATA = 2
-    SPLATA_CALKOWITA = 6
-    TRANSZA = 1
-    WAKACJE = 5
 
 @dataclass
-class Zdarzenie:
-    data:dt.datetime
-    rodzaj:Rodzaj
-    wartosc:object
-    def __lt__(self, other):
+class KredytSuwak:
+    def __init__(self,kredyt:Kredyt, p:float):
 
-        return str(self.data) + str(self.rodzaj.value) < str(other.data) + str(other.rodzaj.value)
-
-class Kredyt:
-    def __init__(self,K:Decimal, N:int, p:Decimal, marza:Decimal, start:dt.datetime, rodzajRat:str):
-        grosze =  decimal.Decimal('.01')
-
-        self.K = K.quantize(grosze, ROUND_HALF_UP)
-        self.N = N
+        self.K = kredyt.K
+        self.N = kredyt.N
         self.p = p
-        self.marza = marza
-        self.start = start
-        self.rodzajRat = rodzajRat
+        self.marza = kredyt.marza
+        self.start = kredyt.start
+        self.rodzajRat = kredyt.rodzajRat
 
-        self.dzien_odsetki = start
+        self.dzien_odsetki = kredyt.start
         self.zdarzenia = []
     
         self.odsetki_naliczone = 0
@@ -49,10 +34,7 @@ class Kredyt:
         self.wynik = []
         self.wynik_nadplaty = []
 
-
-    def __repr__(self) -> str:
-        return "kredyt : {}".format(self.K)
-
+            
     def wyswietl(self, dzien_raty):
 
         grosze =  decimal.Decimal('.01')
@@ -80,7 +62,6 @@ class Kredyt:
         }
 
         self.wynik.append(data)
-        logging.info(self.licznik_rat)
 
 
         return 1
@@ -228,16 +209,27 @@ class Kredyt:
 
         self.dzien_odsetki = dzien_raty
         self.N -= 1
-        
-    def kopiuj_zdarzenia_splaty(self)->list:
-        return [zdarzenie for zdarzenie in self.zdarzenia if zdarzenie.rodzaj == Rodzaj.SPLATA]
 
-    def symuluj(self):
+        # sprawdz czy mozna zrobic nadplate
         
+        for rata in self.raty_kred:
+            if rata['nr_raty'] == self.licznik_rat:
+                rata_k = Decimal(rata['rata'])
+                rata_i = self.I
+                logger.info(f"{self.licznik_rat}: rata kredyt: {rata_k}, rata i: {rata_i}")
+                if rata_k > rata_i:
+                    nadplata_k = Decimal(rata_k - rata_i)
+                    logger.info(f"nadplata: {nadplata_k}")
+                    self.zrob_nadplate(dzien_raty, nadplata_k)
+                                                             
+
+    def symuluj(self, raty_kred:list):
+
+
+        self.raty_kred:list = raty_kred
 
         for zdarzenie in sorted(self.zdarzenia):
-
-
+            #print(zdarzenie)
             if zdarzenie.rodzaj == Rodzaj.OPROCENTOWANIE:
                 self.zmien_oprocentowanie(zdarzenie.data, zdarzenie.wartosc)
             elif zdarzenie.rodzaj == Rodzaj.SPLATA:
@@ -254,75 +246,10 @@ class Kredyt:
 
         return {"raty": self.wynik, "nadplaty": self.wynik_nadplaty, "kapital_na_koniec": str(self.K.quantize(decimal.Decimal('0.01')))}
 
+
+
     def zapisz_do_pliku(self, nazwa_pliku):
 
         zapis = {"raty": self.wynik, "kapital_na_koniec": str(self.K.quantize(decimal.Decimal('0.01')))}
 
         yaml.dump(zapis, open(nazwa_pliku, 'w'), default_flow_style=False)
-
-            
-
-def create_kredyt(dane_kredytu, rodzajRat):
-
-    dane = dane_kredytu
-
-    p = Decimal(dane['p']/100.0)
-    marza = Decimal(dane['marza']/100.0)
-    K = Decimal(dane['K'])
-    dni = dane['daty_splaty']
-    N = len(dni)
-    start_kredytu = dt.datetime.strptime(dane['start'], '%Y-%m-%d')
-
-    kr = Kredyt(K, N, p, marza, start_kredytu, rodzajRat)
-
-    for dzien_splaty in dane['daty_splaty']:
-        kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(dzien_splaty, '%Y-%m-%d'), Rodzaj.SPLATA, 0))
-
-    if 'oprocentowanie' in dane:
-        for zmiana_opr in dane['oprocentowanie']:
-            kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(zmiana_opr['dzien'], '%Y-%m-%d'), Rodzaj.OPROCENTOWANIE, zmiana_opr['proc']))
-
-    if 'nadplaty' in dane:
-        for nadplata in dane['nadplaty']:
-            if nadplata['calkowita'] == True:
-                kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(nadplata['dzien'], '%Y-%m-%d'), Rodzaj.SPLATA_CALKOWITA, Decimal(nadplata['kwota'])))
-            else:
-                kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(nadplata['dzien'], '%Y-%m-%d'), Rodzaj.NADPLATA, Decimal(nadplata['kwota'])))
-            
-    if 'transze' in dane:
-        for transza in dane['transze']:
-            kr.zdarzenia.append(Zdarzenie(dt.datetime.strptime(transza['dzien'], '%Y-%m-%d'), Rodzaj.TRANSZA, Decimal(transza['kapital'])))
-
-
-    return kr.symuluj()
-
-
-
-
-if __name__== "__main__":
-
-    logging.basicConfig(filename='logs/loginfo.log', encoding='utf-8', level=logging.DEBUG)
-    logging.info("{} start aplikacji".format(dt.datetime.now()))
-
-    try:
-
-        opts, arg = getopt.getopt(sys.argv[1:], 'm:',  ["model="])
-        
-        for opt, arg in opts:
-            if opt in ("-m", "--model"):
-                plik_model = str(arg)
-                
-    except getopt.error as err:
-        # output error, and return with an error code
-        print (str(err))
-
-    kr = create_kredyt(plik_model)
-
-    kr.symuluj()
-
-
-    #print("kapital na koniec : {}".format(kr.K.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
-
-    kr.zapisz_do_pliku('./results/last_result.yml')
-
-    logging.info("{} koniec aplikacji".format(dt.datetime.now()))
