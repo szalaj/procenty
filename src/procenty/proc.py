@@ -1,13 +1,20 @@
 import yaml
 import sys
-import logging
+from loguru import logger
 import getopt
 import datetime as dt
 from dataclasses import dataclass
 from enum import auto, Enum
 import decimal
 from decimal import Decimal, ROUND_HALF_UP
+from typing import Optional
 from procenty.miary import Odleglosc
+import procenty.inwestycja as inv
+import copy
+
+from dateutil.relativedelta import relativedelta
+
+grosze =  decimal.Decimal('.01')
 
 class Rodzaj(Enum):
     SPLATA = 3
@@ -26,19 +33,28 @@ class Zdarzenie:
 
         return str(self.data) + str(self.rodzaj.value) < str(other.data) + str(other.rodzaj.value)
 
+@dataclass
 class Kredyt:
-    def __init__(self,K:Decimal, N:int, p:Decimal, marza:Decimal, start:dt.datetime, rodzajRat:str):
-        grosze =  decimal.Decimal('.01')
+    """Klasa do obsługi kredytów."""
+    K:Decimal
+    N:int
+    p:Decimal
+    marza:Decimal
+    start:dt.datetime
+    rodzajRat:str
+    splaty_normalne:bool=True
+    operacje:Optional[list[Zdarzenie]] = None
 
-        self.K = K.quantize(grosze, ROUND_HALF_UP)
-        self.N = N
-        self.p = p
-        self.marza = marza
-        self.start = start
-        self.rodzajRat = rodzajRat
 
-        self.dzien_odsetki = start
-        self.zdarzenia = []
+    def __post_init__(self):
+        self.Kstart = self.K
+        self.Nstart = self.N
+
+        self.K = self.K.quantize(grosze, ROUND_HALF_UP)
+        self.dzien_odsetki: dt.datetime = self.start
+        self.zdarzenia: list[Zdarzenie] = []
+        if self.operacje:
+            self.zdarzenia.extend(self.operacje)
     
         self.odsetki_naliczone = 0
         self.odsetki_naliczone_marza = 0
@@ -49,6 +65,18 @@ class Kredyt:
         self.wynik = []
         self.wynik_nadplaty = []
 
+        '''Jeśli flaga jest True, to dodajemy zdarzenia spłaty raty w miesięcznych 
+        regularnych odstępach czasu'''
+        if self.splaty_normalne and self.operacje:
+            raise Exception('nie można jednocześnie podać operacji i użyć flagi splaty_normalne')
+        elif self.splaty_normalne and not self.operacje:
+            dni_splaty = [dt.datetime(2021, 11, 1) + relativedelta(months=i) for i in range(420)]
+            for dzien_splaty in dni_splaty:
+                self.zdarzenia.append(Zdarzenie(dzien_splaty, Rodzaj.SPLATA, 0))
+
+            
+        self.kredyt_wynik = self._symuluj()
+
 
     def __repr__(self) -> str:
         return "kredyt : {}".format(self.K)
@@ -56,7 +84,6 @@ class Kredyt:
     def wyswietl(self, dzien_raty):
 
         grosze =  decimal.Decimal('.01')
-
         return "dzien: {}, K: {} zł, odsetki: {} zł, rata: {} zł".format(dzien_raty, 
                                                               self.K.quantize(grosze, ROUND_HALF_UP),  
                                                               self.odsetki_naliczone.quantize(grosze, ROUND_HALF_UP), 
@@ -64,8 +91,6 @@ class Kredyt:
 
     def zapisz_stan(self, dzien_raty):
 
-
-        grosze =  decimal.Decimal('.01')
 
         data = {
             'dzien': dzien_raty.strftime('%Y-%m-%d'),
@@ -80,8 +105,6 @@ class Kredyt:
         }
 
         self.wynik.append(data)
-        logging.info(self.licznik_rat)
-
 
         return 1
 
@@ -165,7 +188,6 @@ class Kredyt:
         self.dzien_odsetki = dzien_transzy
 
     def zrob_splate_calkowita(self, dzien_splaty:dt.datetime):
-        grosze =  decimal.Decimal('.01')
 
         o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_splaty.strftime('%Y-%m-%d'), 'a')
 
@@ -191,7 +213,6 @@ class Kredyt:
 
     def splata_raty(self, dzien_raty:dt.datetime):
 
-        grosze =  decimal.Decimal('.01')
 
         o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_raty.strftime('%Y-%m-%d'), 'a')
 
@@ -229,10 +250,10 @@ class Kredyt:
         self.dzien_odsetki = dzien_raty
         self.N -= 1
         
-    def kopiuj_zdarzenia_splaty(self)->list:
+    def _kopiuj_zdarzenia_splaty(self)->list:
         return [zdarzenie for zdarzenie in self.zdarzenia if zdarzenie.rodzaj == Rodzaj.SPLATA]
 
-    def symuluj(self):
+    def _symuluj(self):
         
 
         for zdarzenie in sorted(self.zdarzenia):
@@ -260,7 +281,37 @@ class Kredyt:
 
         yaml.dump(zapis, open(nazwa_pliku, 'w'), default_flow_style=False)
 
+    @property
+    def xirr(self)->float:
+        cashflows = [(dt.datetime.strptime(x['dzien'], '%Y-%m-%d'), float(x['rata'])) for x in self.kredyt_wynik['raty']]
+        cashflows = cashflows + [(dt.datetime.strptime(x['dzien'], '%Y-%m-%d'), float(x['kwota'])) for x in self.kredyt_wynik['nadplaty']]
+        cashflows = cashflows + [(self.start, float(-self.Kstart))]
+
+        return inv.xirr(cashflows)
+
             
+@dataclass
+class KredytSuwak():
+    """Klasa do obsługi kredytów."""
+    kredyt:Kredyt
+    p:Decimal
+    def __post_init__(self):
+
+        self.kredyt = copy.deepcopy(self.kredyt)
+
+        self.kredyt_suwak = Kredyt(self.kredyt.Kstart, 
+                                   self.kredyt.Nstart, 
+                                   self.p,
+                                   self.kredyt.marza, 
+                                   self.kredyt.start, 
+                                   self.kredyt.rodzajRat, 
+                                   self.kredyt.splaty_normalne, 
+                                   self.kredyt.operacje)
+    @property
+    def xirr(self) -> float:
+        return self.kredyt_suwak.xirr
+
+
 
 def create_kredyt(dane_kredytu, rodzajRat):
 
@@ -300,29 +351,4 @@ def create_kredyt(dane_kredytu, rodzajRat):
 
 
 if __name__== "__main__":
-
-    logging.basicConfig(filename='logs/loginfo.log', encoding='utf-8', level=logging.DEBUG)
-    logging.info("{} start aplikacji".format(dt.datetime.now()))
-
-    try:
-
-        opts, arg = getopt.getopt(sys.argv[1:], 'm:',  ["model="])
-        
-        for opt, arg in opts:
-            if opt in ("-m", "--model"):
-                plik_model = str(arg)
-                
-    except getopt.error as err:
-        # output error, and return with an error code
-        print (str(err))
-
-    kr = create_kredyt(plik_model)
-
-    kr.symuluj()
-
-
-    #print("kapital na koniec : {}".format(kr.K.quantize(Decimal('.01'), decimal.ROUND_HALF_UP)))
-
-    kr.zapisz_do_pliku('./results/last_result.yml')
-
-    logging.info("{} koniec aplikacji".format(dt.datetime.now()))
+    pass
