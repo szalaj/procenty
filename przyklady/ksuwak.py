@@ -1,5 +1,5 @@
 import procenty.suwak as sw 
-import procenty.proc as pr
+import procenty.kredyt as pr
 from decimal import Decimal
 from datetime import datetime
 from dateutil.relativedelta import relativedelta

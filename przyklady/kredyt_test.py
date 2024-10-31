@@ -1,4 +1,4 @@
-from procenty.proc import Kredyt, Zdarzenie, Rodzaj
+from procenty.kredyt import Kredyt, Zdarzenie, Rodzaj
 from datetime import datetime
 from decimal import Decimal
 from dateutil.relativedelta import relativedelta
