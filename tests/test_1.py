@@ -2,7 +2,7 @@ import pytest
 import yaml
 import procenty.rrso
 import procenty.miary
-import procenty.proc
+import procenty.kredyt
 import datetime as dt
 from decimal import Decimal, ROUND_HALF_UP
 
@@ -61,7 +61,7 @@ def test_mnoznik_odsetkowy():
     assert abs(mnoznik_nowy - mnoznik_klasyczny) < n*2.74*10**-3 # max roznica (366/365)
 
 def test_rrso_wieksze_zero():
-    k = procenty.proc.Kredyt(Decimal(1000), 12, Decimal(0.01), Decimal(0.01), dt.datetime(2020, 12, 11), 'rowne')
+    k = procenty.kredyt.Kredyt(Decimal(1000), 12, Decimal(0.01), Decimal(0.01), dt.datetime(2020, 12, 11), 'rowne')
     wynik = k.symuluj()
 
     assert wynik

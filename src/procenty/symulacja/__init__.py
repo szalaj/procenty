@@ -1,1 +1,0 @@
-from procenty.symulacja.panstwo import Panstwo
