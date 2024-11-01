@@ -1,5 +1,3 @@
-import yaml
-import sys
 from loguru import logger
 from typing import Any
 import datetime as dt
@@ -290,6 +288,12 @@ class Kredyt:
 
         return inv.xirr(cashflows)
 
+    @property
+    def podsumowanie(self) -> str:
+        raty = [float(x['rata']) for x in self.kredyt_wynik['raty']]
+        ile = len(raty)
+        suma = sum(raty)
+        return f"K: {self.Kstart}, suma rat: {suma}, liczba rat: {ile}, xirr: {self.xirr}"
             
 @dataclass
 class KredytPorownanie():
