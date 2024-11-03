@@ -65,14 +65,15 @@ class Kredyt:
         self.wynik = []
         self.wynik_nadplaty = []
 
-        if self.operacje:
-            self.zdarzenia.extend(self.operacje)
-
         if self.splaty_normalne:
-  
             dni_splaty = [self.start + relativedelta(months=i+1) for i in range(self.N)]
             for dzien_splaty in dni_splaty:
                 self.zdarzenia.append(Zdarzenie(dzien_splaty, Rodzaj.SPLATA, 0))
+
+        N_zdarzenie=[z for z in self.zdarzenia if z.rodzaj == Rodzaj.SPLATA]
+        if len(N_zdarzenie) != self.N:
+            logger.warning(f"Kredyt: {self.K}, splaty normalne {self.splaty_normalne}.Nie zgadza się liczba zdarzeń {len(N_zdarzenie)} z N {self.N}")
+            raise Exception('Nie zgadza się liczba zdarzeń SPLATA RATY z argumentem N')
 
             
         self.kredyt_wynik = self._symuluj()
@@ -319,7 +320,9 @@ class KredytPorownanie():
     def xirr(self) -> float:
         return self.kredyt_suwak.xirr
 
-
+    @property
+    def raty(self) -> list:
+        return self.kredyt_suwak.raty
 
 def create_kredyt(dane:list[dict[str, Any]], rodzajRat:str):
 

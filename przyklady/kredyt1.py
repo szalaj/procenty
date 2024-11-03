@@ -1,40 +1,37 @@
-from procenty.kredyt import Kredyt, Zdarzenie, Rodzaj
-from datetime import datetime
+from procenty.kredyt import Kredyt, KredytPorownanie, Zdarzenie, Rodzaj, create_kredyt
 from decimal import Decimal
-from dateutil.relativedelta import relativedelta
-from tabulate import tabulate
-import networkx as nx
-from procenty.podmioty import Podmiot, Menadzer
+from datetime import datetime
 
 
-k = Kredyt(Decimal(400000), 420, Decimal(0.076), Decimal(0.04), datetime(2021, 10, 1), 'rowne')
+if __name__ == "__main__":
 
-datetimes = [datetime(2021, 11, 1) + relativedelta(months=i) for i in range(420)]
-for dzien_splaty in datetimes:
-    k.zdarzenia.append(Zdarzenie(dzien_splaty, Rodzaj.SPLATA, 0))
+    K = Decimal(400000)
+    N = 420
+    p1 = Decimal(0.076)
+    p2 = Decimal(0.026)
+    marza = Decimal(0.04)
+    start = datetime(2021, 10, 13)
+    rodzaj = 'rowne'
 
-wynik = k.symuluj()
+    print('--------------------------Kredyty-----------------------')
+
+    zdarzenia = [
+        Zdarzenie(datetime.strptime('2021-12-12', '%Y-%m-%d'), Rodzaj.NADPLATA, Decimal(40000)),
+        Zdarzenie(datetime.strptime('2024-12-12', '%Y-%m-%d'), Rodzaj.OPROCENTOWANIE, float(0.2)),
+        Zdarzenie(datetime.strptime('2025-12-12', '%Y-%m-%d'), Rodzaj.SPLATA_CALKOWITA, float(0.2))
+        ]
+
+    k1 = Kredyt(K, N, p1, marza, start, rodzaj, True, zdarzenia)
+    k2 = KredytPorownanie(k1, p2)
+
+    dane:dict = {'daty_splaty': ['2021-11-13','2021-12-13', '2022-01-13'],
+            'K': 3000,
+            'N': 3,
+            'p': 12,
+            'marza': 4,
+            'start': '2021-10-13'}
+
+    k3 = create_kredyt(dane, 'rowne')
 
 
-headers = wynik['raty'][0].keys()
-rows = [list(item.values()) for item in wynik['raty']]
-
-
-mg = Menadzer('2022-10')
-
-p1 = Podmiot('2022-10','A', mg)
-p2 = Podmiot('2022-10','B', mg)
-
-
-mg.dodaj_przeplyw(p2, p1, typ='przeplyw', czas='2022-10', kwota=1112050)
-
-for r in rows:
-    rata=r[6]
-    kiedy=r[0]
-
-    mg.dodaj_przeplyw(p1, p2, typ='przeplyw', czas=kiedy, kwota=rata)
-
-mg.sim()
-
-print(p1.konto)
-print(p2.konto)
+    print(f"XIRR1: {k1.xirr}, XIRR2: {k2.xirr}, XIRR3: {k3.xirr}")
