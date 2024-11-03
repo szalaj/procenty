@@ -320,7 +320,9 @@ class KredytPorownanie():
     def xirr(self) -> float:
         return self.kredyt_suwak.xirr
 
-
+    @property
+    def raty(self) -> list:
+        return self.kredyt_suwak.raty
 
 def create_kredyt(dane:list[dict[str, Any]], rodzajRat:str):
 
