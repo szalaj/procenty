@@ -36,7 +36,7 @@ class Kredyt:
     """Klasa do obsługi kredytów."""
     K:Decimal
     N:int
-    p:Decimal
+    r:Decimal
     marza:Decimal
     start:dt.datetime
     rodzajRat:str
@@ -47,6 +47,8 @@ class Kredyt:
     def __post_init__(self):
         self.Kstart = self.K
         self.Nstart = self.N
+
+        self.p = self.r + self.marza
 
         self.K = self.K.quantize(grosze, ROUND_HALF_UP)
         self.dzien_odsetki: dt.datetime = self.start
@@ -131,7 +133,7 @@ class Kredyt:
         return I
         
 
-    def zmien_oprocentowanie(self, dzien_zmiany:dt.datetime, nowe_p:Decimal):
+    def zmien_oprocentowanie(self, dzien_zmiany:dt.datetime, nowe_r:Decimal):
 
 
         o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_zmiany.strftime('%Y-%m-%d'), 'a')
@@ -143,7 +145,7 @@ class Kredyt:
         self.odsetki_naliczone = self.odsetki_naliczone +  opr*self.K
         self.odsetki_naliczone_marza = self.odsetki_naliczone_marza +  opr_marza*self.K
 
-        self.p = Decimal(nowe_p/100.0)
+        self.p = Decimal((nowe_r/100.0))+self.marza
 
         self.dzien_odsetki = dzien_zmiany
 
@@ -318,14 +320,14 @@ class Kredyt:
 class KredytPorownanie():
     """Klasa do obsługi kredytów."""
     kredyt:Kredyt
-    p:Decimal
+    r:Decimal
     def __post_init__(self):
 
         self.kredyt = copy.deepcopy(self.kredyt)
 
         self.kredyt_suwak = Kredyt(self.kredyt.Kstart, 
                                    self.kredyt.Nstart, 
-                                   self.p,
+                                   self.r,
                                    self.kredyt.marza, 
                                    self.kredyt.start, 
                                    self.kredyt.rodzajRat, 
@@ -348,7 +350,7 @@ class KredytPorownanie():
 def create_kredyt(dane:list[dict[str, Any]], rodzajRat:str):
 
 
-    p = Decimal(dane['p']/100.0)
+    r = Decimal(dane['r']/100.0)
     marza = Decimal(dane['marza']/100.0)
     K = Decimal(dane['K'])
     dni = dane['daty_splaty']
@@ -376,7 +378,7 @@ def create_kredyt(dane:list[dict[str, Any]], rodzajRat:str):
             zdarzenia.append(Zdarzenie(dt.datetime.strptime(transza['dzien'], '%Y-%m-%d'), Rodzaj.TRANSZA, Decimal(transza['kapital'])))
 
 
-    kr = Kredyt(K, N, p, marza, start_kredytu, rodzajRat, False, zdarzenia)
+    kr = Kredyt(K, N, r, marza, start_kredytu, rodzajRat, False, zdarzenia)
 
 
 
