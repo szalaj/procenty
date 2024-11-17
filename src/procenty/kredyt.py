@@ -281,6 +281,9 @@ class Kredyt:
         return self.kredyt_wynik['raty']
     
     @property
+    def nadplaty(self) -> list:
+        return self.kredyt_wynik['nadplaty']  
+    @property
     def xirr(self)->float:
         cashflows = [(dt.datetime.strptime(x['dzien'], '%Y-%m-%d'), float(x['rata'])) for x in self.kredyt_wynik['raty']]
         cashflows = cashflows + [(dt.datetime.strptime(x['dzien'], '%Y-%m-%d'), float(x['kwota'])) for x in self.kredyt_wynik['nadplaty']]
@@ -294,7 +297,22 @@ class Kredyt:
         raty = [float(x['rata']) for x in self.kredyt_wynik['raty']]
         ile = len(raty)
         suma = sum(raty)
-        return f"K: {self.Kstart}, suma rat: {suma}, liczba rat: {ile}, xirr: {self.xirr}"
+        nadplaty = [float(x['kwota']) for x in self.kredyt_wynik['nadplaty']]
+        suma_nadplat = sum(nadplaty)
+        odsetki = [float(x['odsetki']) for x in self.kredyt_wynik['raty']]
+        suma_odsetek = sum(odsetki)
+
+        dane = {'raty': self.kredyt_wynik['raty'],
+                'info': {
+                    'suma_rat': str(Decimal(suma).quantize(grosze, ROUND_HALF_UP)),
+                    'suma_nadplat': str(Decimal(suma_nadplat).quantize(grosze, ROUND_HALF_UP)),
+                    'suma_odsetek': str(Decimal(suma_odsetek).quantize(grosze, ROUND_HALF_UP)),
+                    'liczba_rat': ile,
+                    'xirr': str(self.xirr),
+                    'K': str(self.Kstart.quantize(grosze, ROUND_HALF_UP))}
+                }
+
+        return dane
             
 @dataclass
 class KredytPorownanie():
@@ -314,8 +332,6 @@ class KredytPorownanie():
                                    self.kredyt.splaty_normalne, 
                                    self.kredyt.operacje)
         
-
-    
     @property
     def xirr(self) -> float:
         return self.kredyt_suwak.xirr
@@ -323,7 +339,12 @@ class KredytPorownanie():
     @property
     def raty(self) -> list:
         return self.kredyt_suwak.raty
+    
+    @property
+    def podsumowanie(self) -> dict:
+        return self.kredyt_suwak.podsumowanie
 
+    
 def create_kredyt(dane:list[dict[str, Any]], rodzajRat:str):
 
 
