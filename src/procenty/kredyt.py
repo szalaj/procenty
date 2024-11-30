@@ -325,7 +325,7 @@ class KredytPorownanie():
 
         self.kredyt = copy.deepcopy(self.kredyt)
 
-        self.kredyt_suwak = Kredyt(self.kredyt.Kstart, 
+        self.kredyt_porownanie = Kredyt(self.kredyt.Kstart, 
                                    self.kredyt.Nstart, 
                                    self.r,
                                    self.kredyt.marza, 
@@ -336,17 +336,86 @@ class KredytPorownanie():
         
     @property
     def xirr(self) -> float:
-        return self.kredyt_suwak.xirr
+        return self.kredyt_porownanie.xirr
 
     @property
     def raty(self) -> list:
-        return self.kredyt_suwak.raty
+        return self.kredyt_porownanie.raty
     
     @property
     def podsumowanie(self) -> dict:
-        return self.kredyt_suwak.podsumowanie
+        return self.kredyt_porownanie.podsumowanie
 
-    
+@dataclass
+class KredytSuwak:
+    K:Decimal
+    N:int
+    p:Decimal
+    start:dt.datetime
+
+    def __post_init__(self):
+        self._iN = 0
+        self.dzien_odsetki: dt.datetime = self.start
+
+    def next(self, data:dt.datetime, rata_porownawcza:Decimal):
+        if self._iN < self.N and self.K > 0:
+            
+
+            o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), data.strftime('%Y-%m-%d'), 'a')
+
+            opr = o_d.mnoznik*self.p
+
+            if self.K > 0:
+                I = self.oblicz_rate().quantize(grosze, ROUND_HALF_UP)
+            else:
+                I = Decimal(0).quantize(grosze, ROUND_HALF_UP)
+
+            odsetki_naliczone = (opr*self.K).quantize(grosze, ROUND_HALF_UP)
+
+            
+            if odsetki_naliczone > I:
+                I = odsetki_naliczone
+
+            nadplata = 0
+            if I < rata_porownawcza:
+                nadplata = rata_porownawcza - I
+
+            
+            #ostatnia rata
+            if self.N == (self._iN+1):
+                roznica_na_koniec = self.K - (I-odsetki_naliczone) - nadplata
+                I += roznica_na_koniec
+
+
+        
+            self.K = self.K - (I-odsetki_naliczone) - nadplata
+            if self.K < 0:
+                self.K = Decimal(0)
+
+            self.dzien_odsetki = data
+
+            self._iN += 1
+
+        return self.K
+
+        
+    def oblicz_rate(self) -> Decimal:  
+
+
+        k = 12
+        do_splaty = self.K
+        liczba_rat = self.N - self._iN
+        if self.p>0:
+            L = (do_splaty * self.p)
+            M = k*(1-pow(k/(k+self.p),liczba_rat) )
+            I =L/M
+        else: 
+            I = do_splaty/liczba_rat
+
+
+        return I
+
+
 def create_kredyt(dane:list[dict[str, Any]], rodzajRat:str):
 
 

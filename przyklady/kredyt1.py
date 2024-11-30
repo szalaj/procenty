@@ -1,4 +1,4 @@
-from procenty.kredyt import Kredyt, KredytPorownanie, Zdarzenie, Rodzaj, create_kredyt
+from procenty.kredyt import Kredyt, KredytPorownanie, KredytSuwak, Zdarzenie, Rodzaj, create_kredyt
 from decimal import Decimal
 from datetime import datetime
 
@@ -27,11 +27,22 @@ if __name__ == "__main__":
     dane:dict = {'daty_splaty': ['2021-11-13','2021-12-13', '2022-01-13'],
             'K': 3000,
             'N': 3,
-            'p': 12,
+            'r': 12,
             'marza': 4,
             'start': '2021-10-13'}
 
     k3 = create_kredyt(dane, 'rowne')
+
+    k1s = KredytSuwak(K, N, p1, start)
+    
+
+    for i,zd in enumerate(k1.zdarzenia):
+        if zd.rodzaj == Rodzaj.SPLATA:
+            # print(zd.data)  
+            # print(type(zd.data))    
+            kl = k1s.next(zd.data,100000)
+            if kl>0:
+                print(f"{i}: Kolejna kwota: {kl}")
 
 
     print(f"XIRR1: {k1.xirr}, XIRR2: {k2.xirr}, XIRR3: {k3.xirr}")
