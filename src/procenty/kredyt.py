@@ -351,60 +351,92 @@ class KredytSuwak:
     K:Decimal
     N:int
     p:Decimal
+    marza: Decimal
     start:dt.datetime
+    operacje:Optional[list[Zdarzenie]] = None
+
 
     def __post_init__(self):
-        self._iN = 0
         self.dzien_odsetki: dt.datetime = self.start
+        self.I = 0
+        self.odsetki_naliczone = 0
+
+    def zmien_oprocentowanie(self, dzien_zmiany:dt.datetime, nowe_r:Decimal):
+
+
+        o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_zmiany.strftime('%Y-%m-%d'), 'a')
+
+        opr = o_d.mnoznik*self.p
+
+
+        self.odsetki_naliczone = self.odsetki_naliczone +  opr*self.K
+
+        self.p = Decimal((nowe_r*0.01))+self.marza
+
+        self.dzien_odsetki = dzien_zmiany
+
+
+    def splata_raty(self, dzien_raty:dt.datetime):
+
+
+        o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_raty.strftime('%Y-%m-%d'), 'a')
+
+        opr = o_d.mnoznik*self.p
+
+        if self.K > 0:
+            self.I = self.oblicz_rate().quantize(grosze, ROUND_HALF_UP)
+        else:
+            self.I = Decimal(0).quantize(grosze, ROUND_HALF_UP)
+
+        self.odsetki_naliczone = (self.odsetki_naliczone + opr*self.K).quantize(grosze, ROUND_HALF_UP)
+    
+        if self.odsetki_naliczone > self.I:
+            self.I = self.odsetki_naliczone
+
+        #ostatnia rata
+        if self.N == 1:
+            roznica_na_koniec = self.K - (self.I-self.odsetki_naliczone)
+            self.I += roznica_na_koniec
+
+    
+        self.K = self.K - (self.I-self.odsetki_naliczone)
+
+
+        self.odsetki_naliczone = 0
+  
+
+        self.dzien_odsetki = dzien_raty
+        self.N -= 1
+
 
     def next(self, data:dt.datetime, rata_porownawcza:Decimal):
-        if self._iN < self.N and self.K > 0:
-            
 
-            o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), data.strftime('%Y-%m-%d'), 'a')
+        # sprawdz czy pomiędzy ostatnią spłatą a datą jest zmiana oprocentowania
+        # jeśli tak to zmień oprocentowanie
 
-            opr = o_d.mnoznik*self.p
+        if self.N > 0 and self.K > 0:
 
-            if self.K > 0:
-                I = self.oblicz_rate().quantize(grosze, ROUND_HALF_UP)
-            else:
-                I = Decimal(0).quantize(grosze, ROUND_HALF_UP)
+            if self.operacje:
+                for zdarzenie in self.operacje:
+                    if zdarzenie.data > self.dzien_odsetki and zdarzenie.data <= data:
+                        if zdarzenie.rodzaj == Rodzaj.OPROCENTOWANIE:
+                            self.zmien_oprocentowanie(zdarzenie.data, zdarzenie.wartosc)
 
-            odsetki_naliczone = (opr*self.K).quantize(grosze, ROUND_HALF_UP)
-
-            
-            if odsetki_naliczone > I:
-                I = odsetki_naliczone
+            self.splata_raty(data)
 
             nadplata = 0
-            if I < rata_porownawcza:
-                nadplata = rata_porownawcza - I
-
-            
-            #ostatnia rata
-            if self.N == (self._iN+1):
-                roznica_na_koniec = self.K - (I-odsetki_naliczone) - nadplata
-                I += roznica_na_koniec
-
-
-        
-            self.K = self.K - (I-odsetki_naliczone) - nadplata
-            if self.K < 0:
-                self.K = Decimal(0)
-
-            self.dzien_odsetki = data
-
-            self._iN += 1
+            if self.I < rata_porownawcza:
+                nadplata = rata_porownawcza - self.I
+                self.K = self.K - nadplata
 
         return self.K
-
-        
+          
     def oblicz_rate(self) -> Decimal:  
 
 
         k = 12
         do_splaty = self.K
-        liczba_rat = self.N - self._iN
+        liczba_rat = self.N 
         if self.p>0:
             L = (do_splaty * self.p)
             M = k*(1-pow(k/(k+self.p),liczba_rat) )
@@ -414,6 +446,8 @@ class KredytSuwak:
 
 
         return I
+
+
 
 
 def create_kredyt(dane:list[dict[str, Any]], rodzajRat:str):

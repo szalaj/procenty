@@ -18,7 +18,7 @@ if __name__ == "__main__":
     zdarzenia = [
         Zdarzenie(datetime.strptime('2021-12-12', '%Y-%m-%d'), Rodzaj.NADPLATA, Decimal(40000)),
         Zdarzenie(datetime.strptime('2024-12-12', '%Y-%m-%d'), Rodzaj.OPROCENTOWANIE, float(0.2)),
-        Zdarzenie(datetime.strptime('2025-12-12', '%Y-%m-%d'), Rodzaj.SPLATA_CALKOWITA, float(0.2))
+        #Zdarzenie(datetime.strptime('2025-12-12', '%Y-%m-%d'), Rodzaj.SPLATA_CALKOWITA, float(0.2))
         ]
 
     k1 = Kredyt(K, N, p1, marza, start, rodzaj, True, zdarzenia)
@@ -33,16 +33,24 @@ if __name__ == "__main__":
 
     k3 = create_kredyt(dane, 'rowne')
 
-    k1s = KredytSuwak(K, N, p1, start)
+    k1s = KredytSuwak(K, N, p1, marza, start, zdarzenia)
     
+    for i, zd in enumerate(k1.podsumowanie['raty']):
 
-    for i,zd in enumerate(k1.zdarzenia):
-        if zd.rodzaj == Rodzaj.SPLATA:
-            # print(zd.data)  
-            # print(type(zd.data))    
-            kl = k1s.next(zd.data,100000)
-            if kl>0:
-                print(f"{i}: Kolejna kwota: {kl}")
+        # print(zd)
+        data_raty = datetime.strptime(zd['dzien'], '%Y-%m-%d')
+        kwota_raty = Decimal(zd['rata'])
+        kl = k1s.next(data_raty, kwota_raty)
+        print(f"{i}: Kolejna kwota: {kl}")
+
+
+    # for i,zd in enumerate(k1.zdarzenia):
+    #     if zd.rodzaj == Rodzaj.SPLATA:
+    #         # print(zd.data)  
+    #         # print(type(zd.data))    
+    #         kl = k1s.next(zd.data,4000)
+    #         if kl>0:
+    #             print(f"{i}: Kolejna kwota: {kl}")
 
 
     print(f"XIRR1: {k1.xirr}, XIRR2: {k2.xirr}, XIRR3: {k3.xirr}")
