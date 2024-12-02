@@ -11,6 +11,9 @@ import numpy as np
 from scipy.interpolate import CubicSpline, interp1d
 from dateutil.relativedelta import relativedelta
 
+def diff_month(d1, d2):
+    return (d1.year - d2.year) * 12 + d1.month - d2.month
+
 @dataclass
 class Krzywa:
 
@@ -55,3 +58,15 @@ class Krzywa:
         opr = [(d,self.interpolation_function(d.timestamp()).item()) for d in dajs]
 
         return opr
+    
+    def podzial_miesiac(self) -> list:
+        '''
+        Na razie dzieli na miesace biorac konkretny dzień.
+        Trzeba zrobić uśrednienie z całego miesiąca.
+        '''
+        dajs = [self.start]
+        dajs.extend([self.start + relativedelta(months=(i+1)) for i in range(diff_month(self.end, self.start))])
+        opr = [(d,self.interpolation_function(d.timestamp()).item()) for d in dajs]
+
+        return opr
+    

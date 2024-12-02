@@ -5,6 +5,94 @@ import decimal
 from dataclasses import dataclass
 from scipy.interpolate import interp1d
 import numpy as np
+from typing import List, Tuple
+from procenty.stopy import Krzywa
+import copy
+
+@dataclass
+class Inflacja:
+    krzywa: Krzywa
+    miesiac_ref: dt.datetime
+
+    def __post_init__(self):
+
+        self.inflacja_miesiace = self.krzywa.podzial_miesiac()
+
+        self.inflator = self._oblicz_inflacje()
+
+    def _oblicz_inflacje(self):
+        min_miesiac = min(self.inflacja_miesiace, key=lambda x: x[0])[0]
+        max_miesiac = max(self.inflacja_miesiace, key=lambda x: x[0])[0]
+
+        print(f"min_miesiac: {min_miesiac}, max_miesiac: {max_miesiac}, ref: {self.miesiac_ref}")
+
+        if self.miesiac_ref < min_miesiac or self.miesiac_ref > max_miesiac:
+            raise ValueError(f"Miesac ref spoza przedzialu danych. min_miesiac: {min_miesiac}, max_miesiac: {max_miesiac}, ref: {self.miesiac_ref}")
+        
+        # miesiace przed miesiacem referencyjnym
+
+        miesiac_i = self.miesiac_ref - relativedelta(months=1)
+
+
+   
+        inflator = 1
+        inflatory = []
+
+        inflatory.append((self.miesiac_ref, 1))
+
+        i = 0
+        while miesiac_i >= min_miesiac:
+            i+=1
+
+            mi = miesiac_i.strftime('%Y-%m')
+            
+            for m in self.inflacja_miesiace:
+                m0 = m[0].strftime('%Y-%m')
+                #print(f"m0: {m0}, mi: {mi}")
+                
+                if mi == m0:
+                    inflator = inflator*m[1]
+                    inflatory.append((copy.copy(miesiac_i), copy.copy(inflator)))
+                    break
+                    
+                
+            miesiac_i = miesiac_i - relativedelta(months=1)
+            #raise Exception(f"Brak danych dla miesiaca: {miesiac_i}")
+
+        # miesiace po miesiacu referencyjnym
+        miesiac_i = self.miesiac_ref + relativedelta(months=1)
+        inflator = 1
+        
+        i = 0
+        while miesiac_i <= max_miesiac:
+            i+=1
+            mi = miesiac_i.strftime('%Y-%m')
+            for m in self.inflacja_miesiace:
+                m0 = m[0].strftime('%Y-%m')
+                if mi == m0:
+                    inflator = inflator*m[1]
+                    inflatory.append((copy.copy(miesiac_i), copy.copy(inflator)))
+                    break
+                    
+                
+            miesiac_i = miesiac_i + relativedelta(months=1)
+            #raise Exception(f"Brak danych dla miesiaca: {miesiac_i}")
+
+        inflatory = sorted(inflatory, key=lambda x: x[0])
+
+        return inflatory
+    
+    def urealnij(self, data, wartosc) -> float:
+            
+        miesiac = data.strftime('%Y-%m')
+
+        for i in self.inflator:
+            if i[0].strftime('%Y-%m') == miesiac:
+                print(wartosc, i[1])
+                return float(wartosc)/float(i[1])
+            
+        raise ValueError(f"Brak danych dla miesiaca: {miesiac}")
+
 
 @dataclass
 class InflacjaMiesiac:
