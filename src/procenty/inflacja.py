@@ -11,16 +11,14 @@ import copy
 
 @dataclass
 class Inflacja:
-    punkty: List[Tuple[dt.datetime, float]]
+    krzywa: Krzywa
     miesiac_ref: dt.datetime
 
     def __post_init__(self):
 
-        self.krzywa = Krzywa(self.punkty)
-
         self.inflacja_miesiace = self.krzywa.podzial_miesiac()
 
-        self._oblicz_inflacje()
+        self.inflator = self._oblicz_inflacje()
 
     def _oblicz_inflacje(self):
         min_miesiac = min(self.inflacja_miesiace, key=lambda x: x[0])[0]
@@ -63,9 +61,6 @@ class Inflacja:
 
         # miesiace po miesiacu referencyjnym
         miesiac_i = self.miesiac_ref + relativedelta(months=1)
-
-
-   
         inflator = 1
         
         i = 0
@@ -85,7 +80,18 @@ class Inflacja:
 
         inflatory = sorted(inflatory, key=lambda x: x[0])
 
-        print(f"len(inflatory): {inflatory}")
+        return inflatory
+    
+    def urealnij(self, data, wartosc) -> float:
+            
+        miesiac = data.strftime('%Y-%m')
+
+        for i in self.inflator:
+            if i[0].strftime('%Y-%m') == miesiac:
+                print(wartosc, i[1])
+                return float(wartosc)/float(i[1])
+            
+        raise ValueError(f"Brak danych dla miesiaca: {miesiac}")
 
 
 @dataclass

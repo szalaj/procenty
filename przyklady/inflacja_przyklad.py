@@ -10,6 +10,8 @@ if __name__ == "__main__":
     punkty = [(datetime(2021, 10, 13), 1.01), 
                 (datetime(2040, 6, 13), 1.01)]
     
-    inflacja = Inflacja(punkty, datetime(2021, 10, 13))
+    kr = Krzywa(punkty)
+    
+    inflacja = Inflacja(kr, datetime(2021, 10, 13))
 
-    # print(inflacja)
+    print(inflacja.inflator)
