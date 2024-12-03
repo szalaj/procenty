@@ -18,9 +18,9 @@ class Inflacja:
 
         self.inflacja_miesiace = self.krzywa.podzial_miesiac()
 
-        self.inflator = self._oblicz_inflacje()
+        self.inflator = self._oblicz_inflator()
 
-    def _oblicz_inflacje(self):
+    def _oblicz_inflator(self):
         min_miesiac = min(self.inflacja_miesiace, key=lambda x: x[0])[0]
         max_miesiac = max(self.inflacja_miesiace, key=lambda x: x[0])[0]
 
@@ -70,7 +70,7 @@ class Inflacja:
             for m in self.inflacja_miesiace:
                 m0 = m[0].strftime('%Y-%m')
                 if mi == m0:
-                    inflator = inflator*m[1]
+                    inflator = inflator*(1.0/m[1])
                     inflatory.append((copy.copy(miesiac_i), copy.copy(inflator)))
                     break
                     
@@ -89,7 +89,7 @@ class Inflacja:
         for i in self.inflator:
             if i[0].strftime('%Y-%m') == miesiac:
                 print(wartosc, i[1])
-                return float(wartosc)/float(i[1])
+                return float(wartosc)*float(i[1])
             
         raise ValueError(f"Brak danych dla miesiaca: {miesiac}")
 
