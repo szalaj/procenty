@@ -8,6 +8,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from typing import Optional
 from procenty.miary import Odleglosc
 import procenty.inwestycja as inv
+from procenty.inflacja import Inflacja
 import copy
 
 from dateutil.relativedelta import relativedelta
@@ -67,6 +68,9 @@ class Kredyt:
         self.wynik = []
         self.wynik_nadplaty = []
 
+        self.wszystkie_koszty= []
+        self.wszystkie_koszty_kwota = 0
+
         if self.splaty_normalne:
             dni_splaty = [self.start + relativedelta(months=i+1) for i in range(self.N)]
             for dzien_splaty in dni_splaty:
@@ -83,6 +87,20 @@ class Kredyt:
 
     def __repr__(self) -> str:
         return "kredyt : {}".format(self.K)
+    
+    def _dodaj_koszt(self, dzien_koszt:dt.datetime, kwota:Decimal):
+        dotychczasowe_koszty = self.wszystkie_koszty_kwota
+        self.wszystkie_koszty_kwota = dotychczasowe_koszty + kwota
+        self.wszystkie_koszty.append({'dzien': dzien_koszt.strftime('%Y-%m-%d'), 'kwota': float(copy.copy(self.wszystkie_koszty_kwota))})
+
+    def pokaz_koszty(self):
+        return self.wszystkie_koszty
+    
+    def pokaz_koszty_real(self, inflator:Inflacja):
+        wynik = []
+        for koszt in self.wszystkie_koszty:
+            wynik.append({'dzien':koszt['dzien'], 'kwota': inflator.urealnij(dt.datetime.strptime(koszt['dzien'], '%Y-%m-%d'), koszt['kwota'])})
+        return wynik
 
     def wyswietl(self, dzien_raty):
 
@@ -173,6 +191,8 @@ class Kredyt:
         self.wynik_nadplaty.append({'dzien': str(dzien_nadplaty.strftime('%Y-%m-%d')),
                                     'kwota': str(kwota.quantize(grosze, ROUND_HALF_UP)),
                                     })
+        
+        self._dodaj_koszt(dzien_nadplaty, kwota)
 
 
     def zrob_transze(self, dzien_transzy:dt.datetime, kwota:Decimal):
@@ -204,16 +224,16 @@ class Kredyt:
 
         self.odsetki_naliczone_marza = self.odsetki_naliczone_marza +  opr_marza*self.K
 
+        kwota = self.K - self.odsetki_naliczone
 
-        self.I = self.K - self.odsetki_naliczone
+        self.I = kwota
   
         self.licznik_rat += 1
         self.zapisz_stan(dzien_splaty)
 
         self.K = Decimal(0).quantize(grosze, ROUND_HALF_UP)
-
         self.dzien_odsetki = dzien_splaty
-
+        self._dodaj_koszt(dzien_splaty, kwota)
 
 
     def splata_raty(self, dzien_raty:dt.datetime):
@@ -254,6 +274,8 @@ class Kredyt:
 
         self.dzien_odsetki = dzien_raty
         self.N -= 1
+
+        self._dodaj_koszt(dzien_raty, self.I)
         
 
     def _symuluj(self):

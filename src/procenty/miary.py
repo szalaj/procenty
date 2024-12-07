@@ -7,6 +7,20 @@ Moduł z klasami miar finansowych.
 import pendulum
 from dataclasses import dataclass
 from decimal import Decimal
+from procenty.stopy import Krzywa
+from procenty.inflacja import Inflacja
+
+@dataclass
+class Cena:
+    """Cena w poszczególnych miesiącach."""
+    krzywa: Krzywa
+    inflator: Inflacja
+
+
+    def __post_init__(self):
+        pass
+    
+
 
 @dataclass
 class Odleglosc:

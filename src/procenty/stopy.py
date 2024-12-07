@@ -11,6 +11,7 @@ import numpy as np
 from scipy.interpolate import CubicSpline, interp1d
 from dateutil.relativedelta import relativedelta
 
+
 def diff_month(d1, d2):
     return (d1.year - d2.year) * 12 + d1.month - d2.month
 
@@ -40,6 +41,20 @@ class Krzywa:
  
     def __repr__(self):
         return f'Krzywa({self.start}, {self.end}, {self.punkty})'
+    
+    def __mul__(self, inflator):
+        from procenty.inflacja import Inflacja
+        if isinstance(inflator, Inflacja):
+            
+            wynik = []
+            punkty_miesiac = self.podzial_miesiac()
+
+            for punkt in punkty_miesiac:
+                wartosc_inflator = inflator.urealnij(punkt[0], punkt[1])
+                wynik.append((punkt[0], wartosc_inflator))
+                
+            return wynik
+        return NotImplemented
     
     @property
     def splajn(self):
