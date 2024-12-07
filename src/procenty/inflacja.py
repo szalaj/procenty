@@ -24,7 +24,7 @@ class Inflacja:
         min_miesiac = min(self.inflacja_miesiace, key=lambda x: x[0])[0]
         max_miesiac = max(self.inflacja_miesiace, key=lambda x: x[0])[0]
 
-        print(f"min_miesiac: {min_miesiac}, max_miesiac: {max_miesiac}, ref: {self.miesiac_ref}")
+        #print(f"min_miesiac: {min_miesiac}, max_miesiac: {max_miesiac}, ref: {self.miesiac_ref}")
 
         if self.miesiac_ref < min_miesiac or self.miesiac_ref > max_miesiac:
             raise ValueError(f"Miesac ref spoza przedzialu danych. min_miesiac: {min_miesiac}, max_miesiac: {max_miesiac}, ref: {self.miesiac_ref}")
@@ -88,7 +88,7 @@ class Inflacja:
 
         for i in self.inflator:
             if i[0].strftime('%Y-%m') == miesiac:
-                print(wartosc, i[1])
+                #print(wartosc, i[1])
                 return float(wartosc)*float(i[1])
             
         raise ValueError(f"Brak danych dla miesiaca: {miesiac}")
@@ -300,11 +300,7 @@ class Nieruchomosc:
         wartosci.append({'dzien': data_koniec, 'wartosc': wartosc_value})
 
        
-
-
         # wartosci.append({'miesiac': dt.datetime.strftime(self.data_koniec, '%Y-%m'), 'wartosc': wartosc_value_koniec})
-
-
         self.json_data = wartosci
     
     def get_points(self):

@@ -41,7 +41,7 @@ if __name__ == "__main__":
         data_raty = datetime.strptime(zd['dzien'], '%Y-%m-%d')
         kwota_raty = Decimal(zd['rata'])
         kl = k1s.next(data_raty, kwota_raty)
-        print(f"{i}: Kolejna kwota: {kl}")
+        #print(f"{i}: Kolejna kwota: {kl}")
 
 
     # for i,zd in enumerate(k1.zdarzenia):
