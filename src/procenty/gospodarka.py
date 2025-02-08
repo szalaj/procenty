@@ -4,7 +4,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from procenty.stopy import Krzywa
-from procenty.kredyt import Kredyt, KredytPorownanie, Zdarzenie, Rodzaj, create_kredyt
+from procenty.kredyt import Kredyt, Zdarzenie, Rodzaj 
 from decimal import Decimal
 
 k = 1.8
@@ -13,8 +13,8 @@ M = 300
 Pc = 2
 
 alfa = 0.5
-omega = 0.5
-A = 1000
+omega = 4
+A = 10
 
 def rownaniestanu(vars):
 
@@ -40,6 +40,8 @@ for i in range(1, 500):
 
 kr = Krzywa(lista_r)
 
+print(kr)
+
 K = Decimal(400000)
 N = 300
 p1 = Decimal(0.02)
@@ -54,4 +56,4 @@ zdarzenia = []
 zdarzenia.extend(oprocentowania)
 
 k4 = Kredyt(K, N, p1, marza, start, rodzaj, True, zdarzenia)
-print(k4.podsumowanie)
+# print(k4.podsumowanie)
