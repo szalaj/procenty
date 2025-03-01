@@ -1,11 +1,15 @@
 import numpy as np
 import random
 
+# Define the number of resources and zones
+R = 3
+Z = 3
+
 # Define primary resources
-resources = ['r1', 'r2', 'r3']
+resources = [f'r{i+1}' for i in range(R)]
 
 # Define zones
-zones = ['z1', 'z2', 'z3']
+zones = [f'z{i+1}' for i in range(Z)]
 
 # Function to assign resources to zones with random quantities and store in a matrix
 def assign_resources_to_zones(resources, zones):
