@@ -144,6 +144,8 @@ class Kredyt:
                 I = do_splaty/self.N
         elif self.rodzajRat=='malejace':
             I = (self.K/self.N)*(1+(self.p/12)*self.N)
+        elif self.rodzajRat=='malejace_met2':
+            I = (self.K/self.N)*(1+(self.p/12)*(self.N+1)/2)
         else:
             raise Exception('nie ma takich rat')
 
@@ -254,6 +256,11 @@ class Kredyt:
         self.odsetki_naliczone_marza = self.odsetki_naliczone_marza + opr_marza*self.K
 
         
+        if self.rodzajRat=='malejace_met2':
+            self.I = (self.Kstart/self.Nstart + self.odsetki_naliczone).quantize(grosze, ROUND_HALF_UP)
+            if self.K <=0:
+                self.I = Decimal(0).quantize(grosze, ROUND_HALF_UP)
+
         if self.odsetki_naliczone > self.I:
             self.I = self.odsetki_naliczone
 
@@ -473,6 +480,8 @@ class KredytSuwak:
 
 
 def create_kredyt(dane:list[dict[str, Any]], rodzajRat:str):
+
+    # print(dane)
 
 
     r = Decimal(dane['r']/100.0)
