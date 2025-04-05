@@ -84,6 +84,24 @@ class Kredyt:
             
         self.kredyt_wynik = self._symuluj()
 
+        if self.rodzajRat=='malejace_met2':
+            print("przeliczam---------------------------")
+            odsetki = [float(x['odsetki']) for x in self.kredyt_wynik['raty']]
+            odsetki_marza = [float(x['odsetki_marza']) for x in self.kredyt_wynik['raty']]
+            odsetki_wibor = [float(x['odsetki_wibor']) for x in self.kredyt_wynik['raty']]
+
+            nowe_odsetki = self.__przelicz_odsetki_mal2(odsetki)
+            nowe_odsetki_marza = self.__przelicz_odsetki_mal2(odsetki_marza)
+            nowe_odsetki_wibor = self.__przelicz_odsetki_mal2(odsetki_wibor)
+
+            for i in range(len(self.kredyt_wynik['raty'])):
+                self.kredyt_wynik['raty'][i]['odsetki'] = str(Decimal(nowe_odsetki[i]).quantize(grosze, ROUND_HALF_UP))
+                self.kredyt_wynik['raty'][i]['odsetki_marza'] = nowe_odsetki_marza[i]
+                self.kredyt_wynik['raty'][i]['odsetki_wibor'] = nowe_odsetki_wibor[i]
+                
+                nowa_rata= Decimal(nowe_odsetki[i]  + float(self.kredyt_wynik['raty'][i]['kapital']))
+                self.kredyt_wynik['raty'][i]['rata'] = str(nowa_rata.quantize(grosze, ROUND_HALF_UP))
+
 
     def __repr__(self) -> str:
         return "kredyt : {}".format(self.K)
@@ -92,6 +110,32 @@ class Kredyt:
         dotychczasowe_koszty = self.wszystkie_koszty_kwota
         self.wszystkie_koszty_kwota = dotychczasowe_koszty + kwota
         self.wszystkie_koszty.append({'dzien': dzien_koszt.strftime('%Y-%m-%d'), 'kwota': float(copy.copy(self.wszystkie_koszty_kwota))})
+
+    def __przelicz_odsetki_mal2(self, ciag_platnosci:list[float]) -> list[float]:
+    
+
+        N = len(ciag_platnosci)
+        sum_O = sum(ciag_platnosci)
+
+
+        o_N = ciag_platnosci[-1]
+
+        # Wyznaczanie współczynnika A
+        # A = (2 * sum_O - N * o_N) / (N * (N + 1))
+
+        a1 = N*((1+N)/2)-N*N
+        A= (sum_O - N*o_N)/a1
+
+
+        # Wyznaczanie współczynnika B
+        B = o_N - A * N
+
+        # Tworzenie nowego ciągu odsetek
+        nowy_ciag = [A * i + B for i in range(1, N + 1)]
+        
+
+        return nowy_ciag
+      
 
     def pokaz_koszty(self):
         return self.wszystkie_koszty
@@ -145,7 +189,7 @@ class Kredyt:
         elif self.rodzajRat=='malejace':
             I = (self.K/self.N)*(1+(self.p/12)*self.N)
         elif self.rodzajRat=='malejace_met2':
-            I = (self.K/self.N)*(1+(self.p/12)*(self.N+1)/2)
+            I = (self.K/self.N)*(1+(self.p/12)*(self.N+1)/2) #workaround
         else:
             raise Exception('nie ma takich rat')
 
@@ -255,7 +299,7 @@ class Kredyt:
         self.odsetki_naliczone = (self.odsetki_naliczone + opr*self.K).quantize(grosze, ROUND_HALF_UP)
         self.odsetki_naliczone_marza = self.odsetki_naliczone_marza + opr_marza*self.K
 
-        
+        #work around
         if self.rodzajRat=='malejace_met2':
             self.I = (self.Kstart/self.Nstart + self.odsetki_naliczone).quantize(grosze, ROUND_HALF_UP)
             if self.K <=0:
@@ -342,6 +386,8 @@ class Kredyt:
                     'xirr': str(self.xirr),
                     'K': str(self.Kstart.quantize(grosze, ROUND_HALF_UP))}
                 }
+        
+
 
         return dane
             
