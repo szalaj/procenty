@@ -17,10 +17,7 @@ def irr(cash_flows):
     return rate
 
 
-if __name__ == "__main__":
-    cf = [-1000, 300, 300, 300, 300]
-    print(npv(0.1, cf))
-    print(irr(cf))
+
 
 def secant_method(tol, f, x0):
     """
@@ -189,3 +186,10 @@ def mpkk(K, N, data_start):
         mpkk = K * 0.1 + K * wspolczynnik * 0.1
 
     return mpkk
+
+
+
+if __name__ == "__main__":
+    cf = [-1000, 300, 300, 300, 300]
+    print(npv(0.1, cf))
+    print(irr(cf))
