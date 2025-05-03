@@ -16,3 +16,9 @@ poetry.lock
 dist/*
 dist
 poetry.lock
+*.aux
+*.log
+*.out
+*.toc
+*.pdf
+*.synctex.gz
