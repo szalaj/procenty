@@ -4,6 +4,35 @@ import datetime as dt
 from dateutil.relativedelta import relativedelta
 
 
+'''
+Klasa Lokata:
+    * kwota: kwota lokaty
+    * oprocentowanie: oprocentowanie lokaty
+    * czas: czas lokaty
+    * kapitalizacja: kapitalizacja lokaty
+'''
+@dataclass
+class Lokata:
+    kwota: float  # Kwota lokaty
+    oprocentowanie: float  # Oprocentowanie lokaty (np. 0.05 dla 5%)
+    czas: int  # Czas lokaty w miesiącach
+    kapitalizacja: int  # Kapitalizacja lokaty (np. 1 - roczna, 12 - miesięczna)
+
+    def __post_init__(self):
+
+        # Oblicz liczbę okresów kapitalizacji
+        liczba_okresow = self.czas / (12 / self.kapitalizacja)
+        # Oblicz stopę procentową na okres kapitalizacji
+        stopa_okresowa = self.oprocentowanie / self.kapitalizacja
+        # Oblicz przyszłą wartość lokaty
+        self._przyszla_wartosc = self.kwota * (1 + stopa_okresowa) ** liczba_okresow
+  
+    def oblicz_zysk(self):
+        return self._przyszla_wartosc - self.kwota
+
+    def przyszla_wartosc(self):
+        return self._przyszla_wartosc
+
 
 
 def npv(rate, cash_flows):
@@ -186,6 +215,9 @@ def mpkk(K, N, data_start):
         mpkk = K * 0.1 + K * wspolczynnik * 0.1
 
     return mpkk
+
+
+
 
 
 
