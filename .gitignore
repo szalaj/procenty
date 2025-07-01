@@ -25,3 +25,5 @@ poetry.lock
 *.synctex.gz
 .vscode/
 dist/
+.vscode
+dist
