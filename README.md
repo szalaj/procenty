@@ -32,3 +32,15 @@ https://networkx.org/documentation/stable/reference/generated/networkx.generator
 W gospodarce są zasoby tj. r1, r2, ... ri ... rn
 
 Zasoby występują w zonach tj. z1, z2, ..., zn
+
+
+# klasy
+
+Lokata
+
+Kredyt
+
+
+# utils
+
+liczenie wartości waluty co do groszy

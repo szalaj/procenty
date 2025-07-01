@@ -12,7 +12,14 @@ envproc/
 .pytest_cache
 poetry.lock
 env/
+.venv/
 poetry.lock
 dist/*
 dist
 poetry.lock
+*.aux
+*.log
+*.out
+*.toc
+*.pdf
+*.synctex.gz
