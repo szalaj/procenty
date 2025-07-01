@@ -9,11 +9,12 @@ from decimal import Decimal
 
 k = 1.8
 beta = 1000
-M = 300
+M = 1
 Pc = 2
 alfa = 0.5
 omega = 4
 A = 10
+
 
 
 def rownaniestanu(vars):
@@ -37,7 +38,6 @@ def sym1():
         Y, r = oblicz()
         lista_r.append((kol, r))
 
-
     kr = Krzywa(lista_r)
 
     #print(kr)
@@ -50,13 +50,12 @@ def sym1():
     start = datetime(2021, 10, 13)
     rodzaj = 'rowne'
 
-
     oprocentowania = [Zdarzenie(d[0],Rodzaj.OPROCENTOWANIE,d[1]) for d in kr.podzial(30)]
     zdarzenia = []
     zdarzenia.extend(oprocentowania)
 
     k4 = Kredyt(K, N, p1, marza, start, rodzaj, True, zdarzenia)
-    #print(k4.podsumowanie)
+    print(k4.podsumowanie)
     return k4.podsumowanie
 
 if __name__ == "__main__":

@@ -514,6 +514,7 @@ INPUT main.aux
 INPUT main.run.xml
 OUTPUT main.run.xml
 INPUT /home/szalaj/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk
+INPUT /usr/share/texlive/texmf-dist/fonts/pk/ljfour/public/cm/dpi600/cmr8.pk
 INPUT /home/szalaj/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1200.600pk
 INPUT /home/szalaj/.texlive2021/texmf-var/fonts/pk/ljfour/public/cm/cmex10.720pk
 INPUT /home/szalaj/.texlive2021/texmf-var/fonts/pk/ljfour/public/cm/cmsy10.720pk

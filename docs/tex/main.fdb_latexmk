@@ -1,10 +1,10 @@
 # Fdb version 3
-["biber main"] 1748606632 "main.bcf" "main.bbl" "main" 1748606634
-  "main.bcf" 1748606513 106986 628f04c69d982252bc0384997af939a0 "pdflatex"
+["biber main"] 1749834176 "main.bcf" "main.bbl" "main" 1749834178
+  "main.bcf" 1749834077 106986 628f04c69d982252bc0384997af939a0 "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
-["pdflatex"] 1748606634 "/home/szalaj/repos/procenty/docs/tex/main.tex" "main.pdf" "main" 1748606634
+["pdflatex"] 1749834178 "/home/szalaj/repos/procenty/docs/tex/main.tex" "main.pdf" "main" 1749834178
   "/etc/texmf/web2c/texmf.cnf" 1746220043 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/szalaj/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk" 1746260281 31928 7afc8fe037e17598864208032d1219b5 ""
   "/home/szalaj/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.600pk" 1746473137 40112 ca0e102ece1a2ef6b90f72474db66f5a ""
@@ -21,6 +21,7 @@
   "/home/szalaj/repos/procenty/docs/tex/main.tex" 1746884803 417 d1ebd826024e733a846ffcdef373d1c4 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/pk/ljfour/public/cm/dpi600/cmr12.pk" 1136849718 13144 0235be32b099c919a01c28a385c0ff86 ""
+  "/usr/share/texlive/texmf-dist/fonts/pk/ljfour/public/cm/dpi600/cmr8.pk" 1136849718 8868 6802580824d038b2553e8b2aaa199234 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecbx1200.tfm" 1136768653 3584 402da0b29eafbad07963b1224b222f18 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecbx1440.tfm" 1136768653 3584 13049b61b922a28b158a38aeff75ee9b ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecbx1728.tfm" 1136768653 3584 ad49a18d8515beef6d92d4d3f197d0fd ""
@@ -102,11 +103,11 @@
   "img/zony.drawio.png" 1746262686 51693 7dce18bcfe6944f88d1d97f93e91efb8 ""
   "kredyty.tex" 1747680127 2492 c559c65c66ca9d5220ec08243e1bb866 ""
   "main.aux" 0 -1 0 "pdflatex"
-  "main.bbl" 1748606633 466 ee04f40f768daeed26442158e95aba61 "biber main"
-  "main.run.xml" 1748606634 2306 5f51dac0958998d734c78082560dbca5 "pdflatex"
+  "main.bbl" 1749834177 466 ee04f40f768daeed26442158e95aba61 "biber main"
+  "main.run.xml" 1749834178 2306 5f51dac0958998d734c78082560dbca5 "pdflatex"
   "main.tex" 1746884803 417 d1ebd826024e733a846ffcdef373d1c4 ""
-  "makro.tex" 1746884845 34 1935ff455e8f0b00ab15a4e22d14f594 ""
-  "zasoby.tex" 1748465594 3937 157d756641ab2c05102de858f0a8d76b ""
+  "makro.tex" 1749834176 1542 4988fe10190ac55ea77e5c4e6a0aafb7 ""
+  "zasoby.tex" 1748800048 4165 ad3ecd876f606c7d3a96adfc41c768a1 ""
   (generated)
   "main.aux"
   "main.bcf"
