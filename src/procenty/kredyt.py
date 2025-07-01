@@ -199,7 +199,6 @@ class Kredyt:
 
     def zmien_oprocentowanie(self, dzien_zmiany:dt.datetime, nowe_r:Decimal):
 
-
         o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_zmiany.strftime('%Y-%m-%d'), 'a')
 
         opr = o_d.mnoznik*self.p
