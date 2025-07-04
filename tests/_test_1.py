@@ -18,7 +18,7 @@
 #     dzien_koniec = '2022-01-12' 
 #     print(f"--d start {dzien_start}, d koniec {dzien_koniec}")
 
-#     o_d = procenty.miary.Odleglosc(dzien_start, dzien_koniec, 'a')
+#     o_d = procenty.miary.LiczbaDni(dzien_start, dzien_koniec, 'a')
 #     mnoznik_nowy = o_d.mnoznik
 
 #     # nalicz odsetki do dnia zmiany raty
@@ -32,7 +32,7 @@
 #     dzien_koniec = '2021-10-12' 
 #     print(f"--d start {dzien_start}, d koniec {dzien_koniec}")
 
-#     o_d = procenty.miary.Odleglosc(dzien_start, dzien_koniec, 'a')
+#     o_d = procenty.miary.LiczbaDni(dzien_start, dzien_koniec, 'a')
 #     mnoznik_nowy = o_d.mnoznik
 
 #     # nalicz odsetki do dnia zmiany raty
@@ -50,7 +50,7 @@
 
 #     print(f"--d start {dzien_start}, d koniec {dzien_koniec}")
 
-#     o_d = procenty.miary.Odleglosc(dzien_start, dzien_koniec, 'a')
+#     o_d = procenty.miary.LiczbaDni(dzien_start, dzien_koniec, 'a')
 #     mnoznik_nowy = Decimal(o_d.mnoznik)
 
 #     # nalicz odsetki do dnia zmiany raty

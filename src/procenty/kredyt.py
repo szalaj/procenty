@@ -1,3 +1,4 @@
+"""Oblicz swój kredyt."""
 from loguru import logger
 from typing import Any
 import datetime as dt
@@ -6,7 +7,7 @@ from enum import auto, Enum
 import decimal
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Optional
-from procenty.miary import Odleglosc
+from procenty.miary import LiczbaDni
 import procenty.inwestycja as inv
 from procenty.inflacja import Inflacja
 import copy
@@ -199,7 +200,7 @@ class Kredyt:
 
     def zmien_oprocentowanie(self, dzien_zmiany:dt.datetime, nowe_r:Decimal):
 
-        o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_zmiany.strftime('%Y-%m-%d'), 'a')
+        o_d = LiczbaDni(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_zmiany.strftime('%Y-%m-%d'), 'a')
 
         opr = o_d.mnoznik*self.p
 
@@ -215,7 +216,7 @@ class Kredyt:
 
     def zrob_nadplate(self, dzien_nadplaty:dt.datetime, kwota:Decimal):
 
-        o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_nadplaty.strftime('%Y-%m-%d'), 'a')
+        o_d = LiczbaDni(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_nadplaty.strftime('%Y-%m-%d'), 'a')
 
         opr = o_d.mnoznik*self.p
 
@@ -242,7 +243,7 @@ class Kredyt:
 
     def zrob_transze(self, dzien_transzy:dt.datetime, kwota:Decimal):
 
-        o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_transzy.strftime('%Y-%m-%d'), 'a')
+        o_d = LiczbaDni(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_transzy.strftime('%Y-%m-%d'), 'a')
 
         opr = o_d.mnoznik*self.p
 
@@ -259,7 +260,7 @@ class Kredyt:
 
     def zrob_splate_calkowita(self, dzien_splaty:dt.datetime):
 
-        o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_splaty.strftime('%Y-%m-%d'), 'a')
+        o_d = LiczbaDni(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_splaty.strftime('%Y-%m-%d'), 'a')
 
         opr = o_d.mnoznik*self.p
 
@@ -284,7 +285,7 @@ class Kredyt:
     def splata_raty(self, dzien_raty:dt.datetime):
 
 
-        o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_raty.strftime('%Y-%m-%d'), 'a')
+        o_d = LiczbaDni(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_raty.strftime('%Y-%m-%d'), 'a')
 
         opr = o_d.mnoznik*self.p
 
@@ -389,6 +390,9 @@ class Kredyt:
 
 
         return dane
+    
+
+
             
 @dataclass
 class KredytPorownanie():
@@ -420,6 +424,9 @@ class KredytPorownanie():
     def podsumowanie(self) -> dict:
         return self.kredyt_porownanie.podsumowanie
 
+
+
+
 @dataclass
 class KredytSuwak:
     K:Decimal
@@ -438,7 +445,7 @@ class KredytSuwak:
     def zmien_oprocentowanie(self, dzien_zmiany:dt.datetime, nowe_r:Decimal):
 
 
-        o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_zmiany.strftime('%Y-%m-%d'), 'a')
+        o_d = LiczbaDni(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_zmiany.strftime('%Y-%m-%d'), 'a')
 
         opr = o_d.mnoznik*self.p
 
@@ -453,7 +460,7 @@ class KredytSuwak:
     def splata_raty(self, dzien_raty:dt.datetime):
 
 
-        o_d = Odleglosc(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_raty.strftime('%Y-%m-%d'), 'a')
+        o_d = LiczbaDni(self.dzien_odsetki.strftime('%Y-%m-%d'), dzien_raty.strftime('%Y-%m-%d'), 'a')
 
         opr = o_d.mnoznik*self.p
 
@@ -507,7 +514,6 @@ class KredytSuwak:
           
     def oblicz_rate(self) -> Decimal:  
 
-
         k = 12
         do_splaty = self.K
         liczba_rat = self.N 
@@ -524,47 +530,3 @@ class KredytSuwak:
 
 
 
-def create_kredyt(dane:list[dict[str, Any]], rodzajRat:str):
-
-    # print(dane)
-
-
-    r = Decimal(dane['r']/100.0)
-    marza = Decimal(dane['marza']/100.0)
-    K = Decimal(dane['K'])
-    dni = dane['daty_splaty']
-    N = len(dni)
-    start_kredytu = dt.datetime.strptime(dane['start'], '%Y-%m-%d')
-
-    zdarzenia = []
-
-    for dzien_splaty in dane['daty_splaty']:
-        zdarzenia.append(Zdarzenie(dt.datetime.strptime(dzien_splaty, '%Y-%m-%d'), Rodzaj.SPLATA, 0))
-
-    if 'oprocentowanie' in dane:
-        for zmiana_opr in dane['oprocentowanie']:
-            zdarzenia.append(Zdarzenie(dt.datetime.strptime(zmiana_opr['dzien'], '%Y-%m-%d'), Rodzaj.OPROCENTOWANIE, zmiana_opr['proc']))
-
-    if 'nadplaty' in dane:
-        for nadplata in dane['nadplaty']:
-            if nadplata['calkowita'] == True:
-                zdarzenia.append(Zdarzenie(dt.datetime.strptime(nadplata['dzien'], '%Y-%m-%d'), Rodzaj.SPLATA_CALKOWITA, Decimal(nadplata['kwota'])))
-            else:
-                zdarzenia.append(Zdarzenie(dt.datetime.strptime(nadplata['dzien'], '%Y-%m-%d'), Rodzaj.NADPLATA, Decimal(nadplata['kwota'])))
-            
-    if 'transze' in dane:
-        for transza in dane['transze']:
-            zdarzenia.append(Zdarzenie(dt.datetime.strptime(transza['dzien'], '%Y-%m-%d'), Rodzaj.TRANSZA, Decimal(transza['kapital'])))
-
-
-    kr = Kredyt(K, N, r, marza, start_kredytu, rodzajRat, False, zdarzenia)
-
-
-
-    return kr
-
-
-
-
-if __name__== "__main__":
-    pass
