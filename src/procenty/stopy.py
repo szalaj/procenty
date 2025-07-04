@@ -10,10 +10,9 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.interpolate import CubicSpline, interp1d
 from dateutil.relativedelta import relativedelta
+from procenty.utils import diff_month
 
 
-def diff_month(d1, d2):
-    return (d1.year - d2.year) * 12 + d1.month - d2.month
 
 @dataclass
 class Krzywa:

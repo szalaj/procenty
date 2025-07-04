@@ -1,21 +1,8 @@
-# to do
-
-- jaki będzie harmonogram splaty kredytu
-- porownanie splaty z inną ofertą kredytu
-- porownanie splaty z inna stopa procentowa
-- dodanie inflacji
-- dodanie ceny nieruchomosci
-- dodanie obligacji
-- dodanie portfela
-- dodanie dochodu 
-- dodanie wydatku
-- pokazanie majątku w miesiącach
-
 
 # procenty
 
-- symulacja różnych typów kredytu
-- symulacja kreacji i cyrkulacji pieniądza
+Symulacja różnych typów kredytu i lokat.
+
 
 # połączenia za pomocą networkx
 
@@ -27,11 +14,6 @@ stworzeniu grafu składającego się z heksów
 
 https://networkx.org/documentation/stable/reference/generated/networkx.generators.lattice.hexagonal_lattice_graph.html
 
-# zasoby
-
-W gospodarce są zasoby tj. r1, r2, ... ri ... rn
-
-Zasoby występują w zonach tj. z1, z2, ..., zn
 
 
 # klasy

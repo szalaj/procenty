@@ -1,2 +1,2 @@
-"""An amazing sample package!"""
+"""Pakiet do obliczeń finansowych."""
 

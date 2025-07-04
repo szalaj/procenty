@@ -1,4 +1,4 @@
-"""\
+"""
 Moduł z klasami miar finansowych.
 
 
@@ -7,9 +7,10 @@ Moduł z klasami miar finansowych.
 import pendulum
 from dataclasses import dataclass
 from decimal import Decimal
+from procenty.utils import liczba_dni_w_roku
 
 @dataclass
-class Odleglosc:
+class LiczbaDni:
     """Liczy dni do np. wyliczania odsetek.
 
     Bierze pod uwagę liczbę dni w latach przestępnych.
@@ -58,12 +59,6 @@ class Odleglosc:
     def mnoznik(self)->Decimal:
         return Decimal(self._mnoznik)
     
-def liczba_dni(rok):
-    if rok%4==0:
-        liczba_dni = 366
-    else:
-        liczba_dni = 365
-    return liczba_dni
 
 
 class Zloty:

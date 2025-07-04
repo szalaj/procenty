@@ -1,4 +1,5 @@
-from procenty.kredyt import Kredyt, KredytPorownanie, KredytSuwak, Zdarzenie, Rodzaj, create_kredyt
+from procenty.kredyt import Kredyt, KredytPorownanie, KredytSuwak, Zdarzenie, Rodzaj
+from procenty.utils import create_kredyt
 from procenty.stopy import Krzywa
 from procenty.inflacja import Inflacja
 from decimal import Decimal

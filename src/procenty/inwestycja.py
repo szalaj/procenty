@@ -2,6 +2,7 @@ from scipy import optimize
 from dataclasses import dataclass
 import datetime as dt
 from dateutil.relativedelta import relativedelta
+from procenty.utils import liczba_dni_w_roku
 
 
 '''
@@ -172,13 +173,7 @@ class RRSO:
         return rrso
     
 
-def liczba_dni_w_roku(rok):
-    if rok % 4 == 0:
-        dni_rok = 366
-    else:
-        dni_rok = 365
-    
-    return dni_rok
+
 
 def mpkk(K, N, data_start):
     # 28.12.2020 - 04.01.2021
@@ -217,11 +212,3 @@ def mpkk(K, N, data_start):
     return mpkk
 
 
-
-
-
-
-if __name__ == "__main__":
-    cf = [-1000, 300, 300, 300, 300]
-    print(npv(0.1, cf))
-    print(irr(cf))
