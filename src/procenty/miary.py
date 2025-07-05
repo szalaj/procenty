@@ -7,7 +7,7 @@ Moduł z klasami miar finansowych.
 
 from dataclasses import dataclass
 from decimal import Decimal
-
+from .utils.inne import liczba_dni_w_roku
 import pendulum
 
 
@@ -20,11 +20,13 @@ class LiczbaDni:
     Argumenty:
     start -- data w formacie YYYY-MM-DD
     koniec -- data w formacie YYYY-MM-DD
+
+    mnożnik - proporcja dni odsetkowych do liczby dni w roku.
     """
 
     start: str
     koniec: str
-    flaga: str
+
 
     def __post_init__(self):
         dt_start = pendulum.from_format(self.start, "YYYY-MM-DD")
@@ -38,17 +40,17 @@ class LiczbaDni:
         mnoznik = 0
 
         if dt_start.year == dt_koniec.year:
-            mnoznik = self._dni_odsetkowe / liczba_dni(dt_start.year)
+            mnoznik = self._dni_odsetkowe / liczba_dni_w_roku(dt_start.year)
         else:
             for rok in range(dt_start.year, dt_koniec.year + 1):
                 if rok == dt_start.year:
                     mnoznik += pendulum.datetime(dt_start.year + 1, 1, 1).diff(
                         dt_start
-                    ).in_days() / liczba_dni(dt_start.year)
+                    ).in_days() / liczba_dni_w_roku(dt_start.year)
                 elif rok == dt_koniec.year:
                     mnoznik += dt_koniec.diff(
                         pendulum.datetime(dt_koniec.year, 1, 1)
-                    ).in_days() / liczba_dni(dt_koniec.year)
+                    ).in_days() / liczba_dni_w_roku(dt_koniec.year)
                 else:
                     mnoznik += 1
 

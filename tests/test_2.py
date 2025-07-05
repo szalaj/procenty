@@ -1,8 +1,7 @@
 import pytest
-import yaml
-import procenty.rrso
-import procenty.miary
 import procenty.kredyt
+import procenty.inwestycja
+
 import datetime as dt
 from decimal import Decimal, ROUND_HALF_UP
 
@@ -24,5 +23,5 @@ def test_check_raty(kredyt1):
 
 
 def test_porownaj_rrso(kredyt2):
-    rrso = procenty.rrso.RRSO(float(kredyt2.Kstart), kredyt2.raty, 10).oblicz_rrso()
+    rrso = procenty.inwestycja.RRSO(float(kredyt2.Kstart), kredyt2.raty, 10).oblicz_rrso()
     assert abs(rrso - kredyt2.xirr) < 0.0001

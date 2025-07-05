@@ -1,6 +1,6 @@
 # import pytest
 # import yaml
-# import procenty.rrso
+# import procenty.inwestycja
 # import procenty.miary
 # import procenty.kredyt
 # import datetime as dt
@@ -8,7 +8,7 @@
 
 # def test_rr_wieksza_zero():
 #     """Check if column names in header are uppercase"""
-#     r = procenty.rrso.rata_rowna(10,1,1)
+#     r = procenty.inwestycja.rata_rowna(10,1,1)
 #     assert r > 0
 
 
