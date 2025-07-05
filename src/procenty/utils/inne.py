@@ -1,10 +1,9 @@
-
 def liczba_dni_w_roku(rok):
     if rok % 4 == 0:
         dni_rok = 366
     else:
         dni_rok = 365
-    
+
     return dni_rok
 
 
