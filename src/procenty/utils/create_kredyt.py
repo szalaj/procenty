@@ -2,7 +2,7 @@ import datetime as dt
 from decimal import Decimal
 from typing import Any
 
-from procenty.kredyt import Kredyt, Rodzaj, Zdarzenie
+from ..kredyt import Kredyt, Rodzaj, Zdarzenie
 
 
 def create_kredyt(dane: list[dict[str, Any]], rodzajRat: str):

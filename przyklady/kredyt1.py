@@ -1,5 +1,5 @@
 from procenty.kredyt import Kredyt, KredytPorownanie, KredytSuwak, Zdarzenie, Rodzaj
-from procenty.utils import create_kredyt
+from procenty.utils.create_kredyt import create_kredyt
 from decimal import Decimal
 from datetime import datetime
 

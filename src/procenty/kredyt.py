@@ -237,8 +237,7 @@ class Kredyt:
 
         o_d = LiczbaDni(
             self.dzien_odsetki.strftime("%Y-%m-%d"),
-            dzien_zmiany.strftime("%Y-%m-%d"),
-            "a",
+            dzien_zmiany.strftime("%Y-%m-%d")
         )
 
         opr = o_d.mnoznik * self.p
@@ -256,8 +255,7 @@ class Kredyt:
 
         o_d = LiczbaDni(
             self.dzien_odsetki.strftime("%Y-%m-%d"),
-            dzien_nadplaty.strftime("%Y-%m-%d"),
-            "a",
+            dzien_nadplaty.strftime("%Y-%m-%d")
         )
 
         opr = o_d.mnoznik * self.p
@@ -289,8 +287,7 @@ class Kredyt:
 
         o_d = LiczbaDni(
             self.dzien_odsetki.strftime("%Y-%m-%d"),
-            dzien_transzy.strftime("%Y-%m-%d"),
-            "a",
+            dzien_transzy.strftime("%Y-%m-%d")
         )
 
         opr = o_d.mnoznik * self.p
@@ -310,8 +307,7 @@ class Kredyt:
 
         o_d = LiczbaDni(
             self.dzien_odsetki.strftime("%Y-%m-%d"),
-            dzien_splaty.strftime("%Y-%m-%d"),
-            "a",
+            dzien_splaty.strftime("%Y-%m-%d")
         )
 
         opr = o_d.mnoznik * self.p
@@ -339,8 +335,7 @@ class Kredyt:
 
         o_d = LiczbaDni(
             self.dzien_odsetki.strftime("%Y-%m-%d"),
-            dzien_raty.strftime("%Y-%m-%d"),
-            "a",
+            dzien_raty.strftime("%Y-%m-%d")
         )
 
         opr = o_d.mnoznik * self.p
@@ -515,8 +510,7 @@ class KredytSuwak:
 
         o_d = LiczbaDni(
             self.dzien_odsetki.strftime("%Y-%m-%d"),
-            dzien_zmiany.strftime("%Y-%m-%d"),
-            "a",
+            dzien_zmiany.strftime("%Y-%m-%d")
         )
 
         opr = o_d.mnoznik * self.p
@@ -531,8 +525,7 @@ class KredytSuwak:
 
         o_d = LiczbaDni(
             self.dzien_odsetki.strftime("%Y-%m-%d"),
-            dzien_raty.strftime("%Y-%m-%d"),
-            "a",
+            dzien_raty.strftime("%Y-%m-%d")
         )
 
         opr = o_d.mnoznik * self.p
