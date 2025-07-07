@@ -51,7 +51,7 @@ class Kredyt:
     start: dt.datetime
     rodzajRat: str
     splaty_normalne: bool = True
-    zdarzenia: Optional[list[Zdarzenie]] = None
+    operacje: Optional[list[Zdarzenie]] = None
 
     def __post_init__(self):
         self.Kstart = self.K
@@ -62,8 +62,8 @@ class Kredyt:
         self.K = self.K.quantize(grosze, ROUND_HALF_UP)
         self.dzien_odsetki: dt.datetime = self.start
         self.zdarzenia: list[Zdarzenie] = []
-        if self.zdarzenia:
-            self.zdarzenia.extend(self.zdarzenia)
+        if self.operacje:
+            self.zdarzenia.extend(self.operacje)
 
         self.odsetki_naliczone = 0
         self.odsetki_naliczone_marza = 0
@@ -476,7 +476,7 @@ class KredytPorownanie:
             self.kredyt.start,
             self.kredyt.rodzajRat,
             self.kredyt.splaty_normalne,
-            self.kredyt.zdarzenia,
+            self.kredyt.operacje,
         )
 
     @property
@@ -499,7 +499,7 @@ class KredytSuwak:
     p: Decimal
     marza: Decimal
     start: dt.datetime
-    zdarzenia: Optional[list[Zdarzenie]] = None
+    operacje: Optional[list[Zdarzenie]] = None
 
     def __post_init__(self):
         self.dzien_odsetki: dt.datetime = self.start
@@ -561,8 +561,8 @@ class KredytSuwak:
 
         if self.N > 0 and self.K > 0:
 
-            if self.zdarzenia:
-                for zdarzenie in self.zdarzenia:
+            if self.operacje:
+                for zdarzenie in self.operacje:
                     if zdarzenie.data > self.dzien_odsetki and zdarzenie.data <= data:
                         if zdarzenie.rodzaj == Rodzaj.OPROCENTOWANIE:
                             self.zmien_oprocentowanie(zdarzenie.data, zdarzenie.wartosc)
