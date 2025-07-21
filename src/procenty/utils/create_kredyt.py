@@ -63,3 +63,16 @@ def create_kredyt(dane: list[dict[str, Any]], rodzajRat: str):
     kr = Kredyt(K, N, r, marza, start_kredytu, rodzajRat, False, zdarzenia)
 
     return kr
+
+
+def create_kredyt_normalny(dane: list[dict[str, Any]], rodzajRat: str):
+
+    r = Decimal(dane["r"] / 100.0)
+    marza = Decimal(dane["marza"] / 100.0)
+    K = Decimal(dane["K"])
+    N = dane["N"]
+    start_kredytu = dt.datetime.strptime(dane["start"], "%Y-%m-%d")
+
+    kr = Kredyt(K, N, r, marza, start_kredytu, rodzajRat, True, [])
+
+    return kr

@@ -62,6 +62,7 @@ class Kredyt:
         self.K = self.K.quantize(grosze, ROUND_HALF_UP)
         self.dzien_odsetki: dt.datetime = self.start
         self.zdarzenia: list[Zdarzenie] = []
+        
         if self.operacje:
             self.zdarzenia.extend(self.operacje)
 
