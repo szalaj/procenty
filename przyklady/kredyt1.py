@@ -1,5 +1,5 @@
 from procenty.kredyt import Kredyt, KredytPorownanie, KredytSuwak, Zdarzenie, Rodzaj
-from procenty.utils.create_kredyt import create_kredyt
+from procenty.utils.create_kredyt import create_kredyt, create_kredyt_normalny
 from decimal import Decimal
 from datetime import datetime
 
@@ -34,6 +34,17 @@ if __name__ == "__main__":
 
     k3 = create_kredyt(dane, 'rowne')
 
+    dane_normalny:dict = {
+            'K': 3000,
+            'N': 3,
+            'r': 12,
+            'marza': 4,
+            'start': '2021-10-13'
+            
+            }
+
+    k3n = create_kredyt_normalny(dane_normalny, 'rowne')
+
     k1s = KredytSuwak(K, N, p1, marza, start, zdarzenia)
     
     for i, zd in enumerate(k1.podsumowanie['raty']):
@@ -55,3 +66,4 @@ if __name__ == "__main__":
 
 
     print(f"XIRR1: {k1.xirr}, XIRR2: {k2.xirr}, XIRR3: {k3.xirr}")
+    print(k3n.podsumowanie)
