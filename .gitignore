@@ -27,3 +27,4 @@ poetry.lock
 dist/
 .vscode
 dist
+build.md
