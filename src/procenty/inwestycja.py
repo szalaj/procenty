@@ -1,157 +1,148 @@
+"""Moduł do obliczeń inwestycyjnych: lokaty, XIRR, XNPV, IRR, RRSO, MPKK."""
+
 import datetime as dt
 from dataclasses import dataclass
+from typing import Any
 
 from dateutil.relativedelta import relativedelta
 from scipy import optimize
 
 from procenty.utils import liczba_dni_w_roku
 
-"""
-Klasa Lokata:
-    * kwota: kwota lokaty
-    * oprocentowanie: oprocentowanie lokaty
-    * czas: czas lokaty
-    * kapitalizacja: kapitalizacja lokaty
-"""
-
 
 @dataclass
 class Lokata:
-    kwota: float  # Kwota lokaty
-    oprocentowanie: float  # Oprocentowanie lokaty (np. 0.05 dla 5%)
-    czas: int  # Czas lokaty w miesiącach
-    kapitalizacja: int  # Kapitalizacja lokaty (np. 1 - roczna, 12 - miesięczna)
+    """Klasa do obsługi lokat bankowych.
 
-    def __post_init__(self):
+    Argumenty:
+        kwota: kwota lokaty
+        oprocentowanie: oprocentowanie lokaty (np. 0.05 dla 5%)
+        czas: czas lokaty w miesiącach
+        kapitalizacja: liczba kapitalizacji w roku (np. 1 - roczna, 12 - miesięczna)
+    """
 
-        # Oblicz liczbę okresów kapitalizacji
+    kwota: float
+    oprocentowanie: float
+    czas: int
+    kapitalizacja: int
+
+    def __post_init__(self) -> None:
         liczba_okresow = self.czas / (12 / self.kapitalizacja)
-        # Oblicz stopę procentową na okres kapitalizacji
         stopa_okresowa = self.oprocentowanie / self.kapitalizacja
-        # Oblicz przyszłą wartość lokaty
         self._przyszla_wartosc = self.kwota * (1 + stopa_okresowa) ** liczba_okresow
 
-    def oblicz_zysk(self):
+    def oblicz_zysk(self) -> float:
+        """Zwraca zysk z lokaty (przyszła wartość - kwota początkowa)."""
         return self._przyszla_wartosc - self.kwota
 
-    def przyszla_wartosc(self):
+    def przyszla_wartosc(self) -> float:
+        """Zwraca przyszłą wartość lokaty."""
         return self._przyszla_wartosc
 
 
-def npv(rate, cash_flows):
+def npv(rate: float, cash_flows: list[float]) -> float:
+    """Oblicza wartość bieżącą netto (NPV) dla regularnych przepływów pieniężnych."""
     return sum([cf / (1 + rate) ** i for i, cf in enumerate(cash_flows)])
 
 
-def irr(cash_flows):
+def irr(cash_flows: list[float]) -> float:
+    """Oblicza wewnętrzną stopę zwrotu (IRR) dla regularnych przepływów pieniężnych."""
     rate = 0.1
     while npv(rate, cash_flows) > 0:
         rate += 0.01
     return rate
 
 
-def secant_method(tol, f, x0):
+@dataclass
+class Inwestycja:
+    """Prosta inwestycja z oprocentowaniem."""
+
+    kwota: float
+    czas_start: int
+    czas_trwania: int
+
+    def zysk(
+        self, oprocentowanie: float, czas_oprocentowania: int, aktualny_czas: int
+    ) -> float:
+        """Oblicza zysk z inwestycji w danym momencie."""
+        if aktualny_czas <= self.czas_start + self.czas_trwania:
+            return self.kwota * (oprocentowanie / 100) * (czas_oprocentowania / 12)
+        else:
+            return 0.0
+
+
+def secant_method(tol: float, f: Any, x0: float) -> float:
     """
-    Solve for x where f(x)=0, given starting x0 and tolerance.
+    Rozwiązuje f(x)=0 metodą siecznych.
 
-    Arguments
-    ----------
-    tol: tolerance as percentage of final result. If two subsequent x values are with tol percent, the function will return.
-    f: a function of a single variable
-    x0: a starting value of x to begin the solver
-
-    Notes
-    ------
-    The secant method for finding the zero value of a function uses the following formula to find subsequent values of x.
-
-    x(n+1) = x(n) - f(x(n))*(x(n)-x(n-1))/(f(x(n))-f(x(n-1)))
-
-    Warning
-    --------
-    This implementation is simple and does not handle cases where there is no solution. Users requiring a more robust version should use scipy package optimize.newton.
-
+    Argumenty:
+        tol: tolerancja jako procent wyniku końcowego
+        f: funkcja jednej zmiennej
+        x0: wartość początkowa x
     """
-
     x1 = x0 * 1.1
     while abs(x1 - x0) / abs(x1) > tol:
         x0, x1 = x1, x1 - f(x1) * (x1 - x0) / (f(x1) - f(x0))
     return x1
 
 
-def xnpv(rate, cashflows):
+def xnpv(rate: float, cashflows: list[tuple[dt.datetime, float]]) -> float:
     """
-    Calculate the net present value of a series of cashflows at irregular intervals.
+    Oblicza wartość bieżącą netto (NPV) dla nieregularnych przepływów pieniężnych.
 
-    Arguments
-    ---------
-    * rate: the discount rate to be applied to the cash flows
-    * cashflows: a list object in which each element is a tuple of the form (date, amount), where date is a python datetime.date object and amount is an integer or floating point number. Cash outflows (investments) are represented with negative amounts, and cash inflows (returns) are positive amounts.
+    Argumenty:
+        rate: stopa dyskontowa
+        cashflows: lista krotek (data, kwota). Ujemne kwoty = inwestycje, dodatnie = zwroty.
 
-    Returns
-    -------
-    * returns a single value which is the NPV of the given cash flows.
-
-    Notes
-    ---------------
-    * The Net Present Value is the sum of each of cash flows discounted back to the date of the first cash flow. The discounted value of a given cash flow is A/(1+r)**(t-t0), where A is the amount, r is the discout rate, and (t-t0) is the time in years from the date of the first cash flow in the series (t0) to the date of the cash flow being added to the sum (t).
-    * This function is equivalent to the Microsoft Excel function of the same name.
-
+    Zwraca:
+        Wartość NPV.
     """
-
     chron_order = sorted(cashflows, key=lambda x: x[0])
-    t0 = chron_order[0][0]  # t0 is the date of the first cash flow
+    t0 = chron_order[0][0]
 
     return sum([cf / (1 + rate) ** ((t - t0).days / 365.0) for (t, cf) in chron_order])
 
 
-def xirr(cashflows, guess=0.1):
+def xirr(cashflows: list[tuple[dt.datetime, float]], guess: float = 0.1) -> float:
     """
-    Calculate the Internal Rate of Return of a series of cashflows at irregular intervals.
+    Oblicza wewnętrzną stopę zwrotu (IRR) dla nieregularnych przepływów pieniężnych.
 
-    Arguments
-    ---------
-    * cashflows: a list object in which each element is a tuple of the form (date, amount), where date is a python datetime.date object and amount is an integer or floating point number. Cash outflows (investments) are represented with negative amounts, and cash inflows (returns) are positive amounts.
-    * guess (optional, default = 0.1): a guess at the solution to be used as a starting point for the numerical solution.
+    Argumenty:
+        cashflows: lista krotek (data, kwota)
+        guess: wartość początkowa do optymalizacji (domyślnie 0.1)
 
-    Returns
-    --------
-    * Returns the IRR as a single value
-
-    Notes
-    ----------------
-    * The Internal Rate of Return (IRR) is the discount rate at which the Net Present Value (NPV) of a series of cash flows is equal to zero. The NPV of the series of cash flows is determined using the xnpv function in this module. The discount rate at which NPV equals zero is found using the secant method of numerical solution.
-    * This function is equivalent to the Microsoft Excel function of the same name.
-    * For users that do not have the scipy module installed, there is an alternate version (commented out) that uses the secant_method function defined in the module rather than the scipy.optimize module's numerical solver. Both use the same method of calculation so there should be no difference in performance, but the secant_method function does not fail gracefully in cases where there is no solution, so the scipy.optimize.newton version is preferred.
-
+    Zwraca:
+        Wewnętrzna stopa zwrotu (IRR).
     """
-
-    # return secant_method(0.0001,lambda r: xnpv(r,cashflows),guess)
     return optimize.newton(lambda r: xnpv(r, cashflows), guess)
 
 
 @dataclass
 class RRSO:
+    """Oblicza Rzeczywistą Roczną Stopę Oprocentowania."""
+
     wyplata: float
-    raty: list
+    raty: list[dict[str, Any]]
     rrso_0: float
 
-    def right_side(self, rrso):
-
-        R = 0
+    def right_side(self, rrso: float) -> float:
+        """Oblicza prawą stronę równania RRSO."""
+        R = 0.0
         for i, r in enumerate(self.raty):
             R += float(r["rata"]) / ((1 + rrso) ** ((i + 1) / 12))
         return R
 
-    def oblicz_rrso(self):
+    def oblicz_rrso(self) -> float:
+        """Oblicza RRSO metodą bisekcji."""
         rrso = self.rrso_0
-        l_granica = 0
-        r_granica = 10
+        l_granica = 0.0
+        r_granica = 10.0
 
         rs = self.right_side(rrso)
 
         i = 0
 
         while abs(self.wyplata - rs) > 0.0001:
-
             if self.wyplata > rs:
                 r_granica = rrso
             else:
@@ -164,31 +155,30 @@ class RRSO:
             i += 1
             if i > 1000:
                 raise Exception("Za dużo iteracji")
-                return "N/A"
 
         return rrso
 
 
-def mpkk(K, N, data_start):
-    # 28.12.2020 - 04.01.2021
-    # 29,30,31,1,2,3,4
-    # 3 + 4 = 7
+def mpkk(K: float, N: int, data_start: dt.datetime) -> float:
+    """Oblicza Maksymalny Pozaodsetkowy Koszt Kredytu.
 
+    Argumenty:
+        K: kwota kredytu
+        N: okres kredytu w miesiącach
+        data_start: data rozpoczęcia kredytu
+    """
     data_koniec = data_start + relativedelta(months=N)
 
-    # get year out of data_start
     rok_start = data_start.year
     rok_koniec = data_koniec.year
 
     if rok_start == rok_koniec:
         dni_rok = liczba_dni_w_roku(rok_start)
         dni = (data_koniec - data_start).days
-        # print(f"ile dni {dni}")
-        mpkk = K * 0.1 + K * dni / dni_rok * 0.1
+        result = K * 0.1 + K * dni / dni_rok * 0.1
     else:
-        wspolczynnik = 0
+        wspolczynnik = 0.0
         for rok in range(rok_start, rok_koniec + 1):
-            # sprawdz czy rok startowy jest przestepny
             if rok == rok_start:
                 dni_rok = liczba_dni_w_roku(rok)
                 dni = (dt.datetime(rok, 12, 31) - data_start).days
@@ -200,6 +190,6 @@ def mpkk(K, N, data_start):
             else:
                 wspolczynnik += 1
 
-        mpkk = K * 0.1 + K * wspolczynnik * 0.1
+        result = K * 0.1 + K * wspolczynnik * 0.1
 
-    return mpkk
+    return result

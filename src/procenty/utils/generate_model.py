@@ -1,20 +1,29 @@
 import datetime as dt
 import decimal
 from dataclasses import dataclass
+from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 from pandas.tseries.offsets import BDay
 from scipy.interpolate import interp1d
-from sqlalchemy import text as sql_text
+
+try:
+    from sqlalchemy import text as sql_text
+except ImportError:
+    sql_text = None  # type: ignore[assignment]
 
 
 @dataclass
 class WiborInter:
-    """interpolowanie wibour dla wartosci, ktorych jeszce nie znamy."""
+    """Interpolowanie WIBOR dla wartości, których jeszcze nie znamy.
 
-    db: object
+    Wymaga zainstalowanego pakietu sqlalchemy oraz obiektu bazy danych
+    z atrybutem ``engine`` (np. SQLAlchemy engine).
+    """
+
+    db: Any
     wibor_typ: str
     data_start: dt.datetime
     okresy: int
@@ -22,15 +31,20 @@ class WiborInter:
     points: list
 
     def __post_init__(self):
+        if sql_text is None:
+            raise ImportError(
+                "Moduł sqlalchemy jest wymagany do użycia WiborInter. "
+                "Zainstaluj go: pip install sqlalchemy"
+            )
+
         if self.wibor_typ == "3M":
             self._okres = 3
             wib_rodzaj = "wibor3m"
         elif self.wibor_typ == "6M":
             self._okres = 6
             wib_rodzaj = "wibor6m"
-
-        # self.df = pd.read_csv('obliczeniakredytowe/static/{}'.format(file_name), usecols=[0,1], index_col=0)
-        # self.df.index = pd.to_datetime(self.df.index, format='%Y-%m-%d')
+        else:
+            raise ValueError(f"Nieobsługiwany typ WIBOR: {self.wibor_typ}")
 
         self.df = pd.read_sql(
             sql_text(f"SELECT data, wartosc FROM wibor WHERE rodzaj='{wib_rodzaj}'"),
@@ -53,7 +67,6 @@ class WiborInter:
         self.max_wibor_real = self.df.index.max()
 
         if self.data_koniec > self.max_wibor_real:
-
             if self.points:
                 self.points = [
                     (dt.datetime.strptime(p[0], "%d/%m/%Y"), p[1])
@@ -136,12 +149,10 @@ class WiborInter:
 
         return wibor_value
 
-    def isWiborReal(self, data):
+    def isWiborReal(self, data) -> str:
         if data >= self.max_wibor_real:
             return "N"
         return "Y"
-
-        return wibor_value
 
     @property
     def okres(self):
@@ -149,14 +160,22 @@ class WiborInter:
 
 
 class Wibor:
+    """Klasa do pobierania danych WIBOR z bazy danych.
 
-    def __init__(self, rodzajWiboru: str, db):
+    Wymaga zainstalowanego pakietu sqlalchemy.
+    """
 
-        file_name = ""
+    def __init__(self, rodzajWiboru: str, db: Any):
+        if sql_text is None:
+            raise ImportError(
+                "Moduł sqlalchemy jest wymagany do użycia Wibor. "
+                "Zainstaluj go: pip install sqlalchemy"
+            )
+
         if rodzajWiboru == "3M":
             self._okres = 3
             wib_rodzaj = "wibor3m"
-        if rodzajWiboru == "1M":
+        elif rodzajWiboru == "1M":
             self._okres = 1
             wib_rodzaj = "wibor1m"
         elif rodzajWiboru == "6M":
@@ -165,6 +184,8 @@ class Wibor:
         elif rodzajWiboru == "stopa_ref":
             self._okres = 1
             wib_rodzaj = "stopa_ref"
+        else:
+            raise ValueError(f"Nieobsługiwany rodzaj WIBOR: {rodzajWiboru}")
 
         self.df = pd.read_sql(
             sql_text(f"SELECT data, wartosc FROM wibor WHERE rodzaj='{wib_rodzaj}'"),
@@ -221,6 +242,7 @@ def next_business_day(date):
     i = 0
     while not is_business_day(date):
         date = date + dt.timedelta(days=1)
+        i += 1
         if i > 100:
             raise Exception("next_business_day not found")
     return date
@@ -241,7 +263,6 @@ def generateFromWiborFileInter(
     wibor_value_start,
     tylko_marza=False,
 ):
-
     # daty_splaty = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
     daty_splaty = []
     # wakacje= ['2022-08', '2022-09','2022-10','2022-11', '2023-02','2023-05','2023-08','2023-11']
