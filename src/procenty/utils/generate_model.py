@@ -37,18 +37,16 @@ class WiborInter:
                 "Zainstaluj go: pip install sqlalchemy"
             )
 
-        if self.wibor_typ == "3M":
-            self._okres = 3
-            wib_rodzaj = "wibor3m"
-        elif self.wibor_typ == "6M":
-            self._okres = 6
-            wib_rodzaj = "wibor6m"
-        else:
+        dozwolone_typy = {"3M": ("wibor3m", 3), "6M": ("wibor6m", 6)}
+        if self.wibor_typ not in dozwolone_typy:
             raise ValueError(f"Nieobsługiwany typ WIBOR: {self.wibor_typ}")
 
+        wib_rodzaj, self._okres = dozwolone_typy[self.wibor_typ]
+
         self.df = pd.read_sql(
-            sql_text(f"SELECT data, wartosc FROM wibor WHERE rodzaj='{wib_rodzaj}'"),
+            sql_text("SELECT data, wartosc FROM wibor WHERE rodzaj=:rodzaj"),
             con=self.db.engine.connect(),
+            params={"rodzaj": wib_rodzaj},
             index_col="data",
         )
 
@@ -101,7 +99,6 @@ class WiborInter:
 
             new_df = pd.DataFrame(self.points, columns=["data", "wartosc"])
             new_df["real"] = "N"
-            # new_df['Date'] = pd.to_datetime(new_df['Date'])
             new_df.set_index("data", inplace=True)
 
             # Concatenate the original DataFrame and the new DataFrame
@@ -136,16 +133,18 @@ class WiborInter:
 
         return wibor_value
 
-    def _getWiborLastAvailable(self, data: str) -> float:
+    def _getWiborLastAvailable(self, data: dt.datetime) -> float:
         try:
             wibor_value = self.df.loc[data.strftime("%Y-%m-%d")][0]
-        except BaseException:
+        except (KeyError, IndexError):
             try:
                 wibor_value = self.df[self.df.index < data.strftime("%Y-%m-%d")].iloc[
                     -1
                 ][0]
-            except BaseException:
-                raise Exception("wibor not available")
+            except (KeyError, IndexError):
+                raise ValueError(
+                    f"Dane WIBOR niedostępne dla daty {data.strftime('%Y-%m-%d')}"
+                )
 
         return wibor_value
 
@@ -172,24 +171,21 @@ class Wibor:
                 "Zainstaluj go: pip install sqlalchemy"
             )
 
-        if rodzajWiboru == "3M":
-            self._okres = 3
-            wib_rodzaj = "wibor3m"
-        elif rodzajWiboru == "1M":
-            self._okres = 1
-            wib_rodzaj = "wibor1m"
-        elif rodzajWiboru == "6M":
-            self._okres = 6
-            wib_rodzaj = "wibor6m"
-        elif rodzajWiboru == "stopa_ref":
-            self._okres = 1
-            wib_rodzaj = "stopa_ref"
-        else:
+        dozwolone_rodzaje = {
+            "3M": ("wibor3m", 3),
+            "1M": ("wibor1m", 1),
+            "6M": ("wibor6m", 6),
+            "stopa_ref": ("stopa_ref", 1),
+        }
+        if rodzajWiboru not in dozwolone_rodzaje:
             raise ValueError(f"Nieobsługiwany rodzaj WIBOR: {rodzajWiboru}")
 
+        wib_rodzaj, self._okres = dozwolone_rodzaje[rodzajWiboru]
+
         self.df = pd.read_sql(
-            sql_text(f"SELECT data, wartosc FROM wibor WHERE rodzaj='{wib_rodzaj}'"),
+            sql_text("SELECT data, wartosc FROM wibor WHERE rodzaj=:rodzaj"),
             con=db.engine.connect(),
+            params={"rodzaj": wib_rodzaj},
             index_col="data",
         )
 
@@ -205,23 +201,25 @@ class Wibor:
         wibor_zamr_value = self.df.iloc[zmr_iloc_idx].iloc[0][0]
         return wibor_zamr_value
 
-    def getWiborExact(self, data: str):
+    def getWiborExact(self, data: dt.datetime):
         try:
             wibor_zamr_value = self.df.loc[data.strftime("%Y-%m-%d")][0]
-        except BaseException:
+        except (KeyError, IndexError):
             wibor_zamr_value = None
         return wibor_zamr_value
 
-    def _getWiborLastAvailable(self, data: str) -> float:
+    def _getWiborLastAvailable(self, data: dt.datetime) -> float:
         try:
             wibor_value = self.df.loc[data.strftime("%Y-%m-%d")][0]
-        except BaseException:
+        except (KeyError, IndexError):
             try:
                 wibor_value = self.df[self.df.index < data.strftime("%Y-%m-%d")].iloc[
                     -1
                 ][0]
-            except BaseException:
-                raise Exception("wibor not available")
+            except (KeyError, IndexError):
+                raise ValueError(
+                    f"Dane WIBOR niedostępne dla daty {data.strftime('%Y-%m-%d')}"
+                )
 
         return wibor_value
 
@@ -243,8 +241,8 @@ def next_business_day(date):
     while not is_business_day(date):
         date = date + dt.timedelta(days=1)
         i += 1
-        if i > 100:
-            raise Exception("next_business_day not found")
+        if i > 10:
+            raise ValueError(f"Nie znaleziono dnia roboczego w ciągu 10 dni od {date}")
     return date
 
 
@@ -263,15 +261,7 @@ def generateFromWiborFileInter(
     wibor_value_start,
     tylko_marza=False,
 ):
-    # daty_splaty = [(start_date + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(okresy+1)]
     daty_splaty = []
-    # wakacje= ['2022-08', '2022-09','2022-10','2022-11', '2023-02','2023-05','2023-08','2023-11']
-
-    # nasze_daty_splaty = [(dt.datetime.strptime('2021-11-18', '%Y-%m-%d') + relativedelta(months=i)).strftime('%Y-%m-%d') for i in range(6)] + \
-    # [(dt.datetime.strptime('2022-05-04', '%Y-%m-%d') + relativedelta(months=i)).strftime('%Y-%m-%d')  for i in range(3)] + \
-    # [(dt.datetime.strptime('2022-08-29', '%Y-%m-%d') + relativedelta(months=i)).strftime('%Y-%m-%d')  for i in range(360)]
-
-    # print(f"nasze daty splaty {nasze_daty_splaty}")
 
     grosze = decimal.Decimal(".01")
 
@@ -333,7 +323,6 @@ def generateFromWiborFileInter(
                     )
                     pomost_done = True
 
-            # print(f"day: {wibor_day}, value: {wibor_value}")
             opr_wib.append(
                 {
                     "dzien": wibor_day.strftime("%Y-%m-%d"),
@@ -384,10 +373,9 @@ def generateFromWiborFileInter(
         # sprobujmy utworzyc nowa date splaty
         try:
             str_dzien = f"{rok}-{miesiac}-{aktualny_dzien_splaty_dzien}"
-            # print(f"str dzien: {str_dzien}")
             dzien_splaty = dt.datetime.strptime(str_dzien, "%Y-%m-%d")
-        except BaseException:
-            # zostajemy przy aktualnej dacie splaty
+        except ValueError:
+            # zostajemy przy aktualnej dacie splaty (np. 31 lutego nie istnieje)
             pass
 
         miesiac_dnia_splaty = dzien_splaty.strftime("%Y-%m")
@@ -406,7 +394,6 @@ def generateFromWiborFileInter(
         # WAKACJE KREYDTOWE
         ########################################
 
-        # dzien_splaty = dt.datetime.strptime(nasze_daty_splaty[n], '%Y-%m-%d')
         # check if dzien_splaty is not same month and day as wakacje
         if not (dzien_splaty.strftime("%Y-%m") in wakacje):
             N += 1
@@ -414,7 +401,6 @@ def generateFromWiborFileInter(
             daty_splaty.append(dzien_splaty_business_day.strftime("%Y-%m-%d"))
             if wakacje_in_progress:
                 wakacje_in_progress = False
-                # opr_wib.append({"dzien":dzien_splaty.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(marza+wibor.getWibor(dzien_splaty)).quantize(grosze))})
                 opr_arr.append(
                     {
                         "dzien": dzien_splaty_business_day.strftime("%Y-%m-%d"),
@@ -430,7 +416,6 @@ def generateFromWiborFileInter(
                 )
         else:
             wakacje_in_progress = True
-            # opr_wib.append({"dzien":dzien_splaty.strftime('%Y-%m-%d'), "proc": float(decimal.Decimal(0).quantize(grosze))})
             opr_arr.append(
                 {
                     "dzien": dzien_splaty_business_day.strftime("%Y-%m-%d"),
@@ -456,8 +441,6 @@ def generateFromWiborFileInter(
 
     # df sorted by dzien
     df = df.sort_values(by=["dzien"])
-
-    # print(df)
 
     # oprocentowanie z uwzglednieniem wakacji kredytowych
     opr_wakacje = []
@@ -486,8 +469,6 @@ def generateFromWiborFileInter(
                 opr_wakacje.append(
                     {"dzien": r["dzien"], "proc": r["proc"], "real": r["real"]}
                 )
-
-    # print(opr_wakacje)
 
     transze_out = []
     if transze:

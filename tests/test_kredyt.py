@@ -148,7 +148,7 @@ class TestKredytWalidacja:
             )
 
     def test_bledny_rodzaj_rat(self):
-        with pytest.raises(Exception, match="nie ma takich"):
+        with pytest.raises(ValueError, match="Nieobsługiwany rodzaj rat"):
             Kredyt(
                 K=Decimal(10000),
                 N=12,
@@ -164,7 +164,7 @@ class TestKredytWalidacja:
             Zdarzenie(dt.datetime(2021, 2, 1), Rodzaj.SPLATA, 0),
             Zdarzenie(dt.datetime(2021, 3, 1), Rodzaj.SPLATA, 0),
         ]
-        with pytest.raises(Exception, match="Nie zgadza się"):
+        with pytest.raises(ValueError, match="Nie zgadza się"):
             Kredyt(
                 K=Decimal(10000),
                 N=5,

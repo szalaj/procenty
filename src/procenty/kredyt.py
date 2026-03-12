@@ -34,9 +34,7 @@ class Zdarzenie:
     wartosc: Union[Decimal, float, int]
 
     def __lt__(self, other):
-        return str(self.data) + str(self.rodzaj.value) < str(other.data) + str(
-            other.rodzaj.value
-        )
+        return (self.data, self.rodzaj.value) < (other.data, other.rodzaj.value)
 
 
 @dataclass
@@ -84,6 +82,11 @@ class Kredyt:
                 f"Data startu kredytu musi być >= 1900-01-01, podano: {self.start}"
             )
 
+        if self.N <= 0 or self.N > 600:
+            raise ValueError(
+                f"Liczba rat musi być w zakresie 1-600 (max 50 lat), podano: {self.N}"
+            )
+
         if self.splaty_normalne:
             dni_splaty = [
                 self.start + relativedelta(months=i + 1) for i in range(self.N)
@@ -105,7 +108,9 @@ class Kredyt:
             logger.warning(
                 f"Kredyt: {self.K}, splaty normalne {self.splaty_normalne}.Nie zgadza się liczba zdarzeń {len(N_zdarzenie)} z N {self.N}"
             )
-            raise Exception("Nie zgadza się liczba zdarzeń SPLATA RATY z argumentem N")
+            raise ValueError(
+                "Nie zgadza się liczba zdarzeń SPLATA RATY z argumentem N"
+            )
 
         self.kredyt_wynik = self._symuluj()
 
@@ -238,7 +243,7 @@ class Kredyt:
         elif self.rodzajRat == "malejace_met2":
             I = (self.K / self.N) * (1 + (self.p / 12) * (self.N + 1) / 2)  # workaround
         else:
-            raise Exception("nie ma takich rat")
+            raise ValueError(f"Nieobsługiwany rodzaj rat: {self.rodzajRat}")
 
         return I
 

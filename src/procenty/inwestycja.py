@@ -27,6 +27,13 @@ class Lokata:
     kapitalizacja: int
 
     def __post_init__(self) -> None:
+        if self.kwota < 0:
+            raise ValueError("Kwota lokaty nie może być ujemna")
+        if self.czas <= 0:
+            raise ValueError("Czas lokaty musi być dodatni")
+        if self.kapitalizacja <= 0:
+            raise ValueError("Kapitalizacja musi być dodatnia")
+
         liczba_okresow = self.czas / (12 / self.kapitalizacja)
         stopa_okresowa = self.oprocentowanie / self.kapitalizacja
         self._przyszla_wartosc = self.kwota * (1 + stopa_okresowa) ** liczba_okresow
@@ -47,10 +54,9 @@ def npv(rate: float, cash_flows: list[float]) -> float:
 
 def irr(cash_flows: list[float]) -> float:
     """Oblicza wewnętrzną stopę zwrotu (IRR) dla regularnych przepływów pieniężnych."""
-    rate = 0.1
-    while npv(rate, cash_flows) > 0:
-        rate += 0.01
-    return rate
+    if not cash_flows:
+        raise ValueError("Lista przepływów pieniężnych nie może być pusta")
+    return optimize.brentq(lambda r: npv(r, cash_flows), -0.99, 10.0)
 
 
 @dataclass
@@ -154,7 +160,9 @@ class RRSO:
 
             i += 1
             if i > 1000:
-                raise Exception("Za dużo iteracji")
+                raise RuntimeError(
+                    "RRSO: brak zbieżności po 1000 iteracjach"
+                )
 
         return rrso
 
@@ -167,6 +175,11 @@ def mpkk(K: float, N: int, data_start: dt.datetime) -> float:
         N: okres kredytu w miesiącach
         data_start: data rozpoczęcia kredytu
     """
+    if K <= 0:
+        raise ValueError("Kwota kredytu musi być dodatnia")
+    if N <= 0:
+        raise ValueError("Okres kredytu musi być dodatni")
+
     data_koniec = data_start + relativedelta(months=N)
 
     rok_start = data_start.year

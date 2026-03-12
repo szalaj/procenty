@@ -114,7 +114,7 @@ class TestRRSO:
         """RRSO rzuca wyjątek przy zbyt wielu iteracjach."""
         raty = [{"rata": "1"} for _ in range(12)]
         rrso = RRSO(wyplata=1000000, raty=raty, rrso_0=0.1)
-        with pytest.raises(Exception, match="Za dużo iteracji"):
+        with pytest.raises(RuntimeError, match="brak zbieżności"):
             rrso.oblicz_rrso()
 
 
