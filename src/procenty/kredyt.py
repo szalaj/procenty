@@ -6,7 +6,7 @@ import decimal
 from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
 from enum import Enum
-from typing import Optional
+from typing import Any, Optional, Union
 
 from dateutil.relativedelta import relativedelta
 from loguru import logger
@@ -31,13 +31,10 @@ class Rodzaj(Enum):
 class Zdarzenie:
     data: dt.datetime
     rodzaj: Rodzaj
-    wartosc: object
+    wartosc: Union[Decimal, float, int]
 
     def __lt__(self, other):
-
-        return str(self.data) + str(self.rodzaj.value) < str(other.data) + str(
-            other.rodzaj.value
-        )
+        return (self.data, self.rodzaj.value) < (other.data, other.rodzaj.value)
 
 
 @dataclass
@@ -62,23 +59,33 @@ class Kredyt:
         self.K = self.K.quantize(grosze, ROUND_HALF_UP)
         self.dzien_odsetki: dt.datetime = self.start
         self.zdarzenia: list[Zdarzenie] = []
-        
+
         if self.operacje:
             self.zdarzenia.extend(self.operacje)
 
-        self.odsetki_naliczone = 0
-        self.odsetki_naliczone_marza = 0
-        self.I = 0
+        self.odsetki_naliczone: Decimal = Decimal(0)
+        self.odsetki_naliczone_marza: Decimal = Decimal(0)
+        self.I: Decimal = Decimal(0)
 
-        self.licznik_rat = 0
+        self.licznik_rat: int = 0
 
-        self.transze = []
+        self.transze: list[dict[str, Any]] = []
 
-        self.wynik = []
-        self.wynik_nadplaty = []
+        self.wynik: list[dict[str, Any]] = []
+        self.wynik_nadplaty: list[dict[str, str]] = []
 
-        self.wszystkie_koszty = []
-        self.wszystkie_koszty_kwota = 0
+        self.wszystkie_koszty: list[dict[str, Any]] = []
+        self.wszystkie_koszty_kwota: Decimal = Decimal(0)
+
+        if self.start.year < 1900:
+            raise ValueError(
+                f"Data startu kredytu musi być >= 1900-01-01, podano: {self.start}"
+            )
+
+        if self.N <= 0 or self.N > 600:
+            raise ValueError(
+                f"Liczba rat musi być w zakresie 1-600 (max 50 lat), podano: {self.N}"
+            )
 
         if self.splaty_normalne:
             dni_splaty = [
@@ -87,17 +94,25 @@ class Kredyt:
             for dzien_splaty in dni_splaty:
                 self.zdarzenia.append(Zdarzenie(dzien_splaty, Rodzaj.SPLATA, 0))
 
+        # Walidacja: rata nie może być w dniu startu lub wcześniej
+        for z in self.zdarzenia:
+            if z.rodzaj == Rodzaj.SPLATA and z.data <= self.start:
+                raise ValueError(
+                    f"Data raty ({z.data.strftime('%Y-%m-%d')}) nie może być "
+                    f"<= data startu kredytu ({self.start.strftime('%Y-%m-%d')}). "
+                    f"Pierwsza rata musi być po dniu uruchomienia kredytu."
+                )
+
         N_zdarzenie = [z for z in self.zdarzenia if z.rodzaj == Rodzaj.SPLATA]
         if len(N_zdarzenie) != self.N:
             logger.warning(
                 f"Kredyt: {self.K}, splaty normalne {self.splaty_normalne}.Nie zgadza się liczba zdarzeń {len(N_zdarzenie)} z N {self.N}"
             )
-            raise Exception("Nie zgadza się liczba zdarzeń SPLATA RATY z argumentem N")
+            raise ValueError("Nie zgadza się liczba zdarzeń SPLATA RATY z argumentem N")
 
         self.kredyt_wynik = self._symuluj()
 
         if self.rodzajRat == "malejace_met2":
-            print("przeliczam---------------------------")
             odsetki = [float(x["odsetki"]) for x in self.kredyt_wynik["raty"]]
             odsetki_marza = [
                 float(x["odsetki_marza"]) for x in self.kredyt_wynik["raty"]
@@ -138,7 +153,6 @@ class Kredyt:
         )
 
     def __przelicz_odsetki_mal2(self, ciag_platnosci: list[float]) -> list[float]:
-
         N = len(ciag_platnosci)
         sum_O = sum(ciag_platnosci)
 
@@ -175,7 +189,6 @@ class Kredyt:
         return wynik
 
     def wyswietl(self, dzien_raty):
-
         grosze = decimal.Decimal(".01")
         return "dzien: {}, K: {} zł, odsetki: {} zł, rata: {} zł".format(
             dzien_raty,
@@ -185,7 +198,6 @@ class Kredyt:
         )
 
     def zapisz_stan(self, dzien_raty):
-
         data = {
             "dzien": dzien_raty.strftime("%Y-%m-%d"),
             "K": str(self.K.quantize(grosze, ROUND_HALF_UP)),
@@ -215,7 +227,6 @@ class Kredyt:
         return 1
 
     def oblicz_rate(self) -> Decimal:
-
         if self.rodzajRat == "rowne":
             k = 12
             do_splaty = self.K
@@ -230,15 +241,15 @@ class Kredyt:
         elif self.rodzajRat == "malejace_met2":
             I = (self.K / self.N) * (1 + (self.p / 12) * (self.N + 1) / 2)  # workaround
         else:
-            raise Exception("nie ma takich rat")
+            raise ValueError(f"Nieobsługiwany rodzaj rat: {self.rodzajRat}")
 
         return I
 
-    def zmien_oprocentowanie(self, dzien_zmiany: dt.datetime, nowe_r: Decimal):
-
+    def zmien_oprocentowanie(
+        self, dzien_zmiany: dt.datetime, nowe_r: Union[Decimal, float, int]
+    ) -> None:
         o_d = LiczbaDni(
-            self.dzien_odsetki.strftime("%Y-%m-%d"),
-            dzien_zmiany.strftime("%Y-%m-%d")
+            self.dzien_odsetki.strftime("%Y-%m-%d"), dzien_zmiany.strftime("%Y-%m-%d")
         )
 
         opr = o_d.mnoznik * self.p
@@ -248,15 +259,16 @@ class Kredyt:
         self.odsetki_naliczone = self.odsetki_naliczone + opr * self.K
         self.odsetki_naliczone_marza = self.odsetki_naliczone_marza + opr_marza * self.K
 
-        self.p = Decimal((nowe_r / 100.0)) + self.marza
+        self.p = Decimal(str(float(nowe_r) / 100.0)) + self.marza
 
         self.dzien_odsetki = dzien_zmiany
 
-    def zrob_nadplate(self, dzien_nadplaty: dt.datetime, kwota: Decimal):
-
+    def zrob_nadplate(
+        self, dzien_nadplaty: dt.datetime, kwota: Union[Decimal, float, int]
+    ) -> None:
+        kwota = Decimal(str(kwota))
         o_d = LiczbaDni(
-            self.dzien_odsetki.strftime("%Y-%m-%d"),
-            dzien_nadplaty.strftime("%Y-%m-%d")
+            self.dzien_odsetki.strftime("%Y-%m-%d"), dzien_nadplaty.strftime("%Y-%m-%d")
         )
 
         opr = o_d.mnoznik * self.p
@@ -284,11 +296,11 @@ class Kredyt:
 
         self._dodaj_koszt(dzien_nadplaty, kwota)
 
-    def zrob_transze(self, dzien_transzy: dt.datetime, kwota: Decimal):
-
+    def zrob_transze(
+        self, dzien_transzy: dt.datetime, kwota: Union[Decimal, float, int]
+    ) -> None:
         o_d = LiczbaDni(
-            self.dzien_odsetki.strftime("%Y-%m-%d"),
-            dzien_transzy.strftime("%Y-%m-%d")
+            self.dzien_odsetki.strftime("%Y-%m-%d"), dzien_transzy.strftime("%Y-%m-%d")
         )
 
         opr = o_d.mnoznik * self.p
@@ -298,17 +310,16 @@ class Kredyt:
         self.odsetki_naliczone = self.odsetki_naliczone + opr * self.K
         self.odsetki_naliczone_marza = self.odsetki_naliczone_marza + opr_marza * self.K
 
+        kwota = Decimal(str(kwota))
         self.K = self.K + kwota
 
         self.dzien_odsetki = dzien_transzy
 
         self.transze.append({"dzien": dzien_transzy, "kwota": kwota})
 
-    def zrob_splate_calkowita(self, dzien_splaty: dt.datetime):
-
+    def zrob_splate_calkowita(self, dzien_splaty: dt.datetime) -> None:
         o_d = LiczbaDni(
-            self.dzien_odsetki.strftime("%Y-%m-%d"),
-            dzien_splaty.strftime("%Y-%m-%d")
+            self.dzien_odsetki.strftime("%Y-%m-%d"), dzien_splaty.strftime("%Y-%m-%d")
         )
 
         opr = o_d.mnoznik * self.p
@@ -333,10 +344,8 @@ class Kredyt:
         self._dodaj_koszt(dzien_splaty, kwota)
 
     def splata_raty(self, dzien_raty: dt.datetime):
-
         o_d = LiczbaDni(
-            self.dzien_odsetki.strftime("%Y-%m-%d"),
-            dzien_raty.strftime("%Y-%m-%d")
+            self.dzien_odsetki.strftime("%Y-%m-%d"), dzien_raty.strftime("%Y-%m-%d")
         )
 
         opr = o_d.mnoznik * self.p
@@ -374,8 +383,8 @@ class Kredyt:
 
         self.K = self.K - (self.I - self.odsetki_naliczone)
 
-        self.odsetki_naliczone = 0
-        self.odsetki_naliczone_marza = 0
+        self.odsetki_naliczone = Decimal(0)
+        self.odsetki_naliczone_marza = Decimal(0)
 
         self.dzien_odsetki = dzien_raty
         self.N -= 1
@@ -383,9 +392,7 @@ class Kredyt:
         self._dodaj_koszt(dzien_raty, self.I)
 
     def _symuluj(self):
-
         for zdarzenie in sorted(self.zdarzenia):
-
             if zdarzenie.rodzaj == Rodzaj.OPROCENTOWANIE:
                 self.zmien_oprocentowanie(zdarzenie.data, zdarzenie.wartosc)
             elif zdarzenie.rodzaj == Rodzaj.SPLATA:
@@ -430,7 +437,7 @@ class Kredyt:
         return inv.xirr(cashflows)
 
     @property
-    def podsumowanie(self) -> str:
+    def podsumowanie(self) -> dict[str, Any]:
         raty = [float(x["rata"]) for x in self.kredyt_wynik["raty"]]
         ile = len(raty)
         suma = sum(raty)
@@ -466,7 +473,6 @@ class KredytPorownanie:
     r: Decimal
 
     def __post_init__(self):
-
         self.kredyt = copy.deepcopy(self.kredyt)
 
         self.kredyt_porownanie = Kredyt(
@@ -504,29 +510,27 @@ class KredytSuwak:
 
     def __post_init__(self):
         self.dzien_odsetki: dt.datetime = self.start
-        self.I = 0
-        self.odsetki_naliczone = 0
+        self.I: Decimal = Decimal(0)
+        self.odsetki_naliczone: Decimal = Decimal(0)
 
-    def zmien_oprocentowanie(self, dzien_zmiany: dt.datetime, nowe_r: Decimal):
-
+    def zmien_oprocentowanie(
+        self, dzien_zmiany: dt.datetime, nowe_r: Union[Decimal, float, int]
+    ) -> None:
         o_d = LiczbaDni(
-            self.dzien_odsetki.strftime("%Y-%m-%d"),
-            dzien_zmiany.strftime("%Y-%m-%d")
+            self.dzien_odsetki.strftime("%Y-%m-%d"), dzien_zmiany.strftime("%Y-%m-%d")
         )
 
         opr = o_d.mnoznik * self.p
 
         self.odsetki_naliczone = self.odsetki_naliczone + opr * self.K
 
-        self.p = Decimal((nowe_r * 0.01)) + self.marza
+        self.p = Decimal(str(float(nowe_r) * 0.01)) + self.marza
 
         self.dzien_odsetki = dzien_zmiany
 
     def splata_raty(self, dzien_raty: dt.datetime):
-
         o_d = LiczbaDni(
-            self.dzien_odsetki.strftime("%Y-%m-%d"),
-            dzien_raty.strftime("%Y-%m-%d")
+            self.dzien_odsetki.strftime("%Y-%m-%d"), dzien_raty.strftime("%Y-%m-%d")
         )
 
         opr = o_d.mnoznik * self.p
@@ -550,18 +554,16 @@ class KredytSuwak:
 
         self.K = self.K - (self.I - self.odsetki_naliczone)
 
-        self.odsetki_naliczone = 0
+        self.odsetki_naliczone = Decimal(0)
 
         self.dzien_odsetki = dzien_raty
         self.N -= 1
 
-    def next(self, data: dt.datetime, rata_porownawcza: Decimal):
-
+    def next(self, data: dt.datetime, rata_porownawcza: Decimal) -> Decimal:
         # sprawdz czy pomiędzy ostatnią spłatą a datą jest zmiana oprocentowania
         # jeśli tak to zmień oprocentowanie
 
         if self.N > 0 and self.K > 0:
-
             if self.operacje:
                 for zdarzenie in self.operacje:
                     if zdarzenie.data > self.dzien_odsetki and zdarzenie.data <= data:
@@ -578,7 +580,6 @@ class KredytSuwak:
         return self.K
 
     def oblicz_rate(self) -> Decimal:
-
         k = 12
         do_splaty = self.K
         liczba_rat = self.N
