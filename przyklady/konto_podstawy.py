@@ -6,7 +6,8 @@ obliczanie sald i przeglądanie historii.
 """
 
 from datetime import datetime
-from procenty.konto import Zapis, Konto
+
+from procenty.konto import Konto, Zapis
 
 if __name__ == "__main__":
     teraz = datetime(2025, 1, 1)
@@ -15,17 +16,31 @@ if __name__ == "__main__":
     kasa = Konto("Kasa", "PLN")
 
     # Wpłata początkowa (Ma = przychód)
-    kasa.dodaj_zapis(Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=10000.0, opis="Wpłata początkowa"))
+    kasa.dodaj_zapis(
+        Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=10000.0, opis="Wpłata początkowa")
+    )
 
     # Przychód ze sprzedaży w kolejnych miesiącach
-    kasa.dodaj_zapis(Zapis(t_symulacji=2, tr_rzeczywisty=teraz, ma=3000.0, opis="Sprzedaż - styczeń"))
-    kasa.dodaj_zapis(Zapis(t_symulacji=3, tr_rzeczywisty=teraz, ma=4500.0, opis="Sprzedaż - luty"))
-    kasa.dodaj_zapis(Zapis(t_symulacji=4, tr_rzeczywisty=teraz, ma=2800.0, opis="Sprzedaż - marzec"))
+    kasa.dodaj_zapis(
+        Zapis(t_symulacji=2, tr_rzeczywisty=teraz, ma=3000.0, opis="Sprzedaż - styczeń")
+    )
+    kasa.dodaj_zapis(
+        Zapis(t_symulacji=3, tr_rzeczywisty=teraz, ma=4500.0, opis="Sprzedaż - luty")
+    )
+    kasa.dodaj_zapis(
+        Zapis(t_symulacji=4, tr_rzeczywisty=teraz, ma=2800.0, opis="Sprzedaż - marzec")
+    )
 
     # Wydatki (Winien = rozchód)
-    kasa.dodaj_zapis(Zapis(t_symulacji=2, tr_rzeczywisty=teraz, winien=1500.0, opis="Czynsz"))
-    kasa.dodaj_zapis(Zapis(t_symulacji=3, tr_rzeczywisty=teraz, winien=2000.0, opis="Wynagrodzenia"))
-    kasa.dodaj_zapis(Zapis(t_symulacji=4, tr_rzeczywisty=teraz, winien=800.0, opis="Media"))
+    kasa.dodaj_zapis(
+        Zapis(t_symulacji=2, tr_rzeczywisty=teraz, winien=1500.0, opis="Czynsz")
+    )
+    kasa.dodaj_zapis(
+        Zapis(t_symulacji=3, tr_rzeczywisty=teraz, winien=2000.0, opis="Wynagrodzenia")
+    )
+    kasa.dodaj_zapis(
+        Zapis(t_symulacji=4, tr_rzeczywisty=teraz, winien=800.0, opis="Media")
+    )
 
     print(kasa)
 
@@ -33,7 +48,9 @@ if __name__ == "__main__":
     for t in range(1, 5):
         ma, winien = kasa.rachunek_biezacy(t)
         saldo = kasa.saldo(t)
-        print(f"  Okres {t}: Ma={ma:>10.2f}, Winien={winien:>10.2f}, Saldo={saldo:>10.2f}")
+        print(
+            f"  Okres {t}: Ma={ma:>10.2f}, Winien={winien:>10.2f}, Saldo={saldo:>10.2f}"
+        )
 
     # --- Historia sald ---
     print("\nHistoria sald:")

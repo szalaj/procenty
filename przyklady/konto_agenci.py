@@ -6,7 +6,8 @@ wymieniają się towarami i pieniędzmi.
 """
 
 from datetime import datetime
-from procenty.konto import Zapis, Konto, Agent
+
+from procenty.konto import Agent, Konto, Zapis
 
 if __name__ == "__main__":
     teraz = datetime(2025, 1, 1)
@@ -16,11 +17,15 @@ if __name__ == "__main__":
     # Rolnik: ma zboże i pieniądze
     rolnik = Agent("Rolnik")
     k_zboze = Konto("zboze", "tony")
-    k_zboze.dodaj_zapis(Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=100.0, opis="Zbiory"))
+    k_zboze.dodaj_zapis(
+        Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=100.0, opis="Zbiory")
+    )
     rolnik.dodaj_konto(k_zboze)
 
     k_pln_rolnik = Konto("PLN", "PLN")
-    k_pln_rolnik.dodaj_zapis(Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=5000.0, opis="Oszczędności"))
+    k_pln_rolnik.dodaj_zapis(
+        Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=5000.0, opis="Oszczędności")
+    )
     rolnik.dodaj_konto(k_pln_rolnik)
 
     # Rolnik potrzebuje też konta na mąkę (żeby mógł ją otrzymać w wymianie)
@@ -29,11 +34,15 @@ if __name__ == "__main__":
     # Piekarz: ma mąkę, chleb i pieniądze
     piekarz = Agent("Piekarz")
     k_maka = Konto("maka", "tony")
-    k_maka.dodaj_zapis(Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=20.0, opis="Zapas mąki"))
+    k_maka.dodaj_zapis(
+        Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=20.0, opis="Zapas mąki")
+    )
     piekarz.dodaj_konto(k_maka)
 
     k_chleb = Konto("chleb", "szt")
-    k_chleb.dodaj_zapis(Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=500.0, opis="Wypiek"))
+    k_chleb.dodaj_zapis(
+        Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=500.0, opis="Wypiek")
+    )
     piekarz.dodaj_konto(k_chleb)
 
     k_pln_piekarz = Konto("PLN", "PLN")
@@ -66,8 +75,8 @@ if __name__ == "__main__":
     )
 
     print(f"  Rolnik - zboże: {rolnik.saldo_konta('zboze', 3)}")  # 100 - 10 = 90
-    print(f"  Rolnik - mąka:  {rolnik.saldo_konta('maka', 3)}")   # 0 + 5 = 5
-    print(f"  Piekarz - zboże: {piekarz.saldo_konta('zboze', 3)}") # 0 + 10 = 10
+    print(f"  Rolnik - mąka:  {rolnik.saldo_konta('maka', 3)}")  # 0 + 5 = 5
+    print(f"  Piekarz - zboże: {piekarz.saldo_konta('zboze', 3)}")  # 0 + 10 = 10
     print(f"  Piekarz - mąka:  {piekarz.saldo_konta('maka', 3)}")  # 20 - 5 = 15
 
     # === Transfer (jednostronny) ===
@@ -83,8 +92,8 @@ if __name__ == "__main__":
         opis="Zapłata za zboże",
     )
 
-    print(f"  Rolnik - PLN:  {rolnik.saldo_konta('PLN', 4)}")   # 5000 + 2000 = 7000
-    print(f"  Piekarz - PLN: {piekarz.saldo_konta('PLN', 4)}")   # 10000 - 2000 = 8000
+    print(f"  Rolnik - PLN:  {rolnik.saldo_konta('PLN', 4)}")  # 5000 + 2000 = 7000
+    print(f"  Piekarz - PLN: {piekarz.saldo_konta('PLN', 4)}")  # 10000 - 2000 = 8000
 
     # === Wymiana wewnętrzna agenta ===
     # Piekarz wymienia 5 ton mąki na 200 sztuk chleba (produkcja)
@@ -99,8 +108,8 @@ if __name__ == "__main__":
         opis="Wypiek chleba",
     )
 
-    print(f"  Piekarz - mąka:  {piekarz.saldo_konta('maka', 5)}")   # 15 - 5 = 10
-    print(f"  Piekarz - chleb: {piekarz.saldo_konta('chleb', 5)}")   # 500 + 200 = 700
+    print(f"  Piekarz - mąka:  {piekarz.saldo_konta('maka', 5)}")  # 15 - 5 = 10
+    print(f"  Piekarz - chleb: {piekarz.saldo_konta('chleb', 5)}")  # 500 + 200 = 700
 
     # === Podsumowanie końcowe ===
     print("\n=== Stan końcowy ===")

@@ -65,9 +65,8 @@
 - [x] Zakomentowane printy i stary kod w generate_model.py - wyczyszczone
 - [ ] `przyklady/zasoby.py` - prototyp z niezadeklarowana zaleznoscia networkx
 
-### SE-4: Oddzielic generate_model.py od biblioteki
-- **Problem**: Wprowadza zaleznosc od SQLAlchemy i konkretnego schematu bazy danych
-- **Fix**: Przeniesc do oddzielnego pakietu `procenty-data` lub oznaczyc jako optional dependency z extras
+### [DONE] SE-4: Usunięto generate_model.py z biblioteki
+- **Fix**: Usunięto plik z zależnością od SQLAlchemy i bazy danych
 
 ### SE-5: Mieszanie float i Decimal w stopach procentowych
 - **Problem**: `stopy.py` (Krzywa) uzywa float, `kredyt.py` uzywa Decimal dla `r` i `marza`

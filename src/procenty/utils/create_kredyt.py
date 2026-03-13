@@ -5,7 +5,7 @@ from typing import Any
 from ..kredyt import Kredyt, Rodzaj, Zdarzenie
 
 
-def create_kredyt(dane: list[dict[str, Any]], rodzajRat: str):
+def create_kredyt(dane: dict[str, Any], rodzajRat: str) -> "Kredyt":
 
     r = Decimal(dane["r"] / 100.0)
     marza = Decimal(dane["marza"] / 100.0)
@@ -65,7 +65,7 @@ def create_kredyt(dane: list[dict[str, Any]], rodzajRat: str):
     return kr
 
 
-def create_kredyt_normalny(dane: list[dict[str, Any]], rodzajRat: str):
+def create_kredyt_normalny(dane: dict[str, Any], rodzajRat: str) -> "Kredyt":
 
     r = Decimal(dane["r"] / 100.0)
     marza = Decimal(dane["marza"] / 100.0)

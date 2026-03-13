@@ -7,8 +7,11 @@ Moduł z klasami miar finansowych.
 
 from dataclasses import dataclass
 from decimal import Decimal
-from .utils.inne import liczba_dni_w_roku
+from typing import Union
+
 import pendulum
+
+from .utils.inne import liczba_dni_w_roku
 
 
 @dataclass
@@ -27,17 +30,16 @@ class LiczbaDni:
     start: str
     koniec: str
 
-
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         dt_start = pendulum.from_format(self.start, "YYYY-MM-DD")
         dt_koniec = pendulum.from_format(self.koniec, "YYYY-MM-DD")
 
         if dt_start > dt_koniec:
             raise Exception("Dzien start > Dzien koniec")
 
-        self._dni_odsetkowe = dt_koniec.diff(dt_start).in_days()
+        self._dni_odsetkowe: int = dt_koniec.diff(dt_start).in_days()
 
-        mnoznik = 0
+        mnoznik: float = 0
 
         if dt_start.year == dt_koniec.year:
             mnoznik = self._dni_odsetkowe / liczba_dni_w_roku(dt_start.year)
@@ -54,10 +56,10 @@ class LiczbaDni:
                 else:
                     mnoznik += 1
 
-        self._mnoznik = mnoznik
+        self._mnoznik: float = mnoznik
 
     @property
-    def dni_odsetkowe(self):
+    def dni_odsetkowe(self) -> int:
         return self._dni_odsetkowe
 
     @property
@@ -73,41 +75,45 @@ class Zloty:
     kwota -- kwota w złotówkach
     """
 
-    def __init__(self, kwota: float):
+    def __init__(self, kwota: float) -> None:
         self.kwota = kwota
 
-    def __add__(self, other):
+    def __add__(self, other: "Zloty") -> "Zloty":
         return Zloty(self.kwota + other.kwota)
 
-    def __sub__(self, other):
+    def __sub__(self, other: "Zloty") -> "Zloty":
         return Zloty(self.kwota - other.kwota)
 
-    def __mul__(self, other):
+    def __mul__(self, other: Union[int, float]) -> "Zloty":
         return Zloty(self.kwota * other)
 
-    def __truediv__(self, other):
+    def __truediv__(self, other: Union[int, float]) -> "Zloty":
         return Zloty(self.kwota / other)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.kwota} zł"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.kwota} zł"
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Zloty):
+            return NotImplemented
         return self.kwota == other.kwota
 
-    def __lt__(self, other):
+    def __lt__(self, other: "Zloty") -> bool:
         return self.kwota < other.kwota
 
-    def __le__(self, other):
+    def __le__(self, other: "Zloty") -> bool:
         return self.kwota <= other.kwota
 
-    def __gt__(self, other):
+    def __gt__(self, other: "Zloty") -> bool:
         return self.kwota > other.kwota
 
-    def __ge__(self, other):
+    def __ge__(self, other: "Zloty") -> bool:
         return self.kwota >= other.kwota
 
-    def __ne__(self, other):
+    def __ne__(self, other: object) -> bool:
+        if not isinstance(other, Zloty):
+            return NotImplemented
         return self.kwota != other.kwota
