@@ -4,9 +4,8 @@ import datetime as dt
 
 import pytest
 
-from procenty.stopy import Krzywa
 from procenty.inflacja import Inflacja
-
+from procenty.stopy import Krzywa
 
 # --- Fixtures ---
 

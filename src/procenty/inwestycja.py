@@ -160,9 +160,7 @@ class RRSO:
 
             i += 1
             if i > 1000:
-                raise RuntimeError(
-                    "RRSO: brak zbieżności po 1000 iteracjach"
-                )
+                raise RuntimeError("RRSO: brak zbieżności po 1000 iteracjach")
 
         return rrso
 

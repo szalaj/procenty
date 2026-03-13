@@ -6,7 +6,7 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List, Tuple
+from typing import Any, List, Tuple, Union
 
 import numpy as np
 from dateutil.relativedelta import relativedelta
@@ -20,79 +20,85 @@ class Krzywa:
 
     punkty: List[Tuple[datetime, float]]
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
 
         self.punkty.sort(key=lambda x: x[0])
 
-        self.start = self.punkty[0][0]
-        self.end = self.punkty[-1][0]
+        self.start: datetime = self.punkty[0][0]
+        self.end: datetime = self.punkty[-1][0]
 
-        self.timestamps = np.array([dt.timestamp() for dt, _ in self.punkty])
-        self.values = np.array([val for _, val in self.punkty])
+        self.timestamps: np.ndarray = np.array(
+            [dt.timestamp() for dt, _ in self.punkty]
+        )
+        self.values: np.ndarray = np.array([val for _, val in self.punkty])
 
-        spline = CubicSpline(self.timestamps, self.values)
+        spline: CubicSpline = CubicSpline(self.timestamps, self.values)
 
         # Generate points for smooth plot
-        self.timestamps_smooth = np.linspace(
+        self.timestamps_smooth: np.ndarray = np.linspace(
             self.timestamps.min(), self.timestamps.max(), 500
         )
-        self.values_smooth = spline(self.timestamps_smooth)
+        self.values_smooth: np.ndarray = spline(self.timestamps_smooth)
 
-        self.interpolation_function = interp1d(
+        self.interpolation_function: interp1d = interp1d(
             self.timestamps_smooth, self.values_smooth
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Krzywa({self.start}, {self.end}, {self.punkty})"
 
-    def __mul__(self, inflator):
+    def __mul__(self, inflator: Any) -> Union[List[Tuple[datetime, float]], Any]:
         from procenty.inflacja import Inflacja
 
         if isinstance(inflator, Inflacja):
 
-            wynik = []
-            punkty_miesiac = self.podzial_miesiac()
+            wynik: List[Tuple[datetime, float]] = []
+            punkty_miesiac: List[Tuple[datetime, float]] = self.podzial_miesiac()
 
             for punkt in punkty_miesiac:
-                wartosc_inflator = inflator.urealnij(punkt[0], punkt[1])
+                wartosc_inflator: float = inflator.urealnij(punkt[0], punkt[1])
                 wynik.append((punkt[0], wartosc_inflator))
 
             return wynik
         return NotImplemented
 
     @property
-    def splajn(self):
+    def splajn(self) -> List[Tuple[float, float]]:
         return list(zip(self.timestamps_smooth, self.values_smooth))
 
     @property
-    def punkty_zip(self):
+    def punkty_zip(self) -> List[Tuple[float, float]]:
         return list(zip(self.timestamps, self.values))
 
-    def podzial(self, okres_dni: int) -> list:
+    def podzial(self, okres_dni: int) -> List[Tuple[datetime, float]]:
         """
         Dzieli krzywą na okresy o długości okres_dni
         """
 
-        dajs = [
+        dajs: List[datetime] = [
             self.start + relativedelta(days=(i + 1) * okres_dni)
             for i in range(int((self.end - self.start).days / okres_dni))
         ]
-        opr = [(d, self.interpolation_function(d.timestamp()).item()) for d in dajs]
+        opr: List[Tuple[datetime, float]] = [
+            (d, self.interpolation_function(d.timestamp()).item()) for d in dajs
+        ]
 
         return opr
 
-    def podzial_miesiac(self) -> list:
+    def podzial_miesiac(self) -> List[Tuple[datetime, float]]:
         """
         Na razie dzieli na miesace biorac konkretny dzień.
         Trzeba zrobić uśrednienie z całego miesiąca.
         """
-        dajs = [self.start]
+        dajs: List[datetime] = [self.start]
         dajs.extend(
             [
                 self.start + relativedelta(months=(i + 1))
                 for i in range(diff_month(self.end, self.start))
             ]
         )
-        opr = [(d, self.interpolation_function(d.timestamp()).item()) for d in dajs]
+        opr: List[Tuple[datetime, float]] = [
+            (d, self.interpolation_function(d.timestamp()).item()) for d in dajs
+        ]
 
         return opr

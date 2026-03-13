@@ -49,18 +49,14 @@ print(f"Suma odsetek: {k.podsumowanie['info']['suma_odsetek']} PLN")
 
 ### Co wymaga naprawy (bugi)
 
-1. **`konto.py:269`** - literówka `opis=opisr.wsz` zamiast `opis=opis` - crashuje metodę `wymiana()`
-2. **`generate_model.py:222`** - `next_business_day()` wchodzi w nieskończoną pętlę (brak `i += 1`)
-3. **`inne.py:2`** - `liczba_dni_w_roku()` nie obsługuje pełnej reguły kalendarza gregoriańskiego (lata %100 i %400). Rok 2100 zostanie błędnie uznany za przestępny.
-4. **`inwestycja.py:178-179`** - martwy kod: `return "N/A"` po `raise Exception`
+1. ~~**`konto.py:269`** - literówka~~ - naprawione
+2. ~~**`generate_model.py`** - usunięty~~ - moduł zależny od bazy danych usunięty z biblioteki
+3. ~~**`inne.py:2`** - `liczba_dni_w_roku()`~~ - naprawione (pełna reguła gregoriańska)
+4. ~~**`inwestycja.py:178-179`** - martwy kod~~ - naprawione
 
 ### Propozycje zmian architektonicznych
 
-1. **Oddzielić `generate_model.py` od rdzenia** - zależy od SQLAlchemy i bazy danych, co psuje przenośność biblioteki. Przenieść do osobnego pakietu (np. `procenty-web` lub `procenty-db`).
-
-2. **Ujednolicić model stóp procentowych** - `Krzywa` w `stopy.py` i `WiborInter` w `generate_model.py` robią to samo (interpolacja stóp + prognoza). Wystarczy jeden mechanizm z pluginowymi źródłami danych.
-
-3. **Dopisać testy** - aktualnie pokrycie to ~10% kodu. Priorytetowe:
+1. **Dopisać testy** - priorytetowe:
    - Kredyt z nadpłatami i zmianami stóp
    - Lokata - przyszła wartość
    - Inflacja - urealnianie
@@ -74,7 +70,7 @@ print(f"Suma odsetek: {k.podsumowanie['info']['suma_odsetek']} PLN")
 
 5. **Wyrzucić martwy kod** - zasoby.py (puste klasy), zakomentowane testy w test_1.py, zakomentowane printy.
 
-6. **Zadeklarować brakujące zależności** - networkx i sqlalchemy są używane ale nie w pyproject.toml.
+6. **Zadeklarować brakujące zależności** - networkx jest używany w przykładach ale nie w pyproject.toml.
 
 ### Perspektywa makroekonomiczna
 

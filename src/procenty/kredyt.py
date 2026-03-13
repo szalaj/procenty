@@ -108,9 +108,7 @@ class Kredyt:
             logger.warning(
                 f"Kredyt: {self.K}, splaty normalne {self.splaty_normalne}.Nie zgadza się liczba zdarzeń {len(N_zdarzenie)} z N {self.N}"
             )
-            raise ValueError(
-                "Nie zgadza się liczba zdarzeń SPLATA RATY z argumentem N"
-            )
+            raise ValueError("Nie zgadza się liczba zdarzeń SPLATA RATY z argumentem N")
 
         self.kredyt_wynik = self._symuluj()
 

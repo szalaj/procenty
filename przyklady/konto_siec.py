@@ -9,7 +9,8 @@ Na końcu podsumowanie sald całej gospodarki.
 """
 
 from datetime import datetime
-from procenty.konto import Zapis, Konto, Agent, SiecAgentow
+
+from procenty.konto import Agent, Konto, SiecAgentow, Zapis
 
 if __name__ == "__main__":
     teraz = datetime(2025, 1, 1)
@@ -20,7 +21,9 @@ if __name__ == "__main__":
     # Kopalnia: wydobywa rudę, posiada pieniądze
     kopalnia = Agent("Kopalnia")
     k_ruda = Konto("ruda", "tony")
-    k_ruda.dodaj_zapis(Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=1000.0, opis="Wydobycie"))
+    k_ruda.dodaj_zapis(
+        Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=1000.0, opis="Wydobycie")
+    )
     kopalnia.dodaj_konto(k_ruda)
     k_pln_kop = Konto("PLN", "PLN")
     k_pln_kop.dodaj_zapis(Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=50000.0))
@@ -31,7 +34,9 @@ if __name__ == "__main__":
     huta = Agent("Huta")
     huta.dodaj_konto(Konto("ruda", "tony"))
     k_stal = Konto("stal", "tony")
-    k_stal.dodaj_zapis(Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=200.0, opis="Zapas stali"))
+    k_stal.dodaj_zapis(
+        Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=200.0, opis="Zapas stali")
+    )
     huta.dodaj_konto(k_stal)
     k_pln_huta = Konto("PLN", "PLN")
     k_pln_huta.dodaj_zapis(Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=100000.0))
@@ -42,7 +47,9 @@ if __name__ == "__main__":
     fabryka = Agent("Fabryka")
     fabryka.dodaj_konto(Konto("stal", "tony"))
     k_maszyny = Konto("maszyny", "szt")
-    k_maszyny.dodaj_zapis(Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=50.0, opis="Zapas maszyn"))
+    k_maszyny.dodaj_zapis(
+        Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=50.0, opis="Zapas maszyn")
+    )
     fabryka.dodaj_konto(k_maszyny)
     k_pln_fab = Konto("PLN", "PLN")
     k_pln_fab.dodaj_zapis(Zapis(t_symulacji=1, tr_rzeczywisty=teraz, ma=200000.0))

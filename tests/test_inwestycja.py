@@ -5,7 +5,7 @@ from decimal import Decimal
 
 import pytest
 
-from procenty.inwestycja import Lokata, RRSO, Inwestycja, irr, mpkk, npv, xirr, xnpv
+from procenty.inwestycja import RRSO, Inwestycja, Lokata, irr, mpkk, npv, xirr, xnpv
 
 
 class TestLokata:

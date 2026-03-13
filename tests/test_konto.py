@@ -6,7 +6,6 @@ import pytest
 
 from procenty.konto import Agent, Konto, SiecAgentow, Zapis
 
-
 # --- Fixtures ---
 
 

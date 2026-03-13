@@ -1,8 +1,8 @@
-from datetime import datetime
-from typing import Dict, List, Tuple, Optional
-from dataclasses import dataclass
-from collections import defaultdict
 import bisect
+from collections import defaultdict
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Dict, List, Optional, Tuple
 
 
 @dataclass
@@ -46,9 +46,9 @@ class Konto:
     def __init__(self, nazwa: str, jednostka: str = "PLN"):
         self.nazwa = nazwa
         self.jednostka = jednostka  # jednostka miary (np. PLN, kg, szt, t)
-        self._zapisy: List[
-            Zapis
-        ] = []  # Lista zapisów sortowana według klucza złożonego
+        self._zapisy: List[Zapis] = (
+            []
+        )  # Lista zapisów sortowana według klucza złożonego
         self._ostatnie_obliczenie_t: Optional[int] = None
         self._cache_saldo: Dict[int, Tuple[float, float]] = {}  # cache sald
 

@@ -5,9 +5,8 @@ from decimal import Decimal
 
 import pytest
 
-from procenty.utils.inne import diff_month, liczba_dni_w_roku
 from procenty.miary import LiczbaDni, Zloty
-
+from procenty.utils.inne import diff_month, liczba_dni_w_roku
 
 # --- Testy liczba_dni_w_roku ---
 

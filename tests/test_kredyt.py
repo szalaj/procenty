@@ -7,7 +7,6 @@ import pytest
 
 from procenty.kredyt import Kredyt, KredytPorownanie, KredytSuwak, Rodzaj, Zdarzenie
 
-
 # --- Fixtures ---
 
 

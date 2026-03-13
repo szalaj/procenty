@@ -16,8 +16,7 @@ src/procenty/
 ├── konto.py           # System księgowy: Zapis, Konto, Agent, SiecAgentow
 ├── utils/
 │   ├── inne.py        # liczba_dni_w_roku, diff_month
-│   ├── create_kredyt.py   # Fabryki kredytów z dict/JSON
-│   └── generate_model.py  # WiborInter, Wibor (opcjonalnie wymaga SQLAlchemy), generator modelu
+│   └── create_kredyt.py   # Fabryki kredytów z dict/JSON
 przyklady/
 ├── kredyt1.py         # Przykład użycia kredytów
 ├── inflacja_przyklad.py   # Przykład inflacji
@@ -53,7 +52,7 @@ przyklady/
 
 - Język: Nazewnictwo polskie (zmienne, klasy, metody), docstringi polskie
 - Typy: Decimal dla kwot pieniężnych, float dla stóp i wartości interpolowanych
-- Type annotations w większości modułów
+- Type annotations we wszystkich modułach
 - Daty: datetime obiekty, formatowanie "%Y-%m-%d" w stringach
 - Dataclasses z logiką w `__post_init__`
 - Manager pakietu: Poetry
@@ -68,7 +67,6 @@ przyklady/
 - python-dateutil (relativedelta)
 - loguru (logowanie)
 - pyyaml (zadeklarowane, ale nieużywane w kodzie źródłowym)
-- sqlalchemy (opcjonalna, lazy import w generate_model.py)
 - networkx (tylko w przyklady/zasoby.py, niezadeklarowane)
 
 ## Testy
