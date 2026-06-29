@@ -95,9 +95,15 @@ def secant_method(tol: float, f: Any, x0: float) -> float:
         f: funkcja jednej zmiennej
         x0: wartość początkowa x
     """
-    x1 = x0 * 1.1
-    while abs(x1 - x0) / abs(x1) > tol:
-        x0, x1 = x1, x1 - f(x1) * (x1 - x0) / (f(x1) - f(x0))
+    x1 = x0 * 1.1 if x0 != 0 else 1e-6
+    max_iter = 1000
+    for _ in range(max_iter):
+        if abs(x1) < 1e-12 or abs(x1 - x0) / abs(x1) <= tol:
+            break
+        mianownik = f(x1) - f(x0)
+        if mianownik == 0:
+            raise ValueError("Metoda siecznych nie zbiega: zerowa roznica f(x1)-f(x0).")
+        x0, x1 = x1, x1 - f(x1) * (x1 - x0) / mianownik
     return x1
 
 

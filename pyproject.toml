@@ -1,27 +1,42 @@
 [tool.poetry]
 name = "procenty"
-version = "0.2.2"
-description = ""
+version = "0.3.0"
+description = "Biblioteka Python do symulacji finansowych: kredyty, lokaty, inflacja, stopy procentowe, RRSO."
 authors = ["szalaj <mszalajski@gmail.com>"]
 readme = "README.md"
-packages = [{include="*", from="src"}]
 license = "MIT"
+homepage = "https://github.com/szalaj/procenty"
+repository = "https://github.com/szalaj/procenty"
+keywords = ["finanse", "kredyt", "rrso", "inflacja", "lokata", "stopy-procentowe"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Office/Business :: Financial",
+]
+packages = [{include = "*", from = "src"}]
+include = ["src/procenty/py.typed"]
 
 [tool.poetry.dependencies]
 python = ">=3.10"
 python-dateutil = "^2.8.2"
 scipy = "^1.11.4"
-pytest = ">=7.4.3"
 pendulum = ">=2.1.2"
 pandas = "^2.2.2"
 loguru = "^0.7.2"
-pyyaml = "^6.0.2"
-mcp = ">=1.0.0"
+# mcp jest potrzebne tylko dla serwera MCP - instalowane przez extra:
+#   pip install "procenty[mcp]"
+mcp = {version = ">=1.0.0", optional = true}
+
+[tool.poetry.extras]
+mcp = ["mcp"]
 
 [tool.poetry.scripts]
 procenty-mcp = "procenty.mcp_server:mcp_server.run"
 
 [tool.poetry.group.dev.dependencies]
+pytest = ">=7.4.3"
 flake8 = "^7.3.0"
 black = "^25.1.0"
 isort = "^6.0.1"
