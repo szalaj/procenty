@@ -1,7 +1,7 @@
 import copy
 import datetime as dt
 from dataclasses import dataclass
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -247,7 +247,7 @@ class InflacjaMiesiac:
             (self.dff.index.year == dzien.year) & (self.dff.index.month == dzien.month),
             "wartosc",
         ]
-        return inflacja_value[0]
+        return inflacja_value.iloc[0]
 
     def urealnij(self, dates_values_list: List[dict[str, Any]]) -> List[dict[str, Any]]:
 

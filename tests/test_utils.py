@@ -1,7 +1,6 @@
 """Testy modułu utils — liczba_dni_w_roku, diff_month, create_kredyt."""
 
 import datetime as dt
-from decimal import Decimal
 
 import pytest
 

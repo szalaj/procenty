@@ -372,3 +372,47 @@ class TestZdarzenie:
         assert zdarzenia[0].rodzaj == Rodzaj.TRANSZA
         assert zdarzenia[1].rodzaj == Rodzaj.NADPLATA
         assert zdarzenia[2].rodzaj == Rodzaj.SPLATA
+
+
+class TestSplataCalkowita:
+    """Regresja: spłata całkowita w połowie miesiąca (błąd znaku odsetek)."""
+
+    def test_splata_calkowita_to_kapital_plus_odsetki(self):
+        """Spłata całkowita = pozostały kapitał + naliczone odsetki, kredyt zamknięty."""
+        zdarzenia = [Zdarzenie(dt.datetime(2021, 6, 15), Rodzaj.SPLATA_CALKOWITA, 0)]
+        k = Kredyt(
+            K=Decimal(100000),
+            N=120,
+            r=Decimal("0.05"),
+            marza=Decimal("0.02"),
+            start=dt.datetime(2021, 1, 1),
+            rodzajRat="rowne",
+            operacje=zdarzenia,
+        )
+        payoff = next(r for r in k.raty if r["dzien"] == "2021-06-15")
+        kapital = float(payoff["K"])
+        odsetki = float(payoff["odsetki"])
+        rata = float(payoff["rata"])
+
+        assert odsetki > 0  # spłata w połowie miesiąca nalicza odsetki
+        # rata = kapitał + odsetki; przy błędzie znaku byłoby kapitał - odsetki
+        assert abs(rata - (kapital + odsetki)) < 0.01
+        assert rata > kapital  # rata przewyższa sam kapitał o odsetki
+        assert float(payoff["kapital"]) == pytest.approx(kapital, abs=0.01)
+        assert float(payoff["K_po"]) == 0.0  # kredyt zamknięty
+
+
+class TestMalejaceMet2Brzegowe:
+    """Przypadki brzegowe trybu malejace_met2."""
+
+    def test_jedna_rata_bez_dzielenia_przez_zero(self):
+        """Kredyt jednoratowy malejace_met2 nie może wywalać ZeroDivisionError."""
+        k = Kredyt(
+            K=Decimal(1000),
+            N=1,
+            r=Decimal("0.05"),
+            marza=Decimal("0.02"),
+            start=dt.datetime(2021, 1, 1),
+            rodzajRat="malejace_met2",
+        )
+        assert len(k.raty) == 1

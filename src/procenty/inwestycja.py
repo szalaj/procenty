@@ -56,7 +56,16 @@ def irr(cash_flows: list[float]) -> float:
     """Oblicza wewnętrzną stopę zwrotu (IRR) dla regularnych przepływów pieniężnych."""
     if not cash_flows:
         raise ValueError("Lista przepływów pieniężnych nie może być pusta")
-    return optimize.brentq(lambda r: npv(r, cash_flows), -0.99, 10.0)
+    # brentq wymaga zmiany znaku NPV na koncach przedzialu. Gdy jej nie ma
+    # (np. wszystkie przeplywy dodatnie), zamieniamy niskopoziomowy wyjatek
+    # scipy na czytelny komunikat.
+    try:
+        return optimize.brentq(lambda r: npv(r, cash_flows), -0.99, 10.0)
+    except ValueError as e:
+        raise ValueError(
+            "Nie znaleziono IRR w przedziale od -99% do 1000%. Przepływy muszą "
+            "zmieniać znak (ujemny nakład i dodatnie wpływy)."
+        ) from e
 
 
 @dataclass

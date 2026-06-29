@@ -1,7 +1,6 @@
 """Testy modułu inwestycja."""
 
 import datetime as dt
-from decimal import Decimal
 
 import pytest
 
@@ -13,8 +12,8 @@ class TestLokata:
 
     def test_lokata_roczna(self):
         """Lokata 10000 PLN, 5%, 12 miesięcy, kapitalizacja roczna."""
-        l = Lokata(kwota=10000, oprocentowanie=0.05, czas=12, kapitalizacja=1)
-        assert abs(l.przyszla_wartosc() - 10500.0) < 0.01
+        lok = Lokata(kwota=10000, oprocentowanie=0.05, czas=12, kapitalizacja=1)
+        assert abs(lok.przyszla_wartosc() - 10500.0) < 0.01
 
     def test_lokata_miesieczna(self):
         """Lokata z kapitalizacją miesięczną daje więcej niż roczna."""
@@ -25,19 +24,19 @@ class TestLokata:
         assert l_miesieczna.przyszla_wartosc() > l_roczna.przyszla_wartosc()
 
     def test_lokata_zysk_dodatni(self):
-        l = Lokata(kwota=10000, oprocentowanie=0.05, czas=12, kapitalizacja=1)
-        assert l.oblicz_zysk() > 0
+        lok = Lokata(kwota=10000, oprocentowanie=0.05, czas=12, kapitalizacja=1)
+        assert lok.oblicz_zysk() > 0
 
     def test_lokata_zero_oprocentowanie(self):
-        l = Lokata(kwota=10000, oprocentowanie=0.0, czas=12, kapitalizacja=1)
-        assert l.przyszla_wartosc() == 10000.0
-        assert l.oblicz_zysk() == 0.0
+        lok = Lokata(kwota=10000, oprocentowanie=0.0, czas=12, kapitalizacja=1)
+        assert lok.przyszla_wartosc() == 10000.0
+        assert lok.oblicz_zysk() == 0.0
 
     def test_lokata_krotki_okres(self):
         """Lokata 3 miesiące."""
-        l = Lokata(kwota=10000, oprocentowanie=0.04, czas=3, kapitalizacja=4)
-        assert l.przyszla_wartosc() > 10000
-        assert l.przyszla_wartosc() < 10500  # Mniej niż przy pełnym roku
+        lok = Lokata(kwota=10000, oprocentowanie=0.04, czas=3, kapitalizacja=4)
+        assert lok.przyszla_wartosc() > 10000
+        assert lok.przyszla_wartosc() < 10500  # Mniej niż przy pełnym roku
 
 
 class TestInwestycja:
@@ -136,3 +135,17 @@ class TestMPKK:
         mpkk_krotki = mpkk(10000, 6, dt.datetime(2021, 1, 1))
         mpkk_dlugi = mpkk(10000, 24, dt.datetime(2021, 1, 1))
         assert mpkk_dlugi > mpkk_krotki
+
+
+class TestIrrBrzegowe:
+    """Przypadki brzegowe IRR."""
+
+    def test_irr_bez_zmiany_znaku_czytelny_blad(self):
+        """IRR bez ujemnego przepływu rzuca czytelny ValueError, nie surowy wyjątek scipy."""
+        with pytest.raises(ValueError, match="IRR"):
+            irr([100, 200, 300])
+
+    def test_irr_pusta_lista(self):
+        """IRR pustej listy rzuca ValueError."""
+        with pytest.raises(ValueError):
+            irr([])

@@ -65,7 +65,7 @@ class Kredyt:
 
         self.odsetki_naliczone: Decimal = Decimal(0)
         self.odsetki_naliczone_marza: Decimal = Decimal(0)
-        self.I: Decimal = Decimal(0)
+        self.rata: Decimal = Decimal(0)
 
         self.licznik_rat: int = 0
 
@@ -154,6 +154,10 @@ class Kredyt:
 
     def __przelicz_odsetki_mal2(self, ciag_platnosci: list[float]) -> list[float]:
         N = len(ciag_platnosci)
+        # Dla pojedynczej raty nie ma czego rozkladac (a wzor na A dzieli przez
+        # N*(1-N)/2, czyli 0 dla N=1) - zwracamy ciag bez zmian.
+        if N == 1:
+            return list(ciag_platnosci)
         sum_O = sum(ciag_platnosci)
 
         o_N = ciag_platnosci[-1]
@@ -194,7 +198,7 @@ class Kredyt:
             dzien_raty,
             self.K.quantize(grosze, ROUND_HALF_UP),
             self.odsetki_naliczone.quantize(grosze, ROUND_HALF_UP),
-            self.I.quantize(grosze, ROUND_HALF_UP),
+            self.rata.quantize(grosze, ROUND_HALF_UP),
         )
 
     def zapisz_stan(self, dzien_raty):
@@ -210,13 +214,13 @@ class Kredyt:
                 - self.odsetki_naliczone_marza.quantize(grosze, ROUND_HALF_UP)
             ),
             "kapital": str(
-                self.I.quantize(grosze, ROUND_HALF_UP)
+                self.rata.quantize(grosze, ROUND_HALF_UP)
                 - self.odsetki_naliczone.quantize(grosze, ROUND_HALF_UP)
             ),
-            "rata": str(self.I.quantize(grosze, ROUND_HALF_UP)),
+            "rata": str(self.rata.quantize(grosze, ROUND_HALF_UP)),
             "nr_raty": self.licznik_rat,
             "K_po": str(
-                (self.K - (self.I - self.odsetki_naliczone)).quantize(
+                (self.K - (self.rata - self.odsetki_naliczone)).quantize(
                     grosze, ROUND_HALF_UP
                 )
             ),
@@ -233,17 +237,19 @@ class Kredyt:
             if self.p > 0:
                 L = do_splaty * self.p
                 M = k * (1 - pow(k / (k + self.p), self.N))
-                I = L / M
+                rata = L / M
             else:
-                I = do_splaty / self.N
+                rata = do_splaty / self.N
         elif self.rodzajRat == "malejace":
-            I = (self.K / self.N) * (1 + (self.p / 12) * self.N)
+            rata = (self.K / self.N) * (1 + (self.p / 12) * self.N)
         elif self.rodzajRat == "malejace_met2":
-            I = (self.K / self.N) * (1 + (self.p / 12) * (self.N + 1) / 2)  # workaround
+            rata = (self.K / self.N) * (
+                1 + (self.p / 12) * (self.N + 1) / 2
+            )  # workaround
         else:
             raise ValueError(f"Nieobsługiwany rodzaj rat: {self.rodzajRat}")
 
-        return I
+        return rata
 
     def zmien_oprocentowanie(
         self, dzien_zmiany: dt.datetime, nowe_r: Union[Decimal, float, int]
@@ -332,9 +338,12 @@ class Kredyt:
 
         self.odsetki_naliczone_marza = self.odsetki_naliczone_marza + opr_marza * self.K
 
-        kwota = self.K - self.odsetki_naliczone
+        # Splata calkowita = pozostaly kapital PLUS naliczone odsetki.
+        # (Wczesniej bylo odejmowanie, co zanizalo splate o 2x odsetki, gdy
+        #  dzien splaty nie pokrywal sie z dniem raty.)
+        kwota = self.K + self.odsetki_naliczone
 
-        self.I = kwota
+        self.rata = kwota
 
         self.licznik_rat += 1
         self.zapisz_stan(dzien_splaty)
@@ -353,9 +362,9 @@ class Kredyt:
         opr_marza = o_d.mnoznik * self.marza
 
         if self.K > 0:
-            self.I = self.oblicz_rate().quantize(grosze, ROUND_HALF_UP)
+            self.rata = self.oblicz_rate().quantize(grosze, ROUND_HALF_UP)
         else:
-            self.I = Decimal(0).quantize(grosze, ROUND_HALF_UP)
+            self.rata = Decimal(0).quantize(grosze, ROUND_HALF_UP)
 
         self.odsetki_naliczone = (self.odsetki_naliczone + opr * self.K).quantize(
             grosze, ROUND_HALF_UP
@@ -364,24 +373,24 @@ class Kredyt:
 
         # work around
         if self.rodzajRat == "malejace_met2":
-            self.I = (self.Kstart / self.Nstart + self.odsetki_naliczone).quantize(
+            self.rata = (self.Kstart / self.Nstart + self.odsetki_naliczone).quantize(
                 grosze, ROUND_HALF_UP
             )
             if self.K <= 0:
-                self.I = Decimal(0).quantize(grosze, ROUND_HALF_UP)
+                self.rata = Decimal(0).quantize(grosze, ROUND_HALF_UP)
 
-        if self.odsetki_naliczone > self.I:
-            self.I = self.odsetki_naliczone
+        if self.odsetki_naliczone > self.rata:
+            self.rata = self.odsetki_naliczone
 
         # ostatnia rata
         if self.N == 1:
-            roznica_na_koniec = self.K - (self.I - self.odsetki_naliczone)
-            self.I += roznica_na_koniec
+            roznica_na_koniec = self.K - (self.rata - self.odsetki_naliczone)
+            self.rata += roznica_na_koniec
 
         self.licznik_rat += 1
         self.zapisz_stan(dzien_raty)
 
-        self.K = self.K - (self.I - self.odsetki_naliczone)
+        self.K = self.K - (self.rata - self.odsetki_naliczone)
 
         self.odsetki_naliczone = Decimal(0)
         self.odsetki_naliczone_marza = Decimal(0)
@@ -389,7 +398,7 @@ class Kredyt:
         self.dzien_odsetki = dzien_raty
         self.N -= 1
 
-        self._dodaj_koszt(dzien_raty, self.I)
+        self._dodaj_koszt(dzien_raty, self.rata)
 
     def _symuluj(self):
         for zdarzenie in sorted(self.zdarzenia):
@@ -422,7 +431,7 @@ class Kredyt:
         return self.kredyt_wynik["nadplaty"]
 
     @property
-    def xirr(self) -> float:
+    def xirr(self) -> Optional[float]:
         cashflows = [
             (dt.datetime.strptime(x["dzien"], "%Y-%m-%d"), float(x["rata"]))
             for x in self.kredyt_wynik["raty"]
@@ -434,7 +443,13 @@ class Kredyt:
         cashflows = cashflows + [(self.start, float(-self.Kstart))]
         cashflows = cashflows + [(x["dzien"], float(-x["kwota"])) for x in self.transze]
 
-        return inv.xirr(cashflows)
+        # xirr opiera sie na newtonie bez bracketingu i moze nie zbiec dla
+        # nietypowych przeplywow. Nie wywracamy z tego powodu calego
+        # podsumowania - zwracamy None.
+        try:
+            return inv.xirr(cashflows)
+        except Exception:
+            return None
 
     @property
     def podsumowanie(self) -> dict[str, Any]:
@@ -510,7 +525,7 @@ class KredytSuwak:
 
     def __post_init__(self):
         self.dzien_odsetki: dt.datetime = self.start
-        self.I: Decimal = Decimal(0)
+        self.rata: Decimal = Decimal(0)
         self.odsetki_naliczone: Decimal = Decimal(0)
 
     def zmien_oprocentowanie(
@@ -536,23 +551,23 @@ class KredytSuwak:
         opr = o_d.mnoznik * self.p
 
         if self.K > 0:
-            self.I = self.oblicz_rate().quantize(grosze, ROUND_HALF_UP)
+            self.rata = self.oblicz_rate().quantize(grosze, ROUND_HALF_UP)
         else:
-            self.I = Decimal(0).quantize(grosze, ROUND_HALF_UP)
+            self.rata = Decimal(0).quantize(grosze, ROUND_HALF_UP)
 
         self.odsetki_naliczone = (self.odsetki_naliczone + opr * self.K).quantize(
             grosze, ROUND_HALF_UP
         )
 
-        if self.odsetki_naliczone > self.I:
-            self.I = self.odsetki_naliczone
+        if self.odsetki_naliczone > self.rata:
+            self.rata = self.odsetki_naliczone
 
         # ostatnia rata
         if self.N == 1:
-            roznica_na_koniec = self.K - (self.I - self.odsetki_naliczone)
-            self.I += roznica_na_koniec
+            roznica_na_koniec = self.K - (self.rata - self.odsetki_naliczone)
+            self.rata += roznica_na_koniec
 
-        self.K = self.K - (self.I - self.odsetki_naliczone)
+        self.K = self.K - (self.rata - self.odsetki_naliczone)
 
         self.odsetki_naliczone = Decimal(0)
 
@@ -573,8 +588,8 @@ class KredytSuwak:
             self.splata_raty(data)
 
             nadplata = 0
-            if self.I < rata_porownawcza:
-                nadplata = rata_porownawcza - self.I
+            if self.rata < rata_porownawcza:
+                nadplata = rata_porownawcza - self.rata
                 self.K = self.K - nadplata
 
         return self.K
@@ -586,8 +601,8 @@ class KredytSuwak:
         if self.p > 0:
             L = do_splaty * self.p
             M = k * (1 - pow(k / (k + self.p), liczba_rat))
-            I = L / M
+            rata = L / M
         else:
-            I = do_splaty / liczba_rat
+            rata = do_splaty / liczba_rat
 
-        return I
+        return rata

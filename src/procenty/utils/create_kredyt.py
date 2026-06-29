@@ -33,7 +33,7 @@ def create_kredyt(dane: dict[str, Any], rodzajRat: str) -> "Kredyt":
 
     if "nadplaty" in dane:
         for nadplata in dane["nadplaty"]:
-            if nadplata["calkowita"] == True:
+            if nadplata["calkowita"] is True:
                 zdarzenia.append(
                     Zdarzenie(
                         dt.datetime.strptime(nadplata["dzien"], "%Y-%m-%d"),

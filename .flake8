@@ -1,7 +1,10 @@
 [flake8]
+# Dlugosc linii pilnuje black; E501 wylaczone, bo black zostawia dlugie tylko
+# tam, gdzie nie da sie sensownie zlamac (f-stringi z interpolacja).
+# E203 i W503 sa niezgodne z blackiem - standardowo wylaczane.
 max-line-length = 88
-extend-ignore = E203
-exclude = .git,__pycache__,docs/,build/,dist/,*.egg-info/
+extend-ignore = E203, W503, E501
+exclude = .git,.venv,__pycache__,.pytest_cache,docs/,build/,dist/,*.egg-info/
 per-file-ignores =
     # Allow __init__.py to contain unused imports
     __init__.py:F401

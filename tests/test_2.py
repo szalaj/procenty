@@ -1,5 +1,5 @@
 import datetime as dt
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import Decimal
 
 import pytest
 

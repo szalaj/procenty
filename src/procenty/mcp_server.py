@@ -2,12 +2,11 @@
 
 import datetime as dt
 from decimal import Decimal
-from typing import Optional
 
 from mcp.server.fastmcp import FastMCP
 
 from procenty.inwestycja import Lokata, mpkk, npv, xirr, xnpv
-from procenty.kredyt import Kredyt, Rodzaj, Zdarzenie
+from procenty.kredyt import Kredyt
 from procenty.miary import LiczbaDni
 
 mcp_server = FastMCP(

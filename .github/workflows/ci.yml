@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install zaleznosci (z grupa dev)
+        run: poetry install --no-interaction
+
+      - name: flake8
+        run: poetry run flake8 src tests
+
+      - name: black --check
+        run: poetry run black --check src tests
+
+      - name: isort --check
+        run: poetry run isort --check-only src tests
+
+      - name: pytest
+        run: poetry run pytest -q
