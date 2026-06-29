@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "procenty"
-version = "0.3.0"
+version = "0.3.1"
 description = "Biblioteka Python do symulacji finansowych: kredyty, lokaty, inflacja, stopy procentowe, RRSO."
 authors = ["szalaj <mszalajski@gmail.com>"]
 readme = "README.md"

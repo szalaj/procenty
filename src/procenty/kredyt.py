@@ -606,3 +606,13 @@ class KredytSuwak:
             rata = do_splaty / liczba_rat
 
         return rata
+
+
+# Wsteczna kompatybilnosc: create_kredyt historycznie byl dostepny jako
+# procenty.kredyt.create_kredyt. Po przeniesieniu definicji do utils
+# zachowujemy ten publiczny punkt wejscia (uzywany m.in. przez
+# kredytoweobliczenia.pl, ktore wola procenty.kredyt.create_kredyt).
+from procenty.utils.create_kredyt import (  # noqa: E402,F401
+    create_kredyt,
+    create_kredyt_normalny,
+)

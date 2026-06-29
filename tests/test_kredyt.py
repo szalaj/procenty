@@ -416,3 +416,31 @@ class TestMalejaceMet2Brzegowe:
             rodzajRat="malejace_met2",
         )
         assert len(k.raty) == 1
+
+
+class TestPublicznyApiCreateKredyt:
+    """create_kredyt musi pozostac dostepny jako procenty.kredyt.create_kredyt.
+
+    To publiczny punkt wejscia uzywany przez kredytoweobliczenia.pl; jego
+    przeniesienie do utils zlamalo by produkcje (regresja wstecznej kompat).
+    """
+
+    def test_create_kredyt_dostepny_w_procenty_kredyt(self):
+        import procenty.kredyt as proc
+
+        assert hasattr(proc, "create_kredyt")
+        assert hasattr(proc, "create_kredyt_normalny")
+
+    def test_create_kredyt_liczy_harmonogram(self):
+        import procenty.kredyt as proc
+
+        daty = [f"2021-{m:02d}-01" for m in range(2, 13)] + ["2022-01-01"]
+        dane = {
+            "start": "2021-01-01",
+            "K": 100000.0,
+            "r": 5.0,
+            "marza": 2.0,
+            "daty_splaty": daty,
+        }
+        k = proc.create_kredyt(dane, "rowne")
+        assert len(k.podsumowanie["raty"]) == 12
