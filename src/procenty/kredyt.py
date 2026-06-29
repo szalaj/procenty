@@ -413,7 +413,7 @@ class Kredyt:
             elif zdarzenie.rodzaj == Rodzaj.TRANSZA:
                 self.zrob_transze(zdarzenie.data, zdarzenie.wartosc)
 
-            if self.K == Decimal(0):
+            if self.K <= Decimal(0):
                 break
 
         return {

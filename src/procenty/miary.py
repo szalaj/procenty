@@ -64,7 +64,8 @@ class LiczbaDni:
 
     @property
     def mnoznik(self) -> Decimal:
-        return Decimal(self._mnoznik)
+        # Decimal(str(...)) zamiast Decimal(float) - bez szumu reprezentacji floata.
+        return Decimal(str(self._mnoznik))
 
 
 class Zloty:

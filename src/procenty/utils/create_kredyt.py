@@ -6,10 +6,16 @@ from ..kredyt import Kredyt, Rodzaj, Zdarzenie
 
 
 def create_kredyt(dane: dict[str, Any], rodzajRat: str) -> "Kredyt":
+    """Buduje Kredyt z harmonogramem i zdarzeniami ze slownika `dane`.
 
-    r = Decimal(dane["r"] / 100.0)
-    marza = Decimal(dane["marza"] / 100.0)
-    K = Decimal(dane["K"])
+    Konwencja: `r` i `marza` w PROCENTACH (np. 7.6); kwoty w zlotowkach.
+    Konwersja %->ulamek dzieje sie tutaj, na granicy; klasa Kredyt operuje
+    juz na ulamku (r=0.076).
+    """
+    # Decimal(str(...)) zamiast Decimal(float) eliminuje szum reprezentacji floata.
+    r = Decimal(str(dane["r"])) / Decimal(100)
+    marza = Decimal(str(dane["marza"])) / Decimal(100)
+    K = Decimal(str(dane["K"]))
     dni = dane["daty_splaty"]
     N = len(dni)
     start_kredytu = dt.datetime.strptime(dane["start"], "%Y-%m-%d")
@@ -38,7 +44,7 @@ def create_kredyt(dane: dict[str, Any], rodzajRat: str) -> "Kredyt":
                     Zdarzenie(
                         dt.datetime.strptime(nadplata["dzien"], "%Y-%m-%d"),
                         Rodzaj.SPLATA_CALKOWITA,
-                        Decimal(nadplata["kwota"]),
+                        Decimal(str(nadplata["kwota"])),
                     )
                 )
             else:
@@ -46,7 +52,7 @@ def create_kredyt(dane: dict[str, Any], rodzajRat: str) -> "Kredyt":
                     Zdarzenie(
                         dt.datetime.strptime(nadplata["dzien"], "%Y-%m-%d"),
                         Rodzaj.NADPLATA,
-                        Decimal(nadplata["kwota"]),
+                        Decimal(str(nadplata["kwota"])),
                     )
                 )
 
@@ -56,7 +62,7 @@ def create_kredyt(dane: dict[str, Any], rodzajRat: str) -> "Kredyt":
                 Zdarzenie(
                     dt.datetime.strptime(transza["dzien"], "%Y-%m-%d"),
                     Rodzaj.TRANSZA,
-                    Decimal(transza["kapital"]),
+                    Decimal(str(transza["kapital"])),
                 )
             )
 
@@ -67,9 +73,11 @@ def create_kredyt(dane: dict[str, Any], rodzajRat: str) -> "Kredyt":
 
 def create_kredyt_normalny(dane: dict[str, Any], rodzajRat: str) -> "Kredyt":
 
-    r = Decimal(dane["r"] / 100.0)
-    marza = Decimal(dane["marza"] / 100.0)
-    K = Decimal(dane["K"])
+    # Wejscie r/marza jest w PROCENTACH (np. 7.6); klasa Kredyt oczekuje ulamka
+    # (0.076). Decimal(str(...)) zamiast Decimal(float) eliminuje szum floata.
+    r = Decimal(str(dane["r"])) / Decimal(100)
+    marza = Decimal(str(dane["marza"])) / Decimal(100)
+    K = Decimal(str(dane["K"]))
     N = dane["N"]
     start_kredytu = dt.datetime.strptime(dane["start"], "%Y-%m-%d")
 

@@ -6,6 +6,7 @@ from typing import Any, List, Tuple
 import numpy as np
 import pandas as pd
 from dateutil.relativedelta import relativedelta
+from loguru import logger
 from scipy.interpolate import interp1d
 
 from procenty.stopy import Krzywa
@@ -55,6 +56,10 @@ class Inflacja:
                     inflator = inflator * m[1]
                     inflatory.append((copy.copy(miesiac_i), copy.copy(inflator)))
                     break
+            else:
+                logger.warning(
+                    f"Brak danych inflacji dla miesiaca {mi} - pominieto w szeregu inflatorow."
+                )
 
             miesiac_i = miesiac_i - relativedelta(months=1)
 
