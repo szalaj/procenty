@@ -34,7 +34,5 @@ PRZYPADKI = [
 
 @pytest.mark.parametrize("opis,kod", PRZYPADKI, ids=[p[0] for p in PRZYPADKI])
 def test_import_create_kredyt(opis, kod):
-    wynik = subprocess.run(
-        [sys.executable, "-c", kod], capture_output=True, text=True
-    )
+    wynik = subprocess.run([sys.executable, "-c", kod], capture_output=True, text=True)
     assert wynik.returncode == 0, f"{opis}: {wynik.stderr}"

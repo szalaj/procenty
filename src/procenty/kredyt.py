@@ -621,5 +621,6 @@ _ALIASY_KOMPATYBILNOSCI = ("create_kredyt", "create_kredyt_normalny")
 def __getattr__(name):
     if name in _ALIASY_KOMPATYBILNOSCI:
         from procenty.utils import create_kredyt as _shim
+
         return getattr(_shim, name)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
