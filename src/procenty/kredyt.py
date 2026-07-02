@@ -612,7 +612,14 @@ class KredytSuwak:
 # procenty.kredyt.create_kredyt. Po przeniesieniu definicji do utils
 # zachowujemy ten publiczny punkt wejscia (uzywany m.in. przez
 # kredytoweobliczenia.pl, ktore wola procenty.kredyt.create_kredyt).
-from procenty.utils.create_kredyt import (  # noqa: E402,F401
-    create_kredyt,
-    create_kredyt_normalny,
-)
+# Import jest leniwy (PEP 562), bo zachlanny import na koncu modulu tworzyl
+# cykl z utils.create_kredyt (ktory importuje ten modul) i wywracal
+# bezposredni import procenty.utils.create_kredyt.
+_ALIASY_KOMPATYBILNOSCI = ("create_kredyt", "create_kredyt_normalny")
+
+
+def __getattr__(name):
+    if name in _ALIASY_KOMPATYBILNOSCI:
+        from procenty.utils import create_kredyt as _shim
+        return getattr(_shim, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
