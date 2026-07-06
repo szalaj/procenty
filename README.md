@@ -20,6 +20,7 @@ poetry install
 | `stopy` | Krzywa stóp procentowych (cubic spline) |
 | `miary` | Dni odsetkowe z uwzględnieniem lat przestępnych, klasa Zloty |
 | `konto` | System księgowy z podwójnym zapisem, agenci, wymiana zasobów |
+| `bank_centralny` | Ogólny bank centralny dla symulacji krokowych: emisja pieniądza, stopa referencyjna, inflacja z równania wymiany (MV=PY), reguła Taylora |
 
 ## Szybki start
 

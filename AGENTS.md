@@ -14,6 +14,7 @@ src/procenty/
 ├── stopy.py           # Krzywa stóp procentowych (cubic spline interpolation)
 ├── miary.py           # LiczbaDni (dni odsetkowe z latami przestępnymi), Zloty
 ├── konto.py           # System księgowy: Zapis, Konto, Agent, SiecAgentow
+├── bank_centralny.py  # BankCentralny: emisja pieniądza, stopa, inflacja (MV=PY), reguła Taylora (ogólny, krokowy)
 ├── utils/
 │   ├── inne.py        # liczba_dni_w_roku, diff_month
 │   └── create_kredyt.py   # Fabryki kredytów z dict/JSON
