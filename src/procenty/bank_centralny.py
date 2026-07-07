@@ -12,6 +12,11 @@ pełni rolę pieniądza:
 2. Reguła Taylora: bank ustala nominalną stopę referencyjną w reakcji na
    odchylenie inflacji od celu oraz na lukę produktową.
 
+To jest model MONETARYSTYCZNY (ilościowa teoria pieniądza plus reguła
+Taylora). Alternatywny model zgodny z MMT (wydatek tworzy pieniądz, podatek
+umarza, inflacja z presji fiskalnej na realne moce, stopa jako decyzja
+polityczna) jest w module `procenty.mmt` (`PanstwoMMT`).
+
 Obiekt jest krokowy (operuje na kolejnych okresach symulacji, nie na
 kalendarzu, w odróżnieniu od `procenty.inflacja.Inflacja`). Może działać
 samodzielnie (czysta makroekonomia) albo wpinać emisję pieniądza w księgowość

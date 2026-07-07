@@ -21,6 +21,7 @@ poetry install
 | `miary` | Dni odsetkowe z uwzględnieniem lat przestępnych, klasa Zloty |
 | `konto` | System księgowy z podwójnym zapisem, agenci, wymiana zasobów |
 | `bank_centralny` | Ogólny bank centralny dla symulacji krokowych: emisja pieniądza, stopa referencyjna, inflacja z równania wymiany (MV=PY), reguła Taylora |
+| `mmt` | Państwo w duchu MMT dla symulacji krokowych: wydatek tworzy pieniądz, podatek umarza, inflacja z presji fiskalnej na realne moce, salda sektorowe |
 
 ## Szybki start
 
